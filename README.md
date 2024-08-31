@@ -22,6 +22,22 @@ The Codebase Context Specification is currently in a preview state. We're active
 
 For the full specification, please refer to [CODEBASE-CONTEXT.md](CODEBASE-CONTEXT.md).
 
+## Tooling Recommendations
+
+Developers are encouraged to create:
+
+1. Linters and validators for context files
+2. IDE plugins for context file creation and editing
+3. AI model integrations for parsing and utilizing context
+4. Tools for aggregating and presenting project-wide context
+
+## Future Directions
+
+1. Standardized query language for context interrogation
+2. Integration with existing documentation systems
+3. Dynamic context generation through code analysis
+4. Potential support for explicit context overriding
+
 ## Contribution / RFC Process
 
 We welcome contributions and feedback from the community to help shape the final specification. Here's how you can get involved:
