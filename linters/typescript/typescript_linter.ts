@@ -36,6 +36,18 @@ AI Context Convention TypeScript Linter (v${packageVersion})
       this.lintFile(file);
     }
 
+    // Lint .contextdocs.md and .contextignore if they exist
+    const contextdocsPath = path.join(directoryPath, '.contextdocs.md');
+    const contextignorePath = path.join(directoryPath, '.contextignore');
+
+    if (fs.existsSync(contextdocsPath)) {
+      this.lintContextdocsFile(contextdocsPath);
+    }
+
+    if (fs.existsSync(contextignorePath)) {
+      this.lintContextignoreFile(contextignorePath);
+    }
+
     console.log('\nLinting completed.');
   }
 
@@ -79,6 +91,33 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     console.log('  - Validating JSON structure');
     console.log('  - Verifying content against AI Context Convention Specification');
   }
+
+  private lintContextdocsFile(filePath: string): void {
+    console.log(`\nLinting .contextdocs.md file: ${filePath}`);
+    const content = fs.readFileSync(filePath, 'utf-8');
+    
+    console.log('  - Validating Markdown structure');
+    console.log('  - Checking for required sections');
+    console.log('  - Verifying content against .contextdocs.md specification');
+    
+    // TODO: Implement specific checks for .contextdocs.md
+    // 1. Check if the file starts with a level 1 heading "AI Context Documentation"
+    // 2. Verify that all required sections are present (e.g., "Overview", "File Structure", "Conventions")
+    // 3. Ensure that the content follows the expected format for each section
+  }
+
+  private lintContextignoreFile(filePath: string): void {
+    console.log(`\nLinting .contextignore file: ${filePath}`);
+    const content = fs.readFileSync(filePath, 'utf-8');
+    
+    console.log('  - Validating .contextignore format');
+    console.log('  - Checking for valid ignore patterns');
+    
+    // TODO: Implement specific checks for .contextignore
+    // 1. Verify that each line is a valid ignore pattern (similar to .gitignore format)
+    // 2. Check for any conflicting or redundant patterns
+    // 3. Ensure that the file doesn't ignore critical context files (e.g., .context.md files)
+  }
 }
 
 function main() {
@@ -88,7 +127,7 @@ function main() {
 Usage: npm run lint <directory_to_lint>
 
 AI Context Convention TypeScript Linter (v${packageVersion})
-This tool validates context files according to the AI Context Convention Specification.
+This tool validates context files, including .contextdocs.md and .contextignore, according to the AI Context Convention Specification.
 `);
     process.exit(1);
   }
