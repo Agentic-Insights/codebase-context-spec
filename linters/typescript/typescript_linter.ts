@@ -1,24 +1,40 @@
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import MarkdownIt from 'markdown-it';
 
-let packageVersion = 'unknown';
-try {
-  const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf-8'));
-  packageVersion = packageJson.version;
-} catch (error) {
-  console.warn('Warning: Unable to read package.json file. Version information may not be accurate.');
+async function getPackageVersion(): Promise<string> {
+  try {
+    const packageJson = JSON.parse(await fs.readFile(path.join(__dirname, 'package.json'), 'utf-8'));
+    return packageJson.version;
+  } catch (error) {
+    console.warn('Warning: Unable to read package.json file. Version information may not be accurate.');
+    return 'unknown';
+  }
 }
 
 class TypeScriptLinter {
   private md: MarkdownIt;
+  private kebabToCamelCache: Map<string, string>;
+  private requiredFields: Set<string>;
+  private roleSpecificSections: Set<string>;
+  private sectionChecks: Record<string, Set<string>>;
 
   constructor() {
     this.md = new MarkdownIt();
+    this.kebabToCamelCache = new Map();
+    this.requiredFields = new Set(['project-name', 'version', 'description', 'main-technologies']);
+    this.roleSpecificSections = new Set(['architecture', 'development', 'business-requirements', 'quality-assurance', 'deployment']);
+    this.sectionChecks = {
+      architecture: new Set(['style', 'main-components', 'data-flow']),
+      development: new Set(['setup-steps', 'build-command', 'test-command']),
+      'business-requirements': new Set(['key-features', 'target-audience', 'success-metrics']),
+      'quality-assurance': new Set(['testing-frameworks', 'coverage-threshold', 'performance-benchmarks']),
+      deployment: new Set(['platform', 'cicd-pipeline', 'staging-environment', 'production-environment'])
+    };
   }
 
-  public lintDirectory(directoryPath: string): void {
+  public async lintDirectory(directoryPath: string, packageVersion: string): Promise<void> {
     console.log(`
 ========================================================
 AI Context Convention TypeScript Linter (v${packageVersion})
@@ -26,33 +42,28 @@ AI Context Convention TypeScript Linter (v${packageVersion})
 `);
     console.log(`Linting directory: ${directoryPath}\n`);
 
-    const files = this.getContextFiles(directoryPath);
+    const files = await this.getContextFiles(directoryPath);
     if (files.length === 0) {
       console.log('No context files found in the specified directory.');
       return;
     }
 
-    for (const file of files) {
-      this.lintFile(file);
-    }
+    await Promise.all(files.map(file => this.lintFile(file)));
 
     // Lint .contextdocs.md and .contextignore if they exist
     const contextdocsPath = path.join(directoryPath, '.contextdocs.md');
     const contextignorePath = path.join(directoryPath, '.contextignore');
 
-    if (fs.existsSync(contextdocsPath)) {
-      this.lintContextdocsFile(contextdocsPath);
-    }
-
-    if (fs.existsSync(contextignorePath)) {
-      this.lintContextignoreFile(contextignorePath);
-    }
+    await Promise.all([
+      this.lintFileIfExists(contextdocsPath, this.lintContextdocsFile.bind(this)),
+      this.lintFileIfExists(contextignorePath, this.lintContextignoreFile.bind(this))
+    ]);
 
     console.log('\nLinting completed.');
   }
 
-  private getContextFiles(directoryPath: string): string[] {
-    const files = fs.readdirSync(directoryPath);
+  private async getContextFiles(directoryPath: string): Promise<string[]> {
+    const files = await fs.readdir(directoryPath);
     return files.filter(file => 
       file.endsWith('.context.md') || 
       file.endsWith('.context.yaml') || 
@@ -60,9 +71,20 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     );
   }
 
-  private lintFile(filePath: string): void {
+  private async lintFileIfExists(filePath: string, lintFunction: (content: string) => void): Promise<void> {
+    try {
+      const content = await fs.readFile(filePath, 'utf-8');
+      lintFunction(content);
+    } catch (error) {
+      if (error instanceof Error && 'code' in error && error.code !== 'ENOENT') {
+        console.error(`Error reading file ${filePath}: ${error}`);
+      }
+    }
+  }
+
+  private async lintFile(filePath: string): Promise<void> {
     console.log(`\nLinting file: ${filePath}`);
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = await fs.readFile(filePath, 'utf-8');
     
     if (filePath.endsWith('.context.md')) {
       this.lintMarkdownFile(content);
@@ -78,7 +100,6 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     console.log('  - Checking YAML frontmatter');
     console.log('  - Verifying content against AI Context Convention Specification');
 
-    // Split content into frontmatter and markdown
     const parts = content.split('---\n');
     if (parts.length < 3) {
       console.error('  Error: Invalid markdown structure. YAML frontmatter is missing or incomplete.');
@@ -88,7 +109,6 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     const frontmatter = parts[1];
     const markdownContent = parts.slice(2).join('---\n').trim();
 
-    // Parse and validate frontmatter
     try {
       const frontmatterData = yaml.load(frontmatter) as Record<string, unknown>;
       this.validateContextData(frontmatterData, 'markdown');
@@ -96,27 +116,25 @@ AI Context Convention TypeScript Linter (v${packageVersion})
       console.error(`  Error parsing YAML frontmatter: ${error}`);
     }
 
-    // Validate markdown content
     this.validateMarkdownContent(markdownContent);
   }
 
   private validateContextData(data: Record<string, unknown>, format: 'markdown' | 'yaml' | 'json'): void {
-    const requiredFields = ['project-name', 'version', 'description', 'main-technologies'];
-    const roleSpecificSections = ['architecture', 'development', 'business-requirements', 'quality-assurance', 'deployment'];
+    const isJson = format === 'json';
     
-    for (const field of requiredFields) {
-      const fieldName = format === 'json' ? this.kebabToCamelCase(field) : field;
+    for (const field of this.requiredFields) {
+      const fieldName = isJson ? this.kebabToCamelCase(field) : field;
       if (!(fieldName in data)) {
         console.error(`  Error: Missing required field '${fieldName}'.`);
       }
     }
 
-    for (const section of roleSpecificSections) {
-      const sectionName = format === 'json' ? this.kebabToCamelCase(section) : section;
+    for (const section of this.roleSpecificSections) {
+      const sectionName = isJson ? this.kebabToCamelCase(section) : section;
       if (!(sectionName in data)) {
         console.warn(`  Warning: Missing role-specific section '${sectionName}'.`);
       } else {
-        this.validateRoleSpecificSection(sectionName, data[sectionName] as Record<string, unknown>, format);
+        this.validateRoleSpecificSection(sectionName, data[sectionName] as Record<string, unknown>, isJson);
       }
     }
 
@@ -124,26 +142,17 @@ AI Context Convention TypeScript Linter (v${packageVersion})
       console.error('  Error: Field \'conventions\' must be an array.');
     }
 
-    if ('ai-prompts' in data && !Array.isArray(data['ai-prompts'])) {
-      console.error('  Error: Field \'ai-prompts\' must be an array.');
+    const aiPromptsField = isJson ? 'aiPrompts' : 'ai-prompts';
+    if (aiPromptsField in data && !Array.isArray(data[aiPromptsField])) {
+      console.error(`  Error: Field '${aiPromptsField}' must be an array.`);
     }
-
-    // Add more specific checks as needed
   }
 
-  private validateRoleSpecificSection(sectionName: string, data: Record<string, unknown>, format: 'markdown' | 'yaml' | 'json'): void {
-    const sectionChecks: Record<string, string[]> = {
-      architecture: ['style', 'main-components', 'data-flow'],
-      development: ['setup-steps', 'build-command', 'test-command'],
-      'business-requirements': ['key-features', 'target-audience', 'success-metrics'],
-      'quality-assurance': ['testing-frameworks', 'coverage-threshold', 'performance-benchmarks'],
-      deployment: ['platform', 'cicd-pipeline', 'staging-environment', 'production-environment']
-    };
-
-    const checks = sectionChecks[sectionName];
+  private validateRoleSpecificSection(sectionName: string, data: Record<string, unknown>, isJson: boolean): void {
+    const checks = this.sectionChecks[sectionName];
     if (checks) {
       for (const field of checks) {
-        const fieldName = format === 'json' ? this.kebabToCamelCase(field) : field;
+        const fieldName = isJson ? this.kebabToCamelCase(field) : field;
         if (!(fieldName in data)) {
           console.warn(`  Warning: Missing field '${fieldName}' in '${sectionName}' section.`);
         }
@@ -152,37 +161,30 @@ AI Context Convention TypeScript Linter (v${packageVersion})
   }
 
   private kebabToCamelCase(str: string): string {
-    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+    if (this.kebabToCamelCache.has(str)) {
+      return this.kebabToCamelCache.get(str)!;
+    }
+    const result = str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+    this.kebabToCamelCache.set(str, result);
+    return result;
   }
 
   private validateMarkdownContent(content: string): void {
     const tokens = this.md.parse(content, {});
+    const sections = new Set<string>();
     let hasTitle = false;
-    let hasArchitectureOverview = false;
-    let hasDevelopmentGuidelines = false;
-    let hasBusinessContext = false;
-    let hasQualityAssurance = false;
-    let hasDeploymentAndOperations = false;
-    let currentSection = '';
 
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-
+    for (const token of tokens) {
       if (token.type === 'heading_open') {
         if (token.tag === 'h1' && !hasTitle) {
           hasTitle = true;
         } else if (token.tag === 'h2') {
-          currentSection = tokens[i + 1].content.toLowerCase();
-          if (currentSection === 'architecture overview') hasArchitectureOverview = true;
-          if (currentSection === 'development guidelines') hasDevelopmentGuidelines = true;
-          if (currentSection === 'business context') hasBusinessContext = true;
-          if (currentSection === 'quality assurance') hasQualityAssurance = true;
-          if (currentSection === 'deployment and operations') hasDeploymentAndOperations = true;
+          sections.add(tokens[tokens.indexOf(token) + 1].content.toLowerCase());
         }
       }
 
       if (token.type === 'link_open') {
-        const hrefToken = tokens[i + 1];
+        const hrefToken = tokens[tokens.indexOf(token) + 1];
         if (hrefToken.type !== 'text' || !hrefToken.content.startsWith('http')) {
           console.error('  Warning: Link may be improperly formatted or using relative path.');
         }
@@ -197,24 +199,18 @@ AI Context Convention TypeScript Linter (v${packageVersion})
       console.error('  Error: Markdown content should start with a title (H1 heading).');
     }
 
-    if (!hasArchitectureOverview) {
-      console.warn('  Warning: Markdown content is missing an "Architecture Overview" section.');
-    }
+    const expectedSections = [
+      'architecture overview',
+      'development guidelines',
+      'business context',
+      'quality assurance',
+      'deployment and operations'
+    ];
 
-    if (!hasDevelopmentGuidelines) {
-      console.warn('  Warning: Markdown content is missing a "Development Guidelines" section.');
-    }
-
-    if (!hasBusinessContext) {
-      console.warn('  Warning: Markdown content is missing a "Business Context" section.');
-    }
-
-    if (!hasQualityAssurance) {
-      console.warn('  Warning: Markdown content is missing a "Quality Assurance" section.');
-    }
-
-    if (!hasDeploymentAndOperations) {
-      console.warn('  Warning: Markdown content is missing a "Deployment and Operations" section.');
+    for (const section of expectedSections) {
+      if (!sections.has(section)) {
+        console.warn(`  Warning: Markdown content is missing a "${section}" section.`);
+      }
     }
   }
 
@@ -242,37 +238,27 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     }
   }
 
-  private lintContextdocsFile(filePath: string): void {
-    console.log(`\nLinting .contextdocs.md file: ${filePath}`);
-    const content = fs.readFileSync(filePath, 'utf-8');
-    
+  private lintContextdocsFile(content: string): void {
+    console.log('\nLinting .contextdocs.md file');
     console.log('  - Validating Markdown structure');
     console.log('  - Checking for required sections');
     console.log('  - Verifying content against .contextdocs.md specification');
     
     const tokens = this.md.parse(content, {});
+    const sections = new Set<string>();
     let hasTitle = false;
-    let hasOverview = false;
-    let hasFileStructure = false;
-    let hasConventions = false;
-    let currentSection = '';
 
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-
+    for (const token of tokens) {
       if (token.type === 'heading_open') {
         if (token.tag === 'h1' && !hasTitle) {
-          hasTitle = tokens[i + 1].content === 'AI Context Documentation';
+          hasTitle = tokens[tokens.indexOf(token) + 1].content === 'AI Context Documentation';
         } else if (token.tag === 'h2') {
-          currentSection = tokens[i + 1].content.toLowerCase();
-          if (currentSection === 'overview') hasOverview = true;
-          if (currentSection === 'file structure') hasFileStructure = true;
-          if (currentSection === 'conventions') hasConventions = true;
+          sections.add(tokens[tokens.indexOf(token) + 1].content.toLowerCase());
         }
       }
 
       if (token.type === 'link_open') {
-        const hrefToken = tokens[i + 1];
+        const hrefToken = tokens[tokens.indexOf(token) + 1];
         if (hrefToken.type !== 'text' || !hrefToken.content.startsWith('http')) {
           console.error('  Warning: Link may be improperly formatted or using relative path.');
         }
@@ -287,54 +273,47 @@ AI Context Convention TypeScript Linter (v${packageVersion})
       console.error('  Error: .contextdocs.md should start with the title "AI Context Documentation".');
     }
 
-    if (!hasOverview) {
-      console.error('  Error: .contextdocs.md is missing the "Overview" section.');
-    }
-
-    if (!hasFileStructure) {
-      console.error('  Error: .contextdocs.md is missing the "File Structure" section.');
-    }
-
-    if (!hasConventions) {
-      console.error('  Error: .contextdocs.md is missing the "Conventions" section.');
+    const expectedSections = ['overview', 'file structure', 'conventions'];
+    for (const section of expectedSections) {
+      if (!sections.has(section)) {
+        console.error(`  Error: .contextdocs.md is missing the "${section}" section.`);
+      }
     }
   }
 
-  private lintContextignoreFile(filePath: string): void {
-    console.log(`\nLinting .contextignore file: ${filePath}`);
-    const content = fs.readFileSync(filePath, 'utf-8');
-    
+  private lintContextignoreFile(content: string): void {
+    console.log('\nLinting .contextignore file');
     console.log('  - Validating .contextignore format');
     console.log('  - Checking for valid ignore patterns');
     
     const lines = content.split('\n').map(line => line.trim()).filter(line => line !== '' && !line.startsWith('#'));
-    const patterns: string[] = [];
-    const criticalPatterns = ['.context.md', '.context.yaml', '.context.json', '.contextdocs.md', '.contextignore'];
+    const patterns = new Set<string>();
+    const criticalPatterns = new Set(['.context.md', '.context.yaml', '.context.json', '.contextdocs.md', '.contextignore']);
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       
-      // Check for valid pattern format
       if (!/^[!#]?[\w\-./\*\?]+$/.test(line)) {
         console.error(`  Error: Invalid ignore pattern on line ${i + 1}: ${line}`);
       }
 
-      // Check for redundant patterns
-      if (patterns.includes(line)) {
+      if (patterns.has(line)) {
         console.warn(`  Warning: Redundant pattern on line ${i + 1}: ${line}`);
       }
 
-      // Check for critical file ignores
       for (const criticalPattern of criticalPatterns) {
         if (line.endsWith(criticalPattern) || line.includes(`/${criticalPattern}`)) {
           console.error(`  Error: Ignoring critical context file on line ${i + 1}: ${line}`);
         }
       }
 
-      patterns.push(line);
+      patterns.add(line);
     }
 
-    // Check for conflicting include/exclude patterns
+    this.checkConflictingPatterns(Array.from(patterns));
+  }
+
+  private checkConflictingPatterns(patterns: string[]): void {
     for (let i = 0; i < patterns.length; i++) {
       for (let j = i + 1; j < patterns.length; j++) {
         if (patterns[i].startsWith('!') && patterns[j] === patterns[i].slice(1) ||
@@ -346,21 +325,25 @@ AI Context Convention TypeScript Linter (v${packageVersion})
   }
 }
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   if (args.length !== 1) {
     console.error(`
 Usage: npm run lint <directory_to_lint>
 
-AI Context Convention TypeScript Linter (v${packageVersion})
+AI Context Convention TypeScript Linter
 This tool validates context files, including .contextdocs.md and .contextignore, according to the AI Context Convention Specification.
 `);
     process.exit(1);
   }
 
   const directoryToLint = args[0];
+  const packageVersion = await getPackageVersion();
   const linter = new TypeScriptLinter();
-  linter.lintDirectory(directoryToLint);
+  await linter.lintDirectory(directoryToLint, packageVersion);
 }
 
-main();
+main().catch(error => {
+  console.error('An error occurred:', error);
+  process.exit(1);
+});
