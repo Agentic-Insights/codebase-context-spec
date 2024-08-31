@@ -74,22 +74,124 @@ AI Context Convention TypeScript Linter (v${packageVersion})
   }
 
   private lintMarkdownFile(content: string): void {
-    // TODO: Implement markdown file linting
     console.log('  - Validating Markdown structure');
     console.log('  - Checking YAML frontmatter');
     console.log('  - Verifying content against AI Context Convention Specification');
+
+    // Split content into frontmatter and markdown
+    const parts = content.split('---\n');
+    if (parts.length < 3) {
+      console.error('  Error: Invalid markdown structure. YAML frontmatter is missing or incomplete.');
+      return;
+    }
+
+    const frontmatter = parts[1];
+    const markdownContent = parts.slice(2).join('---\n').trim();
+
+    // Parse and validate frontmatter
+    try {
+      const frontmatterData = yaml.load(frontmatter) as Record<string, unknown>;
+      this.validateContextData(frontmatterData);
+    } catch (error) {
+      console.error(`  Error parsing YAML frontmatter: ${error}`);
+    }
+
+    // Validate markdown content
+    this.validateMarkdownContent(markdownContent);
+  }
+
+  private validateContextData(data: Record<string, unknown>): void {
+    const requiredFields = ['directoryName', 'description'];
+    for (const field of requiredFields) {
+      if (!(field in data)) {
+        console.error(`  Error: Missing required field '${field}'.`);
+      }
+    }
+
+    if ('language' in data && typeof data.language !== 'string') {
+      console.error('  Error: Field \'language\' must be a string.');
+    }
+
+    if ('dependencies' in data && !Array.isArray(data.dependencies)) {
+      console.error('  Error: Field \'dependencies\' must be an array.');
+    }
+
+    // Add more specific checks as needed
+  }
+
+  private validateMarkdownContent(content: string): void {
+    const tokens = this.md.parse(content, {});
+    let hasTitle = false;
+    let hasDescriptionSection = false;
+    let hasFileStructureSection = false;
+    let hasUsageSection = false;
+    let currentSection = '';
+
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+
+      if (token.type === 'heading_open') {
+        if (token.tag === 'h1' && !hasTitle) {
+          hasTitle = true;
+        } else if (token.tag === 'h2') {
+          currentSection = tokens[i + 1].content.toLowerCase();
+          if (currentSection === 'description') hasDescriptionSection = true;
+          if (currentSection === 'file structure') hasFileStructureSection = true;
+          if (currentSection === 'usage') hasUsageSection = true;
+        }
+      }
+
+      if (token.type === 'link_open') {
+        const hrefToken = tokens[i + 1];
+        if (hrefToken.type !== 'text' || !hrefToken.content.startsWith('http')) {
+          console.error('  Warning: Link may be improperly formatted or using relative path.');
+        }
+      }
+
+      if (token.type === 'fence' && !token.info) {
+        console.error('  Warning: Code block is missing language specification.');
+      }
+    }
+
+    if (!hasTitle) {
+      console.error('  Error: Markdown content should start with a title (H1 heading).');
+    }
+
+    if (!hasDescriptionSection) {
+      console.error('  Warning: Markdown content is missing a "Description" section.');
+    }
+
+    if (!hasFileStructureSection) {
+      console.warn('  Note: Consider adding a "File Structure" section for better context.');
+    }
+
+    if (!hasUsageSection) {
+      console.warn('  Note: Consider adding a "Usage" section for better understanding.');
+    }
   }
 
   private lintYamlFile(content: string): void {
-    // TODO: Implement YAML file linting
     console.log('  - Validating YAML structure');
     console.log('  - Verifying content against AI Context Convention Specification');
+
+    try {
+      const yamlData = yaml.load(content) as Record<string, unknown>;
+      this.validateContextData(yamlData);
+    } catch (error) {
+      console.error(`  Error parsing YAML file: ${error}`);
+    }
   }
 
   private lintJsonFile(content: string): void {
-    // TODO: Implement JSON file linting
     console.log('  - Validating JSON structure');
     console.log('  - Verifying content against AI Context Convention Specification');
+
+    try {
+      const jsonData = JSON.parse(content) as Record<string, unknown>;
+      this.validateContextData(jsonData);
+    } catch (error) {
+      console.error(`  Error parsing JSON file: ${error}`);
+    }
   }
 
   private lintContextdocsFile(filePath: string): void {
@@ -100,10 +202,54 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     console.log('  - Checking for required sections');
     console.log('  - Verifying content against .contextdocs.md specification');
     
-    // TODO: Implement specific checks for .contextdocs.md
-    // 1. Check if the file starts with a level 1 heading "AI Context Documentation"
-    // 2. Verify that all required sections are present (e.g., "Overview", "File Structure", "Conventions")
-    // 3. Ensure that the content follows the expected format for each section
+    const tokens = this.md.parse(content, {});
+    let hasTitle = false;
+    let hasOverview = false;
+    let hasFileStructure = false;
+    let hasConventions = false;
+    let currentSection = '';
+
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+
+      if (token.type === 'heading_open') {
+        if (token.tag === 'h1' && !hasTitle) {
+          hasTitle = tokens[i + 1].content === 'AI Context Documentation';
+        } else if (token.tag === 'h2') {
+          currentSection = tokens[i + 1].content.toLowerCase();
+          if (currentSection === 'overview') hasOverview = true;
+          if (currentSection === 'file structure') hasFileStructure = true;
+          if (currentSection === 'conventions') hasConventions = true;
+        }
+      }
+
+      if (token.type === 'link_open') {
+        const hrefToken = tokens[i + 1];
+        if (hrefToken.type !== 'text' || !hrefToken.content.startsWith('http')) {
+          console.error('  Warning: Link may be improperly formatted or using relative path.');
+        }
+      }
+
+      if (token.type === 'fence' && !token.info) {
+        console.error('  Warning: Code block is missing language specification.');
+      }
+    }
+
+    if (!hasTitle) {
+      console.error('  Error: .contextdocs.md should start with the title "AI Context Documentation".');
+    }
+
+    if (!hasOverview) {
+      console.error('  Error: .contextdocs.md is missing the "Overview" section.');
+    }
+
+    if (!hasFileStructure) {
+      console.error('  Error: .contextdocs.md is missing the "File Structure" section.');
+    }
+
+    if (!hasConventions) {
+      console.error('  Error: .contextdocs.md is missing the "Conventions" section.');
+    }
   }
 
   private lintContextignoreFile(filePath: string): void {
@@ -113,10 +259,42 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     console.log('  - Validating .contextignore format');
     console.log('  - Checking for valid ignore patterns');
     
-    // TODO: Implement specific checks for .contextignore
-    // 1. Verify that each line is a valid ignore pattern (similar to .gitignore format)
-    // 2. Check for any conflicting or redundant patterns
-    // 3. Ensure that the file doesn't ignore critical context files (e.g., .context.md files)
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line !== '' && !line.startsWith('#'));
+    const patterns: string[] = [];
+    const criticalPatterns = ['.context.md', '.context.yaml', '.context.json', '.contextdocs.md', '.contextignore'];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      
+      // Check for valid pattern format
+      if (!/^[!#]?[\w\-./\*\?]+$/.test(line)) {
+        console.error(`  Error: Invalid ignore pattern on line ${i + 1}: ${line}`);
+      }
+
+      // Check for redundant patterns
+      if (patterns.includes(line)) {
+        console.warn(`  Warning: Redundant pattern on line ${i + 1}: ${line}`);
+      }
+
+      // Check for critical file ignores
+      for (const criticalPattern of criticalPatterns) {
+        if (line.endsWith(criticalPattern) || line.includes(`/${criticalPattern}`)) {
+          console.error(`  Error: Ignoring critical context file on line ${i + 1}: ${line}`);
+        }
+      }
+
+      patterns.push(line);
+    }
+
+    // Check for conflicting include/exclude patterns
+    for (let i = 0; i < patterns.length; i++) {
+      for (let j = i + 1; j < patterns.length; j++) {
+        if (patterns[i].startsWith('!') && patterns[j] === patterns[i].slice(1) ||
+            patterns[j].startsWith('!') && patterns[i] === patterns[j].slice(1)) {
+          console.warn(`  Warning: Conflicting patterns: "${patterns[i]}" and "${patterns[j]}"`);
+        }
+      }
+    }
   }
 }
 
