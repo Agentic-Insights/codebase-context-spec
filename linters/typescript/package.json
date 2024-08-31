@@ -1,0 +1,23 @@
+{
+  "name": "ai-context-convention-typescript-linter",
+  "version": "1.0.0",
+  "description": "TypeScript linter for AI Context Convention files",
+  "main": "dist/typescript_linter.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/typescript_linter.js",
+    "lint": "node dist/typescript_linter.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["linter", "typescript", "ai", "context", "convention"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^22.5.1",
+    "js-yaml": "^4.1.0",
+    "markdown-it": "^14.1.0",
+    "typescript": "^5.5.4"
+  }
+}

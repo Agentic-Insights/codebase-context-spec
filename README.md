@@ -1,333 +1,53 @@
-# AI Context Convention Specification
+# Codebase Context Specification v 1.0.0-RFC
 
-Version: 1.0-preview
-Date: 2024-08-31
+![Codebase Context Image](./img/codebase-context.png "Codebase Context Specification")
 
-## 1. Overview
+## Introduction
 
-The AI Context Convention is a standardized method for embedding rich contextual information within codebases to enhance AI-assisted development. This specification outlines a flexible, language-agnostic approach to providing both structured and unstructured context at various levels of a project.
+Welcome to the Codebase Context Specification repository! This project aims to establish a standardized method for embedding rich contextual information within codebases to enhance AI-assisted development. By providing a clear and consistent way to communicate project structure, conventions, and key concepts, we can significantly improve the effectiveness of AI models in understanding and working with diverse codebases.
 
-## 2. Key Principles
+## Key Concepts
 
-1. **Flexibility**: Support multiple file formats and context types.
-2. **Proximity**: Keep context close to the code it describes.
-3. **Hierarchy**: Allow for project-wide, directory-level, and file-specific context.
-4. **Clarity**: Promote clear, maintainable context files.
-5. **AI-Centric**: Optimize for AI model consumption and interpretation.
+- **Contextual Metadata**: Structured information about the project, its components, and conventions.
+- **AI-Friendly Documentation**: Guidelines for creating documentation that's easily parsed and understood by AI models.
+- **Standardized File Formats**: Consistent use of .context.md, .context.yaml, and .context.json files for conveying context.
 
-## 3. File Structure
+## Current Version
 
-### 3.1 File Names
+**Version**: 1.0-preview
 
-Context files must use one of the following extensions:
+The Codebase Context Specification is currently in a preview state. We're actively seeking feedback and contributions from the developer community to refine and improve the specification before its official release.
 
-- `.context.md`: Markdown format (default, supports both structured and unstructured content)
-- `.context.yaml` or `.context.yml`: YAML format
-- `.context.json`: JSON format
+## Specification
 
-The `.md` extension is the default and recommended format as it supports both structured (via YAML front matter) and unstructured content.
+For the full specification, please refer to [CODEBASE-CONTEXT.md](CODEBASE-CONTEXT.md).
 
-### 3.2 File Locations
+## Contribution / RFC Process
 
-Context files can be placed at two levels within a project:
+We welcome contributions and feedback from the community to help shape the final specification. Here's how you can get involved:
 
-- Project root: For project-wide context
-- Directories: For context specific to that directory and its contents
+1. **Review the Specification**: Start by thoroughly reading the current specification in CODEBASE-CONTEXT.md.
+2. **Open an Issue**: For suggestions, questions, or concerns, open an issue in this repository.
+3. **Submit a Pull Request**: For proposed changes or additions, submit a pull request with a clear description of your modifications.
+4. **Join the Discussion**: Participate in open discussions and provide your insights on existing issues and pull requests.
 
-Example structure:
+All contributions will be reviewed and discussed openly. Significant changes may go through an RFC (Request for Comments) process to ensure thorough consideration and community input.
 
-```
-project_root/
-├── .context.md
-├── .contexignore
-├── .contextdocs.md
-├── src/
-│   ├── .context.yaml
-│   ├── module1/
-│   │   └── .context.md
-│   └── module2/
-│       └── .context.json
-└── tests/
-    └── .context.md
-```
-
-## 4. File Formats
-
-### 4.1 Markdown Format (Default)
-
-Markdown files (.context.md) are the default and recommended format. They can include an optional YAML front matter for structured data, followed by free-form Markdown content.
-
-Example:
-
-```markdown
----
-description: Core application logic
-conventions:
-  - Use camelCase for variable names
-  - Each function should have a single responsibility
-aiPrompts:
-  - Focus on performance optimizations
-  - Suggest ways to improve error handling
-fileContexts:
-  auth.js:
-    description: Authentication module
-    aiPrompts:
-      - Review security measures
-      - Suggest improvements for password hashing
-  data.js:
-    description: Data processing module
-    conventions:
-      - Use async/await for all database operations
----
-
-# Core Application Logic
-
-This directory contains the core logic for our application, including user authentication and data processing.
-
-## Authentication Module (auth.js)
-
-The authentication module handles user login, registration, and password reset functionality. It uses bcrypt for password hashing and JWT for session management.
-
-Key considerations:
-- OWASP security best practices
-- GDPR compliance for data handling
-
-## Data Processing Module (data.js)
-
-The data processing module is responsible for all database interactions and data transformations. It uses an ORM for database operations and implements caching for improved performance.
-
-Performance considerations:
-- Optimize database queries
-- Implement efficient data structures for in-memory operations
-```
-
-### 4.2 YAML Format
-
-YAML format (.context.yaml or .context.yml) can be used as an alternative to Markdown for purely structured data.
-
-Example:
-
-```yaml
-description: Core application logic
-conventions:
-  - Use camelCase for variable names
-  - Each function should have a single responsibility
-aiPrompts:
-  - Focus on performance optimizations
-  - Suggest ways to improve error handling
-fileContexts:
-  auth.js:
-    description: Authentication module
-    aiPrompts:
-      - Review security measures
-      - Suggest improvements for password hashing
-  data.js:
-    description: Data processing module
-    conventions:
-      - Use async/await for all database operations
-```
-
-### 4.3 JSON Format
-
-JSON format (.context.json) can be used for purely structured data when preferred.
-
-Example:
-
-```json
-{
-  "description": "Core application logic",
-  "conventions": [
-    "Use camelCase for variable names",
-    "Each function should have a single responsibility"
-  ],
-  "aiPrompts": [
-    "Focus on performance optimizations",
-    "Suggest ways to improve error handling"
-  ],
-  "fileContexts": {
-    "auth.js": {
-      "description": "Authentication module",
-      "aiPrompts": [
-        "Review security measures",
-        "Suggest improvements for password hashing"
-      ]
-    },
-    "data.js": {
-      "description": "Data processing module",
-      "conventions": [
-        "Use async/await for all database operations"
-      ]
-    }
-  }
-}
-```
-
-## 5. Context Accumulation
-
-1. Context accumulates as you traverse deeper into the directory structure.
-2. More specific contexts provide additional detail to broader contexts.
-3. AI models should consider all relevant context files, prioritizing more specific contexts when appropriate.
-4. There is no strict overriding; AI judges context relevance based on the query or task.
-
-## 6. The .contexignore File
-
-The `.contexignore` file, placed in the project root, excludes files or directories from context consideration.
-
-### Syntax
-
-- Uses glob patterns similar to `.gitignore`
-- Lines starting with `#` are comments
-
-Example:
-```
-# Ignore all .log files
-*.log
-
-# Ignore the entire build directory
-build/
-
-# Ignore all .test.js files
-**/*.test.js
-
-# Ignore a specific file
-src/deprecated-module.js
-
-# Ignore all files in any directory named 'temp'
-**/temp/*
-```
-
-## 7. Security Considerations
-
-1. Avoid including sensitive information (API keys, passwords) in context files.
-2. Be cautious with proprietary algorithms or trade secrets.
-3. Use `.gitignore` to exclude sensitive context files from version control if necessary.
-
-## 8. The .contextdocs File
-
-The `.contextdocs` file allows developers to specify external documentation sources that should be incorporated into the project's context. This feature is particularly useful for including documentation from dependencies, libraries, or related projects.
-
-### 8.1 Location and Naming
-
-- The `.contextdocs` file should be placed in the root directory of the project.
-- It must use one of the following extensions:
-  - `.contextdocs.md` (default, recommended)
-  - `.contextdocs.yaml` or `.contextdocs.yml`
-  - `.contextdocs.json`
-
-### 8.2 File Structure
-
-The `.contextdocs` file should contain an array of documentation sources. Each source can be:
-
-- A file path relative to the project root
-- A URL to a markdown file
-- A package name with associated documentation files
-
-### 8.3 Examples
-
-#### Markdown Format (.contextdocs.md) - Default
-
-```markdown
----
-documentation:
-  - type: local
-    path: docs/project_overview.md
-  - type: url
-    url: https://raw.githubusercontent.com/example/repo/main/API.md
-  - type: package
-    name: express
-    version: 4.17.1
-    docs:
-      - README.md
-      - docs/api.md
-      - docs/guide/routing.md
----
-
-# Additional Documentation Notes
-
-This section can include any free-form text to provide context about the listed documentation sources, their relevance to the project, or any other pertinent information.
-```
-
-#### YAML Format (.contextdocs.yaml)
-
-```yaml
-documentation:
-  - type: local
-    path: docs/project_overview.md
-  - type: url
-    url: https://raw.githubusercontent.com/example/repo/main/API.md
-  - type: package
-    name: express
-    version: 4.17.1
-    docs:
-      - README.md
-      - docs/api.md
-      - docs/guide/routing.md
-```
-
-#### JSON Format (.contextdocs.json)
-
-```json
-{
-  "documentation": [
-    {
-      "type": "local",
-      "path": "docs/project_overview.md"
-    },
-    {
-      "type": "url",
-      "url": "https://raw.githubusercontent.com/example/repo/main/API.md"
-    },
-    {
-      "type": "package",
-      "name": "express",
-      "version": "4.17.1",
-      "docs": [
-        "README.md",
-        "docs/api.md",
-        "docs/guide/routing.md"
-      ]
-    }
-  ]
-}
-```
-
-### 8.4 Behavior
-
-- When an AI model or related tool is processing the project context, it should fetch and incorporate the specified documentation.
-- For local files, the content should be read from the specified path.
-- For URLs, the content should be fetched from the provided URL.
-- For packages, the documentation should be fetched from the package's repository or documentation site, based on the package name and version.
-
-### 8.5 Use Cases
-
-- Including documentation for key dependencies
-- Referencing company-wide coding standards or guidelines
-- Incorporating design documents or architectural overviews
-- Linking to relevant external resources or tutorials
-
-### 8.6 Considerations
-
-- Ensure that URLs point to stable, version-controlled documentation to maintain consistency.
-- Be mindful of the total volume of documentation to avoid overwhelming the AI model with irrelevant information.
-- Regularly review and update the `.contextdocs` file to ensure all referenced documentation remains relevant and up-to-date.
-- Consider implementing caching mechanisms for external documentation to improve performance and reduce network requests.
-
-## 9. Tooling Recommendations
-
-Developers are encouraged to create:
-
-1. Linters and validators for context files
-2. IDE plugins for context file creation and editing
-3. AI model integrations for parsing and utilizing context
-4. Tools for aggregating and presenting project-wide context
-
-## 10. Future Directions
-
-1. Standardized query language for context interrogation
-2. Integration with existing documentation systems
-3. Dynamic context generation through code analysis
-4. Potential support for explicit context overriding
-
-## 11. Conclusion
-
-The AI Context Convention provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of the `.contextdocs` file further enriches the available context by allowing the incorporation of external documentation, ensuring that AI models have access to comprehensive information about the project and its dependencies.
+## Version History
+
+- 1.0-preview: Initial preview release of the Codebase Context Specification
+
+## Main Links
+
+- [Full Specification (CODEBASE-CONTEXT.md)](CODEBASE-CONTEXT.md)
+- [Context File Example (.context.md)](.context.md)
+- [Contributing Guidelines](CONTRIBUTING.md) [Note: This file needs to be created]
+- [License](LICENSE) [Note: This file needs to be created]
+
+## ComfyUI Header Image Prompt
+
+To create an eye-catching header image for this project using ComfyUI, consider the following prompt:
+
+"A futuristic digital landscape representing a codebase, with holographic projections of file structures and context information floating above. In the foreground, large, sleek text reads 'Codebase Context Specification' with a subtle glow. The scene should convey organization, clarity, and the seamless integration of AI with code. Use a color scheme of deep blues and bright cyans to create a tech-oriented atmosphere."
+
+This prompt leverages ComfyUI's strengths in creating scenes with integrated text, while also visually representing the key concepts of the Codebase Context Specification project.
