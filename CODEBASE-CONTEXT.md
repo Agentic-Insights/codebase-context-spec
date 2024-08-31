@@ -5,7 +5,7 @@ Date: 2024-08-31
 
 ## 1. Overview
 
-The AI Context Convention is a standardized method for embedding rich contextual information within codebases to enhance AI-assisted development. This specification outlines a flexible, language-agnostic approach to providing both structured and unstructured context at various levels of a project.
+The AI Context Convention is a standardized method for embedding rich contextual information within codebases to enhance AI-assisted development. This specification outlines a flexible, language-agnostic approach to providing both structured and unstructured context at various levels of a project, catering to the needs of different team roles.
 
 ## 2. Key Principles
 
@@ -55,109 +55,251 @@ project_root/
 
 ### 4.1 Markdown Format (Default)
 
-Markdown files (.context.md) are the default and recommended format. They can include an optional YAML front matter for structured data, followed by free-form Markdown content.
+Markdown files (.context.md) are the default and recommended format. They can include an optional YAML front matter for structured data, followed by free-form Markdown content. The structured data should now include role-specific sections.
 
 Example:
 
 ```markdown
 ---
-description: Core application logic
+project-name: MyAwesomeProject
+version: 1.0.0
+description: A revolutionary web application
+main-technologies:
+  - Node.js
+  - React
+  - MongoDB
 conventions:
-  - Use camelCase for variable names
+  - Use consistent naming conventions within each file type
   - Each function should have a single responsibility
-aiPrompts:
+ai-prompts:
   - Focus on performance optimizations
   - Suggest ways to improve error handling
-fileContexts:
-  auth.js:
-    description: Authentication module
-    aiPrompts:
-      - Review security measures
-      - Suggest improvements for password hashing
-  data.js:
-    description: Data processing module
-    conventions:
-      - Use async/await for all database operations
+architecture:
+  style: Microservices
+  main-components:
+    - Auth Service
+    - User Service
+    - Data Processing Service
+  data-flow:
+    - Client -> API Gateway -> Services -> Database
+development:
+  setup-steps:
+    - Install Node.js v14+
+    - Run `npm install` in each service directory
+    - Set up MongoDB instance
+  build-command: npm run build
+  test-command: npm test
+business-requirements:
+  key-features:
+    - User authentication
+    - Real-time data processing
+    - Mobile-responsive UI
+  target-audience: Small to medium-sized businesses
+  success-metrics:
+    - User adoption rate
+    - System response time
+    - Data processing accuracy
+quality-assurance:
+  testing-frameworks:
+    - Jest
+    - Cypress
+  coverage-threshold: 80%
+  performance-benchmarks:
+    - API response time < 200ms
+    - Database query time < 100ms
+deployment:
+  platform: AWS
+  cicd-pipeline: GitHub Actions
+  staging-environment: dev.myawesomeproject.com
+  production-environment: myawesomeproject.com
 ---
 
-# Core Application Logic
+# MyAwesomeProject
 
-This directory contains the core logic for our application, including user authentication and data processing.
+This document provides comprehensive context for the MyAwesomeProject, a revolutionary web application designed to streamline business processes.
 
-## Authentication Module (auth.js)
+## Architecture Overview
 
-The authentication module handles user login, registration, and password reset functionality. It uses bcrypt for password hashing and JWT for session management.
+MyAwesomeProject follows a microservices architecture, consisting of the following main components:
 
-Key considerations:
-- OWASP security best practices
-- GDPR compliance for data handling
+1. Auth Service: Handles user authentication and authorization.
+2. User Service: Manages user profiles and preferences.
+3. Data Processing Service: Processes and analyzes business data in real-time.
 
-## Data Processing Module (data.js)
+The system uses an API Gateway to route requests to appropriate services, ensuring scalability and maintainability.
 
-The data processing module is responsible for all database interactions and data transformations. It uses an ORM for database operations and implements caching for improved performance.
+## Development Guidelines
 
-Performance considerations:
-- Optimize database queries
-- Implement efficient data structures for in-memory operations
+- Follow the conventions listed in the front matter.
+- Use feature branches and pull requests for all changes.
+- Write unit tests for all new features and bug fixes.
+- Document all public APIs using JSDoc comments.
+
+## Business Context
+
+The primary goal of MyAwesomeProject is to provide small to medium-sized businesses with a powerful tool for real-time data analysis and visualization. Key features include:
+
+- Secure user authentication
+- Real-time data processing with customizable dashboards
+- Mobile-responsive design for on-the-go access
+
+Success will be measured by user adoption rates, system performance metrics, and data processing accuracy.
+
+## Quality Assurance
+
+Our QA process ensures high-quality, reliable software through:
+
+- Comprehensive unit and integration testing using Jest
+- End-to-end testing with Cypress
+- Continuous integration and deployment via GitHub Actions
+- Regular performance testing and optimization
+
+## Deployment and Operations
+
+MyAwesomeProject is deployed on AWS using a robust CI/CD pipeline:
+
+1. Developers push code to GitHub
+2. GitHub Actions run tests and build the application
+3. Successful builds are deployed to the staging environment
+4. After approval, changes are promoted to production
+
+Monitoring and logging are handled through AWS CloudWatch and ELK stack.
+
 ```
 
 ### 4.2 YAML Format
 
-YAML format (.context.yaml or .context.yml) can be used as an alternative to Markdown for purely structured data.
+YAML format (.context.yaml or .context.yml) should now include the expanded role-specific sections and use kebab-case for key names.
 
 Example:
 
 ```yaml
-description: Core application logic
+project-name: MyAwesomeProject
+version: 1.0.0
+description: A revolutionary web application
+main-technologies:
+  - Node.js
+  - React
+  - MongoDB
 conventions:
-  - Use camelCase for variable names
+  - Use consistent naming conventions within each file type
   - Each function should have a single responsibility
-aiPrompts:
+ai-prompts:
   - Focus on performance optimizations
   - Suggest ways to improve error handling
-fileContexts:
-  auth.js:
-    description: Authentication module
-    aiPrompts:
-      - Review security measures
-      - Suggest improvements for password hashing
-  data.js:
-    description: Data processing module
-    conventions:
-      - Use async/await for all database operations
+architecture:
+  style: Microservices
+  main-components:
+    - Auth Service
+    - User Service
+    - Data Processing Service
+  data-flow:
+    - Client -> API Gateway -> Services -> Database
+development:
+  setup-steps:
+    - Install Node.js v14+
+    - Run `npm install` in each service directory
+    - Set up MongoDB instance
+  build-command: npm run build
+  test-command: npm test
+business-requirements:
+  key-features:
+    - User authentication
+    - Real-time data processing
+    - Mobile-responsive UI
+  target-audience: Small to medium-sized businesses
+  success-metrics:
+    - User adoption rate
+    - System response time
+    - Data processing accuracy
+quality-assurance:
+  testing-frameworks:
+    - Jest
+    - Cypress
+  coverage-threshold: 80%
+  performance-benchmarks:
+    - API response time < 200ms
+    - Database query time < 100ms
+deployment:
+  platform: AWS
+  cicd-pipeline: GitHub Actions
+  staging-environment: dev.myawesomeproject.com
+  production-environment: myawesomeproject.com
 ```
 
 ### 4.3 JSON Format
 
-JSON format (.context.json) can be used for purely structured data when preferred.
+JSON format (.context.json) should also include the expanded role-specific sections. Note that JSON doesn't support kebab-case for key names, so we'll use camelCase as it's a common convention in JSON.
 
 Example:
 
 ```json
 {
-  "description": "Core application logic",
+  "projectName": "MyAwesomeProject",
+  "version": "1.0.0",
+  "description": "A revolutionary web application",
+  "mainTechnologies": [
+    "Node.js",
+    "React",
+    "MongoDB"
+  ],
   "conventions": [
-    "Use camelCase for variable names",
+    "Use consistent naming conventions within each file type",
     "Each function should have a single responsibility"
   ],
   "aiPrompts": [
     "Focus on performance optimizations",
     "Suggest ways to improve error handling"
   ],
-  "fileContexts": {
-    "auth.js": {
-      "description": "Authentication module",
-      "aiPrompts": [
-        "Review security measures",
-        "Suggest improvements for password hashing"
-      ]
-    },
-    "data.js": {
-      "description": "Data processing module",
-      "conventions": [
-        "Use async/await for all database operations"
-      ]
-    }
+  "architecture": {
+    "style": "Microservices",
+    "mainComponents": [
+      "Auth Service",
+      "User Service",
+      "Data Processing Service"
+    ],
+    "dataFlow": [
+      "Client -> API Gateway -> Services -> Database"
+    ]
+  },
+  "development": {
+    "setupSteps": [
+      "Install Node.js v14+",
+      "Run `npm install` in each service directory",
+      "Set up MongoDB instance"
+    ],
+    "buildCommand": "npm run build",
+    "testCommand": "npm test"
+  },
+  "businessRequirements": {
+    "keyFeatures": [
+      "User authentication",
+      "Real-time data processing",
+      "Mobile-responsive UI"
+    ],
+    "targetAudience": "Small to medium-sized businesses",
+    "successMetrics": [
+      "User adoption rate",
+      "System response time",
+      "Data processing accuracy"
+    ]
+  },
+  "qualityAssurance": {
+    "testingFrameworks": [
+      "Jest",
+      "Cypress"
+    ],
+    "coverageThreshold": "80%",
+    "performanceBenchmarks": [
+      "API response time < 200ms",
+      "Database query time < 100ms"
+    ]
+  },
+  "deployment": {
+    "platform": "AWS",
+    "cicdPipeline": "GitHub Actions",
+    "stagingEnvironment": "dev.myawesomeproject.com",
+    "productionEnvironment": "myawesomeproject.com"
   }
 }
 ```
@@ -314,7 +456,7 @@ documentation:
 
 ## 9. Conclusion
 
-The AI Context Convention provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of the `.contextdocs` file further enriches the available context by allowing the incorporation of external documentation, ensuring that AI models have access to comprehensive information about the project and its dependencies.
+The AI Context Convention provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention and including role-specific information, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of role-specific guidelines and consistent naming conventions ensures that AI models have access to comprehensive, relevant, and well-structured information tailored to different aspects of the software development lifecycle.
 
 ## 10. TypeScript Linter Implementation
 

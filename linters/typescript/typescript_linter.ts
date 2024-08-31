@@ -91,7 +91,7 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     // Parse and validate frontmatter
     try {
       const frontmatterData = yaml.load(frontmatter) as Record<string, unknown>;
-      this.validateContextData(frontmatterData);
+      this.validateContextData(frontmatterData, 'markdown');
     } catch (error) {
       console.error(`  Error parsing YAML frontmatter: ${error}`);
     }
@@ -100,31 +100,69 @@ AI Context Convention TypeScript Linter (v${packageVersion})
     this.validateMarkdownContent(markdownContent);
   }
 
-  private validateContextData(data: Record<string, unknown>): void {
-    const requiredFields = ['directoryName', 'description'];
+  private validateContextData(data: Record<string, unknown>, format: 'markdown' | 'yaml' | 'json'): void {
+    const requiredFields = ['project-name', 'version', 'description', 'main-technologies'];
+    const roleSpecificSections = ['architecture', 'development', 'business-requirements', 'quality-assurance', 'deployment'];
+    
     for (const field of requiredFields) {
-      if (!(field in data)) {
-        console.error(`  Error: Missing required field '${field}'.`);
+      const fieldName = format === 'json' ? this.kebabToCamelCase(field) : field;
+      if (!(fieldName in data)) {
+        console.error(`  Error: Missing required field '${fieldName}'.`);
       }
     }
 
-    if ('language' in data && typeof data.language !== 'string') {
-      console.error('  Error: Field \'language\' must be a string.');
+    for (const section of roleSpecificSections) {
+      const sectionName = format === 'json' ? this.kebabToCamelCase(section) : section;
+      if (!(sectionName in data)) {
+        console.warn(`  Warning: Missing role-specific section '${sectionName}'.`);
+      } else {
+        this.validateRoleSpecificSection(sectionName, data[sectionName] as Record<string, unknown>, format);
+      }
     }
 
-    if ('dependencies' in data && !Array.isArray(data.dependencies)) {
-      console.error('  Error: Field \'dependencies\' must be an array.');
+    if ('conventions' in data && !Array.isArray(data.conventions)) {
+      console.error('  Error: Field \'conventions\' must be an array.');
+    }
+
+    if ('ai-prompts' in data && !Array.isArray(data['ai-prompts'])) {
+      console.error('  Error: Field \'ai-prompts\' must be an array.');
     }
 
     // Add more specific checks as needed
   }
 
+  private validateRoleSpecificSection(sectionName: string, data: Record<string, unknown>, format: 'markdown' | 'yaml' | 'json'): void {
+    const sectionChecks: Record<string, string[]> = {
+      architecture: ['style', 'main-components', 'data-flow'],
+      development: ['setup-steps', 'build-command', 'test-command'],
+      'business-requirements': ['key-features', 'target-audience', 'success-metrics'],
+      'quality-assurance': ['testing-frameworks', 'coverage-threshold', 'performance-benchmarks'],
+      deployment: ['platform', 'cicd-pipeline', 'staging-environment', 'production-environment']
+    };
+
+    const checks = sectionChecks[sectionName];
+    if (checks) {
+      for (const field of checks) {
+        const fieldName = format === 'json' ? this.kebabToCamelCase(field) : field;
+        if (!(fieldName in data)) {
+          console.warn(`  Warning: Missing field '${fieldName}' in '${sectionName}' section.`);
+        }
+      }
+    }
+  }
+
+  private kebabToCamelCase(str: string): string {
+    return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+  }
+
   private validateMarkdownContent(content: string): void {
     const tokens = this.md.parse(content, {});
     let hasTitle = false;
-    let hasDescriptionSection = false;
-    let hasFileStructureSection = false;
-    let hasUsageSection = false;
+    let hasArchitectureOverview = false;
+    let hasDevelopmentGuidelines = false;
+    let hasBusinessContext = false;
+    let hasQualityAssurance = false;
+    let hasDeploymentAndOperations = false;
     let currentSection = '';
 
     for (let i = 0; i < tokens.length; i++) {
@@ -135,9 +173,11 @@ AI Context Convention TypeScript Linter (v${packageVersion})
           hasTitle = true;
         } else if (token.tag === 'h2') {
           currentSection = tokens[i + 1].content.toLowerCase();
-          if (currentSection === 'description') hasDescriptionSection = true;
-          if (currentSection === 'file structure') hasFileStructureSection = true;
-          if (currentSection === 'usage') hasUsageSection = true;
+          if (currentSection === 'architecture overview') hasArchitectureOverview = true;
+          if (currentSection === 'development guidelines') hasDevelopmentGuidelines = true;
+          if (currentSection === 'business context') hasBusinessContext = true;
+          if (currentSection === 'quality assurance') hasQualityAssurance = true;
+          if (currentSection === 'deployment and operations') hasDeploymentAndOperations = true;
         }
       }
 
@@ -157,16 +197,24 @@ AI Context Convention TypeScript Linter (v${packageVersion})
       console.error('  Error: Markdown content should start with a title (H1 heading).');
     }
 
-    if (!hasDescriptionSection) {
-      console.error('  Warning: Markdown content is missing a "Description" section.');
+    if (!hasArchitectureOverview) {
+      console.warn('  Warning: Markdown content is missing an "Architecture Overview" section.');
     }
 
-    if (!hasFileStructureSection) {
-      console.warn('  Note: Consider adding a "File Structure" section for better context.');
+    if (!hasDevelopmentGuidelines) {
+      console.warn('  Warning: Markdown content is missing a "Development Guidelines" section.');
     }
 
-    if (!hasUsageSection) {
-      console.warn('  Note: Consider adding a "Usage" section for better understanding.');
+    if (!hasBusinessContext) {
+      console.warn('  Warning: Markdown content is missing a "Business Context" section.');
+    }
+
+    if (!hasQualityAssurance) {
+      console.warn('  Warning: Markdown content is missing a "Quality Assurance" section.');
+    }
+
+    if (!hasDeploymentAndOperations) {
+      console.warn('  Warning: Markdown content is missing a "Deployment and Operations" section.');
     }
   }
 
@@ -176,7 +224,7 @@ AI Context Convention TypeScript Linter (v${packageVersion})
 
     try {
       const yamlData = yaml.load(content) as Record<string, unknown>;
-      this.validateContextData(yamlData);
+      this.validateContextData(yamlData, 'yaml');
     } catch (error) {
       console.error(`  Error parsing YAML file: ${error}`);
     }
@@ -188,7 +236,7 @@ AI Context Convention TypeScript Linter (v${packageVersion})
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
-      this.validateContextData(jsonData);
+      this.validateContextData(jsonData, 'json');
     } catch (error) {
       console.error(`  Error parsing JSON file: ${error}`);
     }
