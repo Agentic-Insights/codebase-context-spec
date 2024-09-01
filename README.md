@@ -37,6 +37,20 @@ The Codebase Context Specification is currently in a preview state. We're active
 
 For the full specification, please refer to [CODEBASE-CONTEXT.md](CODEBASE-CONTEXT.md).
 
+## Using with AI Assistants
+
+The [CODING-ASSISTANT-PROMPT.md](CODING-ASSISTANT-PROMPT.md) file provides guidelines for AI assistants to understand and use the Codebase Context Specification. This allows for immediate adoption of the specification without requiring specific tooling integration.
+
+To use the Codebase Context Specification with an AI assistant:
+
+1. Include the content of CODING-ASSISTANT-PROMPT.md in your prompt to the AI assistant.
+2. Ask the AI to analyze your project's context files based on these guidelines.
+3. The AI will be able to provide more accurate and context-aware responses by following the instructions in the prompt.
+
+[A UI element graphic would be inserted here, demonstrating how the Codebase Context Specification could be integrated into development environments]
+
+Note that while this approach allows for immediate use of the specification, some features like .contextignore should eventually be applied by tooling for more robust implementation.
+
 ## Tooling Recommendations
 
 Developers are encouraged to create:
@@ -77,3 +91,4 @@ All contributions will be reviewed and discussed openly. Significant changes may
 
 - [Full Specification (CODEBASE-CONTEXT.md)](CODEBASE-CONTEXT.md)
 - [Context File Example (.context.md)](.context.md)
+- [AI Assistant Prompt (CODING-ASSISTANT-PROMPT.md)](CODING-ASSISTANT-PROMPT.md)
