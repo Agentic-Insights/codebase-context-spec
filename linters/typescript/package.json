@@ -1,23 +1,40 @@
 {
-  "name": "ai-context-convention-typescript-linter",
-  "version": "1.0.0",
-  "description": "TypeScript linter for AI Context Convention files",
+  "name": "ai-context-convention-linter",
+  "version": "0.0.1",
+  "description": "CLI linter for AI Context Convention files",
   "main": "dist/typescript_linter.js",
+  "bin": {
+    "ai-context-lint": "./dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/typescript_linter.js",
-    "lint": "node dist/typescript_linter.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/cli.js",
+    "lint": "node dist/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": ["linter", "typescript", "ai", "context", "convention"],
-  "author": "",
+  "keywords": ["linter", "typescript", "ai", "context", "convention", "cli"],
+  "author": "Your Name <your.email@example.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-repo/ai-context-convention-typescript-linter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-repo/ai-context-convention-typescript-linter/issues"
+  },
+  "homepage": "https://github.com/your-repo/ai-context-convention-typescript-linter#readme",
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.5.1",
-    "js-yaml": "^4.1.0",
-    "markdown-it": "^14.1.0",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "markdown-it": "^14.1.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
