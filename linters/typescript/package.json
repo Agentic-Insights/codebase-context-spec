@@ -1,0 +1,46 @@
+{
+  "name": "codebase-context-lint",
+  "version": "0.0.4",
+  "description": "CLI linter for AI Context Convention files",
+  "main": "dist/context_linter.js",
+  "bin": {
+    "ai-context-lint": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "lint": "node dist/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "linter",
+    "ai",
+    "context",
+    "convention",
+    "cli"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Agentic-Insights/codebase-context-spec.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Agentic-Insights/codebase-context-spec/issues"
+  },
+  "homepage": "https://github.com/Agentic-Insights/codebase-context-spec#readme",
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^22.5.1",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "markdown-it": "^14.1.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
