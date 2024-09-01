@@ -1,4 +1,23 @@
-# Codebase Context Linter
+# Codebase Context Lint
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Agentic-Insights/codebase-context-spec/main/img/codebase-context.png" alt="Codebase Context Lint Logo" width="200" height="200">
+</div>
+
+<h3 align="center">Codebase Context Lint</h3>
+
+<p align="center">
+  CLI linter for AI Context Convention files
+  <br>
+  <a href="https://github.com/Agentic-Insights/codebase-context-spec"><strong>Explore the spec »</strong></a>
+  <br>
+  <br>
+  <a href="https://github.com/Agentic-Insights/codebase-context-spec/issues/new?template=bug_report.md">Report bug</a>
+  ·
+  <a href="https://github.com/Agentic-Insights/codebase-context-spec/issues/new?template=feature_request.md">Request feature</a>
+</p>
+
+## Overview
 
 This is a CLI linter for validating AI Context Convention files, including `.context.md`, `.context.yaml`, `.context.json`, `.contextdocs.md`, and `.contextignore` files.
 
@@ -61,4 +80,4 @@ To contribute to this project:
 
 ## License
 
-This project is licensed under the ISC License.
+This project is licensed under the MIT License.
