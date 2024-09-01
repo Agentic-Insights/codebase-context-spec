@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { TypeScriptLinter } from './typescript_linter';
+import { ContextLinter } from './context_linter';
 import { getPackageVersion } from './utils';
 
 async function main() {
@@ -9,7 +9,7 @@ async function main() {
     console.error(`
 Usage: ai-context-lint <directory_to_lint>
 
-AI Context Convention TypeScript Linter
+AI Context Convention Linter
 This tool validates context files, including .contextdocs.md and .contextignore, according to the AI Context Convention Specification.
 `);
     process.exit(1);
@@ -17,7 +17,7 @@ This tool validates context files, including .contextdocs.md and .contextignore,
 
   const directoryToLint = args[0];
   const packageVersion = await getPackageVersion();
-  const linter = new TypeScriptLinter();
+  const linter = new ContextLinter();
   await linter.lintDirectory(directoryToLint, packageVersion);
 }
 

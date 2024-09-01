@@ -1,13 +1,13 @@
-# AI Context Convention TypeScript Linter
+# Codebase Context Linter
 
-This is a TypeScript-based CLI linter for validating AI Context Convention files, including `.context.md`, `.context.yaml`, `.context.json`, `.contextdocs.md`, and `.contextignore` files.
+This is a CLI linter for validating AI Context Convention files, including `.context.md`, `.context.yaml`, `.context.json`, `.contextdocs.md`, and `.contextignore` files.
 
 ## Installation
 
 You can install the linter globally using npm:
 
 ```
-npm install -g ai-context-convention-linter
+npm install -g codebase-context-lint
 ```
 
 ## Usage
@@ -34,8 +34,8 @@ To contribute to this project:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/your-repo/ai-context-convention-typescript-linter.git
-   cd ai-context-convention-typescript-linter
+   git clone https://github.com/Agentic-Insights/codebase-context-spec.git
+   cd codebase-context-spec/linters/typescript
    ```
 
 2. Install dependencies:

@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as yaml from 'js-yaml';
 import MarkdownIt from 'markdown-it';
 
-export class TypeScriptLinter {
+export class ContextLinter {
   private md: MarkdownIt;
   private kebabToCamelCache: Map<string, string>;
   private requiredFields: Set<string>;
@@ -27,7 +27,7 @@ export class TypeScriptLinter {
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<void> {
     console.log(`
 ========================================================
-AI Context Convention TypeScript Linter (v${packageVersion})
+AI Context Convention Linter (v${packageVersion})
 ========================================================
 `);
     console.log(`Linting directory: ${directoryPath}\n`);
