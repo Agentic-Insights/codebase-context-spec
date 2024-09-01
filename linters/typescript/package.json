@@ -21,7 +21,7 @@
     "cli"
   ],
   "author": "Your Name <your.email@example.com>",
-  "license": "ISC",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Agentic-Insights/codebase-context-spec.git"
