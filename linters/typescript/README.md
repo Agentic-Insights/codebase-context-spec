@@ -59,29 +59,6 @@ To contribute to this project:
 7. Push to the branch (`git push origin feature/AmazingFeature`)
 8. Open a Pull Request
 
-## Publishing to npm
-
-To publish the package to npm:
-
-1. Make sure you have an npm account and are logged in:
-   ```
-   npm login
-   ```
-
-2. Update the version in `package.json`:
-   ```
-   npm version patch # for bug fixes
-   npm version minor # for new features
-   npm version major # for breaking changes
-   ```
-
-3. Publish the package:
-   ```
-   npm publish
-   ```
-
-Note: Make sure you have the necessary permissions to publish to the npm registry under the chosen package name.
-
 ## License
 
 This project is licensed under the ISC License.
