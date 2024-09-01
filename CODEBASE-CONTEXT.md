@@ -1,6 +1,6 @@
-# AI Context Convention Specification
+# Codebase Context Specification
 
-Version: 1.0-preview
+Specification Version: 1.0-RFC
 Date: 2024-08-31
 
 ## 1. Overview
