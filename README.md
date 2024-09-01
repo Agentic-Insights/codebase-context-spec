@@ -1,5 +1,7 @@
 # Codebase Context Specification (CCS) v 1.0.0-RFC
 
+[![npm version](https://badge.fury.io/js/codebase-context-lint.svg)](https://www.npmjs.com/package/codebase-context-lint)
+
 ![Codebase Context Image](./img/codebase-context.png "Codebase Context Specification")
 
 ## Introduction
