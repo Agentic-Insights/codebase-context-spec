@@ -1,7 +1,7 @@
-# Codebase Context Lint
+# 🧠💻 Codebase Context Lint
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/Agentic-Insights/codebase-context-spec/main/img/codebase-context.png" alt="Codebase Context Lint Logo" width="200" height="200">
+  <img src="https://raw.githubusercontent.com/Agentic-Insights/codebase-context-spec/main/img/codebase-context.png" alt="Codebase Context Lint Logo" width="500">
 </div>
 
 <h3 align="center">Codebase Context Lint</h3>
@@ -17,11 +17,11 @@
   <a href="https://github.com/Agentic-Insights/codebase-context-spec/issues/new?template=feature_request.md">Request feature</a>
 </p>
 
-## Overview
+## 🔎 Overview
 
 This is a CLI linter for validating AI Context Convention files, including `.context.md`, `.context.yaml`, `.context.json`, `.contextdocs.md`, and `.contextignore` files.
 
-## Installation
+## 📦 Installation
 
 You can install the linter globally using npm:
 
@@ -29,7 +29,7 @@ You can install the linter globally using npm:
 npm install -g codebase-context-lint
 ```
 
-## Usage
+## 🚀 Usage
 
 After installation, you can use the linter from the command line:
 
@@ -39,15 +39,15 @@ ai-context-lint <directory_to_lint>
 
 Replace `<directory_to_lint>` with the path to the directory containing your AI Context Convention files.
 
-## Features
+## ✨ Features
 
-- Validates the structure and content of `.context.md`, `.context.yaml`, and `.context.json` files
-- Checks for required fields and sections
-- Verifies the format of `.contextdocs.md` files
-- Validates ignore patterns in `.contextignore` files
-- Provides detailed error messages and warnings
+- 🔍 Validates the structure and content of `.context.md`, `.context.yaml`, and `.context.json` files
+- ✅ Checks for required fields and sections
+- 📄 Verifies the format of `.contextdocs.md` files
+- 🚫 Validates ignore patterns in `.contextignore` files
+- 💬 Provides detailed error messages and warnings
 
-## Development
+## 🛠️ Development
 
 To contribute to this project:
 
@@ -78,6 +78,6 @@ To contribute to this project:
 7. Push to the branch (`git push origin feature/AmazingFeature`)
 8. Open a Pull Request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License.
