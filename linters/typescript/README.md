@@ -7,7 +7,7 @@
 <h3 align="center">Codebase Context Lint</h3>
 
 <p align="center">
-  CLI linter for AI Context Convention files
+  CLI linter for Codebase Context Specification (CCS) files
   <br>
   <a href="https://github.com/Agentic-Insights/codebase-context-spec"><strong>Explore the spec »</strong></a>
   <br>
@@ -19,7 +19,19 @@
 
 ## 🔎 Overview
 
-This is a CLI linter for validating AI Context Convention files, including `.context.md`, `.context.yaml`, `.context.json`, `.contextdocs.md`, and `.contextignore` files.
+This is a CLI linter for validating Codebase Context Specification (CCS) files, including `.context.md`, `.context.yaml`, `.context.json`, `.contextdocs.md`, and `.contextignore` files. The Codebase Context Specification is a convention for documenting your code to enhance understanding for both AI and human developers.
+
+## 📚 What is Codebase Context?
+
+Codebase Context is a convention similar to `.env` and `.editorconfig` systems, but focused on documenting your code for both AI and humans. Just as `.env` files manage environment variables and `.editorconfig` ensures consistent coding styles, CCS files provide a standardized way to capture and communicate the context of your codebase.
+
+This convention allows developers to:
+1. Document high-level architecture and design decisions
+2. Explain project-specific conventions and patterns
+3. Highlight important relationships between different parts of the codebase
+4. Provide context that might not be immediately apparent from the code itself
+
+By adopting this convention, teams can ensure that both human developers and AI assistants have access to crucial contextual information, leading to better code understanding, more accurate suggestions, and improved overall development efficiency.
 
 ## 📦 Installation
 
@@ -37,7 +49,7 @@ After installation, you can use the linter from the command line:
 ai-context-lint <directory_to_lint>
 ```
 
-Replace `<directory_to_lint>` with the path to the directory containing your AI Context Convention files.
+Replace `<directory_to_lint>` with the path to the directory containing your Codebase Context Specification files.
 
 ## ✨ Features
 
