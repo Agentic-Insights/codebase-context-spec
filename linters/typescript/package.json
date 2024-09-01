@@ -10,7 +10,7 @@
     "build": "tsc",
     "start": "node dist/cli.js",
     "lint": "node dist/cli.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -31,9 +31,12 @@
   },
   "homepage": "https://github.com/Agentic-Insights/codebase-context-spec#readme",
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^22.5.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
     "typescript": "^5.5.4"
   },
   "dependencies": {

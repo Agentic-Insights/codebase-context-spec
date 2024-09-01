@@ -223,6 +223,11 @@ AI Context Convention Linter (v${packageVersion})
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
       this.validateContextData(jsonData, 'json');
+      
+      // Check for invalid field types
+      if (typeof jsonData.mainTechnologies === 'string') {
+        console.error('  Error: Invalid field \'mainTechnologies\'. Expected an array, but got a string.');
+      }
     } catch (error) {
       console.error(`  Error parsing JSON file: ${error}`);
     }
