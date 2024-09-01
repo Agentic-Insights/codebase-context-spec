@@ -39,17 +39,22 @@ For the full specification, please refer to [CODEBASE-CONTEXT.md](CODEBASE-CONTE
 
 Developers are encouraged to create:
 
-1. Linters and validators for context files
-2. IDE plugins for context file creation and editing
-3. AI model integrations for parsing and utilizing context
-4. Tools for aggregating and presenting project-wide context
+- Memory systems using git branches as storage
+- Linters and validators for context files
+- IDE plugins for context file creation and editing
+- AI model integrations for parsing and utilizing context
+- Tools for aggregating and presenting project-wide context
+- Agents that can help create context in codebases that are blank
+- Codebase summariziers, submodule summarizers
+- Memory systems that take advantage of the context
+- Continuous TODO monitors that can re-try implementations / solutions
 
 ## Future Directions
 
-1. Standardized query language for context interrogation
-2. Integration with existing documentation systems
-3. Dynamic context generation through code analysis
-4. Potential support for explicit context overriding
+1. Integration with existing documentation systems
+2. Dynamic context generation through code analysis
+3. Potential support for explicit context overriding
+4. Agent tool / context matching and references
 
 ## Contribution / RFC Process
 
@@ -70,13 +75,3 @@ All contributions will be reviewed and discussed openly. Significant changes may
 
 - [Full Specification (CODEBASE-CONTEXT.md)](CODEBASE-CONTEXT.md)
 - [Context File Example (.context.md)](.context.md)
-- [Contributing Guidelines](CONTRIBUTING.md) [Note: This file needs to be created]
-- [License](LICENSE) [Note: This file needs to be created]
-
-## ComfyUI Header Image Prompt
-
-To create an eye-catching header image for this project using ComfyUI, consider the following prompt:
-
-"A futuristic digital landscape representing a codebase, with holographic projections of file structures and context information floating above. In the foreground, large, sleek text reads 'Codebase Context Specification' with a subtle glow. The scene should convey organization, clarity, and the seamless integration of AI with code. Use a color scheme of deep blues and bright cyans to create a tech-oriented atmosphere."
-
-This prompt leverages ComfyUI's strengths in creating scenes with integrated text, while also visually representing the key concepts of the Codebase Context Specification project.
