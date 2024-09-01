@@ -1,6 +1,6 @@
 {
   "name": "codebase-context-lint",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "CLI linter for AI Context Convention files",
   "main": "dist/context_linter.js",
   "bin": {
