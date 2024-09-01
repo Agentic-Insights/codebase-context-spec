@@ -7,10 +7,10 @@ async function main() {
   const args = process.argv.slice(2);
   if (args.length !== 1) {
     console.error(`
-Usage: ai-context-lint <directory_to_lint>
+Usage: codebase-context-lint <directory_to_lint>
 
-AI Context Convention Linter
-This tool validates context files, including .contextdocs.md and .contextignore, according to the AI Context Convention Specification.
+Codebase Context Linter
+This tool validates context files, including .contextdocs.md and .contextignore, according to the Codebase Context Specification.
 `);
     process.exit(1);
   }
