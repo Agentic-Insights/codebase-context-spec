@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.0.0...v1.1.0) (2024-09-01)
+
+
+### Features
+
+* Add guidelines for using Codebase Context Specification with AI assistants ([e1207a1](https://github.com/Agentic-Insights/codebase-context-spec/commit/e1207a17f3386980559d5ffe6a92df2b4c78e8fb))
+* Add npm version badge to README ([ea74208](https://github.com/Agentic-Insights/codebase-context-spec/commit/ea74208d746b364424c8b074371fffbea1c037ad))
+
 # 1.0.0 (2024-09-01)
 
 
