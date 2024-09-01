@@ -63,7 +63,7 @@ We welcome contributions and feedback from the community to help shape the final
 1. **Review the Specification**: Start by thoroughly reading the current specification in CODEBASE-CONTEXT.md.
 2. **Open an Issue**: For suggestions, questions, or concerns, open an issue in this repository.
 3. **Submit a Pull Request**: For proposed changes or additions, submit a pull request with a clear description of your modifications.
-4. **Join the Discussion**: Participate in open discussions and provide your insights on existing issues and pull requests.
+4. [**Join the Discussion**(https://github.com/Agentic-Insights/codebase-context-spec/discussions)]: Participate in open discussions and provide your insights on existing issues and pull requests.
 
 All contributions will be reviewed and discussed openly. Significant changes may go through an RFC (Request for Comments) process to ensure thorough consideration and community input.
 
