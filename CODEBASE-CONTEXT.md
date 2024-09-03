@@ -378,18 +378,27 @@ The `.contextdocs` file should contain an array of documentation sources. Each s
 
 ```markdown
 ---
-documentation:
-  - type: local
-    path: docs/project_overview.md
-  - type: url
-    url: https://raw.githubusercontent.com/example/repo/main/API.md
-  - type: package
-    name: express
-    version: 4.17.1
-    docs:
-      - README.md
-      - docs/api.md
-      - docs/guide/routing.md
+contextdocs:
+  - name: TypeScript
+    relationship: Main language for linter implementation
+    resources:
+      - Official Documentation: https://www.typescriptlang.org/docs/
+      - TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/intro.html
+      - TypeScript Deep Dive: https://basarat.gitbook.io/typescript/
+
+  - name: Node.js
+    relationship: Runtime environment for TypeScript linter
+    resources:
+      - Official Documentation: https://nodejs.org/en/docs/
+      - Getting Started Guide: https://nodejs.org/en/docs/guides/getting-started-guide/
+      - Node.js Best Practices: https://github.com/goldbergyoni/nodebestpractices
+
+  - name: Jest
+    relationship: Testing framework for TypeScript linter
+    resources:
+      - Official Documentation: https://jestjs.io/docs/getting-started
+      - Testing TypeScript with Jest: https://basarat.gitbook.io/typescript/intro-1/jest
+      - Jest with TypeScript in Node.js: https://stackoverflow.com/questions/54822273/how-to-use-jest-with-typescript-in-node-js
 ---
 
 # Additional Documentation Notes
@@ -400,41 +409,33 @@ This section can include any free-form text to provide context about the listed 
 #### YAML Format (.contextdocs.yaml)
 
 ```yaml
-documentation:
-  - type: local
-    path: docs/project_overview.md
-  - type: url
-    url: https://raw.githubusercontent.com/example/repo/main/API.md
-  - type: package
-    name: express
-    version: 4.17.1
-    docs:
-      - README.md
-      - docs/api.md
-      - docs/guide/routing.md
+contextdocs:
+  - name: TypeScript
+    relationship: Main language for linter implementation
+    resources:
+      - Official Documentation: https://www.typescriptlang.org/docs/
+      - TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/intro.html
+      - TypeScript Deep Dive: https://basarat.gitbook.io/typescript/
 ```
 
 #### JSON Format (.contextdocs.json)
 
 ```json
 {
-  "documentation": [
+  "contextdocs": [
     {
-      "type": "local",
-      "path": "docs/project_overview.md"
-    },
-    {
-      "type": "url",
-      "url": "https://raw.githubusercontent.com/example/repo/main/API.md"
-    },
-    {
-      "type": "package",
-      "name": "express",
-      "version": "4.17.1",
-      "docs": [
-        "README.md",
-        "docs/api.md",
-        "docs/guide/routing.md"
+      "name": "TypeScript",
+      "relationship": "Main language for linter implementation",
+      "resources": [
+        {
+          "Official Documentation": "https://www.typescriptlang.org/docs/"
+        },
+        {
+          "TypeScript Handbook": "https://www.typescriptlang.org/docs/handbook/intro.html"
+        },
+        {
+          "TypeScript Deep Dive": "https://basarat.gitbook.io/typescript/"
+        }
       ]
     }
   ]
