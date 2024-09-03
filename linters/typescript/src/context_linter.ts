@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import MarkdownIt from 'markdown-it';
 import { ContextdocsLinter } from './contextdocs_linter';
@@ -23,7 +24,7 @@ export class ContextLinter {
     printHeader(packageVersion, directoryPath);
     await this.handleContextignore(directoryPath);
     await this.handleContextdocs(directoryPath);
-    await this.handleContextFiles(directoryPath);
+    await this.handleContextFilesRecursively(directoryPath);
 
     console.log('\nLinting completed.');
   }
@@ -42,15 +43,17 @@ export class ContextLinter {
     }
   }
 
-  private async handleContextFiles(directoryPath: string): Promise<void> {
-    const files = await getContextFiles(directoryPath);
-    if (files.length === 0) {
-      console.log('No context files found in the specified directory.');
-      return;
-    }
+  private async handleContextFilesRecursively(directoryPath: string): Promise<void> {
+    const entries = await fs.promises.readdir(directoryPath, { withFileTypes: true });
 
-    for (const file of files) {
-      await this.lintContextFile(path.join(directoryPath, file));
+    for (const entry of entries) {
+      const fullPath = path.join(directoryPath, entry.name);
+
+      if (entry.isDirectory()) {
+        await this.handleContextFilesRecursively(fullPath);
+      } else if (entry.isFile() && (entry.name.endsWith('.context.md') || entry.name.endsWith('.context.yaml') || entry.name.endsWith('.context.json'))) {
+        await this.lintContextFile(fullPath);
+      }
     }
   }
 
