@@ -1,9 +1,10 @@
-import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import MarkdownIt from 'markdown-it';
 import { ContextdocsLinter } from './contextdocs_linter';
 import { ContextignoreLinter } from './contextignore_linter';
+import { getContextFiles, lintFileIfExists, fileExists, printHeader } from './utils/file_utils';
+import { kebabToCamelCase } from './utils/string_utils';
 
 export class ContextLinter {
   private md: MarkdownIt;
@@ -31,80 +32,57 @@ export class ContextLinter {
   }
 
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<void> {
-    console.log(`
-========================================================
-AI Context Convention Linter (v${packageVersion})
-========================================================
-`);
-    console.log(`Linting directory: ${directoryPath}\n`);
+    printHeader(packageVersion, directoryPath);
 
-    const files = await this.getContextFiles(directoryPath);
+    // Handle .contextignore
+    await this.handleContextignore(directoryPath);
+
+    // Handle .contextdocs
+    await this.handleContextdocs(directoryPath);
+
+    // Handle .context files
+    await this.handleContextFiles(directoryPath);
+
+    console.log('\nLinting completed.');
+  }
+
+  private async handleContextignore(directoryPath: string): Promise<void> {
+    const contextignorePath = path.join(directoryPath, '.contextignore');
+    await lintFileIfExists(contextignorePath, this.contextignoreLinter.lintContextignoreFile.bind(this.contextignoreLinter));
+  }
+
+  private async handleContextdocs(directoryPath: string): Promise<void> {
+    const contextdocsPath = path.join(directoryPath, '.contextdocs.md');
+    await lintFileIfExists(contextdocsPath, this.contextdocsLinter.lintContextdocsFile.bind(this.contextdocsLinter));
+
+    if (path.resolve(directoryPath) === path.resolve(process.cwd()) && !await fileExists(contextdocsPath)) {
+      console.error('\nError: .contextdocs.md file is missing in the root directory.');
+    }
+  }
+
+  private async handleContextFiles(directoryPath: string): Promise<void> {
+    const files = await getContextFiles(directoryPath);
     if (files.length === 0) {
       console.log('No context files found in the specified directory.');
       return;
     }
 
-    await Promise.all(files.map(file => this.lintFile(file)));
-
-    // Lint .contextdocs.md and .contextignore if they exist
-    const contextdocsPath = path.join(directoryPath, '.contextdocs.md');
-    const contextignorePath = path.join(directoryPath, '.contextignore');
-
-    await Promise.all([
-      this.lintFileIfExists(contextdocsPath, this.contextdocsLinter.lintContextdocsFile.bind(this.contextdocsLinter)),
-      this.lintFileIfExists(contextignorePath, this.contextignoreLinter.lintContextignoreFile.bind(this.contextignoreLinter))
-    ]);
-
-    // Specific check for .contextdocs.md in the root directory
-    if (path.resolve(directoryPath) === path.resolve(process.cwd())) {
-      if (!await this.fileExists(contextdocsPath)) {
-        console.error('\nError: .contextdocs.md file is missing in the root directory.');
-      }
-    }
-
-    console.log('\nLinting completed.');
-  }
-
-  private async getContextFiles(directoryPath: string): Promise<string[]> {
-    const files = await fs.readdir(directoryPath);
-    return files.filter(file => 
-      file.endsWith('.context.md') || 
-      file.endsWith('.context.yaml') || 
-      file.endsWith('.context.json')
-    );
-  }
-
-  private async lintFileIfExists(filePath: string, lintFunction: (content: string) => void): Promise<void> {
-    try {
-      const content = await fs.readFile(filePath, 'utf-8');
-      lintFunction(content);
-    } catch (error) {
-      if (error instanceof Error && 'code' in error && error.code !== 'ENOENT') {
-        console.error(`Error reading file ${filePath}: ${error}`);
-      }
+    for (const file of files) {
+      await this.lintContextFile(path.join(directoryPath, file));
     }
   }
 
-  private async fileExists(filePath: string): Promise<boolean> {
-    try {
-      await fs.access(filePath);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  private async lintFile(filePath: string): Promise<void> {
+  private async lintContextFile(filePath: string): Promise<void> {
     console.log(`\nLinting file: ${filePath}`);
-    const content = await fs.readFile(filePath, 'utf-8');
-    
-    if (filePath.endsWith('.context.md')) {
-      this.lintMarkdownFile(content);
-    } else if (filePath.endsWith('.context.yaml')) {
-      this.lintYamlFile(content);
-    } else if (filePath.endsWith('.context.json')) {
-      this.lintJsonFile(content);
-    }
+    const content = await lintFileIfExists(filePath, (fileContent) => {
+      if (filePath.endsWith('.context.md')) {
+        this.lintMarkdownFile(fileContent);
+      } else if (filePath.endsWith('.context.yaml')) {
+        this.lintYamlFile(fileContent);
+      } else if (filePath.endsWith('.context.json')) {
+        this.lintJsonFile(fileContent);
+      }
+    });
   }
 
   private lintMarkdownFile(content: string): void {
@@ -135,14 +113,14 @@ AI Context Convention Linter (v${packageVersion})
     const isJson = format === 'json';
     
     for (const field of this.requiredFields) {
-      const fieldName = isJson ? this.kebabToCamelCase(field) : field;
+      const fieldName = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
       if (!(fieldName in data)) {
         console.error(`  Error: Missing required field '${fieldName}'.`);
       }
     }
 
     for (const section of this.roleSpecificSections) {
-      const sectionName = isJson ? this.kebabToCamelCase(section) : section;
+      const sectionName = isJson ? kebabToCamelCase(section, this.kebabToCamelCache) : section;
       if (!(sectionName in data)) {
         console.warn(`  Warning: Missing role-specific section '${sectionName}'.`);
       } else {
@@ -164,21 +142,12 @@ AI Context Convention Linter (v${packageVersion})
     const checks = this.sectionChecks[sectionName];
     if (checks) {
       for (const field of checks) {
-        const fieldName = isJson ? this.kebabToCamelCase(field) : field;
+        const fieldName = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
         if (!(fieldName in data)) {
           console.warn(`  Warning: Missing field '${fieldName}' in '${sectionName}' section.`);
         }
       }
     }
-  }
-
-  private kebabToCamelCase(str: string): string {
-    if (this.kebabToCamelCache.has(str)) {
-      return this.kebabToCamelCache.get(str)!;
-    }
-    const result = str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-    this.kebabToCamelCache.set(str, result);
-    return result;
   }
 
   private validateMarkdownContent(content: string): void {
