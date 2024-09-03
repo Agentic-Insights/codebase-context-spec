@@ -70,7 +70,6 @@ export class ContextLinter {
   private lintMarkdownFile(content: string): void {
     console.log('  - Validating Markdown structure');
     console.log('  - Checking YAML frontmatter');
-    console.log('  - Verifying content against AI Context Convention Specification');
 
     const parts = content.split('---\n');
     if (parts.length < 3) {
@@ -119,7 +118,6 @@ export class ContextLinter {
 
   private lintYamlFile(content: string): void {
     console.log('  - Validating YAML structure');
-    console.log('  - Verifying content against AI Context Convention Specification');
 
     try {
       const yamlData = yaml.load(content) as Record<string, unknown>;
@@ -131,7 +129,6 @@ export class ContextLinter {
 
   private lintJsonFile(content: string): void {
     console.log('  - Validating JSON structure');
-    console.log('  - Verifying content against AI Context Convention Specification');
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
