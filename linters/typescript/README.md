@@ -46,7 +46,7 @@ npm install -g codebase-context-lint
 After installation, you can use the linter from the command line:
 
 ```
-ai-context-lint <directory_to_lint>
+codebase-context-lint <directory_to_lint>
 ```
 
 Replace `<directory_to_lint>` with the path to the directory containing your Codebase Context Specification files.

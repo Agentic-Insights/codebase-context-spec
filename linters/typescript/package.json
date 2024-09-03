@@ -1,10 +1,10 @@
 {
   "name": "codebase-context-lint",
   "version": "1.1.0",
-  "description": "CLI linter for AI Context Convention files",
+  "description": "linter for .context.md and related CCS files",
   "main": "dist/context_linter.js",
   "bin": {
-    "ai-context-lint": "./dist/cli.js"
+    "codebase-context-lint": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsc",
@@ -44,6 +44,7 @@
     "@semantic-release/git": "^10.0.1"
   },
   "dependencies": {
+    "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.0",
     "markdown-it": "^14.1.0"
   },

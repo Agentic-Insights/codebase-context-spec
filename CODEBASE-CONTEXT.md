@@ -5,7 +5,15 @@ Date: 2024-08-31
 
 ## 1. Overview
 
-The AI Context Convention is a standardized method for embedding rich contextual information within codebases to enhance AI-assisted development. This specification outlines a flexible, language-agnostic approach to providing both structured and unstructured context at various levels of a project, catering to the needs of different team roles.
+Codebase Context is a convention similar to .env and .editorconfig systems, but focused on documenting your code for both AI and humans. Just as .env files manage environment variables and .editorconfig ensures consistent coding styles, CCS files provide a standardized way to capture and communicate the context of your codebase.
+
+This convention allows developers to:
+
+1. Document high-level architecture and design decisions
+2. Explain project-specific conventions and patterns
+3. Highlight important relationships between different parts of the codebase
+4. Provide context that might not be immediately apparent from the code itself
+5. By adopting this convention, teams can ensure that both human developers and AI assistants have access to crucial contextual information, leading to better code understanding, more accurate suggestions, and improved overall development efficiency.
 
 ## 2. Key Principles
 
@@ -456,8 +464,8 @@ documentation:
 
 ## 9. Conclusion
 
-The AI Context Convention provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention and including role-specific information, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of role-specific guidelines and consistent naming conventions ensures that AI models have access to comprehensive, relevant, and well-structured information tailored to different aspects of the software development lifecycle.
+The Codebase Context Specification provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention and including role-specific information, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of role-specific guidelines and consistent naming conventions ensures that AI models have access to comprehensive, relevant, and well-structured information tailored to different aspects of the software development lifecycle.
 
 ## 10. TypeScript Linter Implementation
 
-For details on the TypeScript implementation of the linter for validating AI Context Convention files, please refer to the [TypeScript Linter README](linters/typescript/README.md).
+For details on the TypeScript implementation of the linter for validating Codebase Context Specification files, please refer to the [TypeScript Linter README](linters/typescript/README.md).
