@@ -5,7 +5,15 @@ Date: 2024-08-31
 
 ## 1. Overview
 
-The AI Context Convention is a standardized method for embedding rich contextual information within codebases to enhance AI-assisted development. This specification outlines a flexible, language-agnostic approach to providing both structured and unstructured context at various levels of a project, catering to the needs of different team roles.
+Codebase Context is a convention similar to .env and .editorconfig systems, but focused on documenting your code for both AI and humans. Just as .env files manage environment variables and .editorconfig ensures consistent coding styles, CCS files provide a standardized way to capture and communicate the context of your codebase.
+
+This convention allows developers to:
+
+1. Document high-level architecture and design decisions
+2. Explain project-specific conventions and patterns
+3. Highlight important relationships between different parts of the codebase
+4. Provide context that might not be immediately apparent from the code itself
+5. By adopting this convention, teams can ensure that both human developers and AI assistants have access to crucial contextual information, leading to better code understanding, more accurate suggestions, and improved overall development efficiency.
 
 ## 2. Key Principles
 
