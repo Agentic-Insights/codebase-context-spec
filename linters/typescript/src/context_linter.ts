@@ -2,6 +2,8 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import MarkdownIt from 'markdown-it';
+import { ContextdocsLinter } from './contextdocs_linter';
+import { ContextignoreLinter } from './contextignore_linter';
 
 export class ContextLinter {
   private md: MarkdownIt;
@@ -9,6 +11,8 @@ export class ContextLinter {
   private requiredFields: Set<string>;
   private roleSpecificSections: Set<string>;
   private sectionChecks: Record<string, Set<string>>;
+  private contextdocsLinter: ContextdocsLinter;
+  private contextignoreLinter: ContextignoreLinter;
 
   constructor() {
     this.md = new MarkdownIt();
@@ -22,6 +26,8 @@ export class ContextLinter {
       'quality-assurance': new Set(['testing-frameworks', 'coverage-threshold', 'performance-benchmarks']),
       deployment: new Set(['platform', 'cicd-pipeline', 'staging-environment', 'production-environment'])
     };
+    this.contextdocsLinter = new ContextdocsLinter();
+    this.contextignoreLinter = new ContextignoreLinter();
   }
 
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<void> {
@@ -45,9 +51,16 @@ AI Context Convention Linter (v${packageVersion})
     const contextignorePath = path.join(directoryPath, '.contextignore');
 
     await Promise.all([
-      this.lintFileIfExists(contextdocsPath, this.lintContextdocsFile.bind(this)),
-      this.lintFileIfExists(contextignorePath, this.lintContextignoreFile.bind(this))
+      this.lintFileIfExists(contextdocsPath, this.contextdocsLinter.lintContextdocsFile.bind(this.contextdocsLinter)),
+      this.lintFileIfExists(contextignorePath, this.contextignoreLinter.lintContextignoreFile.bind(this.contextignoreLinter))
     ]);
+
+    // Specific check for .contextdocs.md in the root directory
+    if (path.resolve(directoryPath) === path.resolve(process.cwd())) {
+      if (!await this.fileExists(contextdocsPath)) {
+        console.error('\nError: .contextdocs.md file is missing in the root directory.');
+      }
+    }
 
     console.log('\nLinting completed.');
   }
@@ -69,6 +82,15 @@ AI Context Convention Linter (v${packageVersion})
       if (error instanceof Error && 'code' in error && error.code !== 'ENOENT') {
         console.error(`Error reading file ${filePath}: ${error}`);
       }
+    }
+  }
+
+  private async fileExists(filePath: string): Promise<boolean> {
+    try {
+      await fs.access(filePath);
+      return true;
+    } catch {
+      return false;
     }
   }
 
@@ -230,92 +252,6 @@ AI Context Convention Linter (v${packageVersion})
       }
     } catch (error) {
       console.error(`  Error parsing JSON file: ${error}`);
-    }
-  }
-
-  private lintContextdocsFile(content: string): void {
-    console.log('\nLinting .contextdocs.md file');
-    console.log('  - Validating Markdown structure');
-    console.log('  - Checking for required sections');
-    console.log('  - Verifying content against .contextdocs.md specification');
-    
-    const tokens = this.md.parse(content, {});
-    const sections = new Set<string>();
-    let hasTitle = false;
-
-    for (const token of tokens) {
-      if (token.type === 'heading_open') {
-        if (token.tag === 'h1' && !hasTitle) {
-          hasTitle = tokens[tokens.indexOf(token) + 1].content === 'AI Context Documentation';
-        } else if (token.tag === 'h2') {
-          sections.add(tokens[tokens.indexOf(token) + 1].content.toLowerCase());
-        }
-      }
-
-      if (token.type === 'link_open') {
-        const hrefToken = tokens[tokens.indexOf(token) + 1];
-        if (hrefToken.type !== 'text' || !hrefToken.content.startsWith('http')) {
-          console.error('  Warning: Link may be improperly formatted or using relative path.');
-        }
-      }
-
-      if (token.type === 'fence' && !token.info) {
-        console.error('  Warning: Code block is missing language specification.');
-      }
-    }
-
-    if (!hasTitle) {
-      console.error('  Error: .contextdocs.md should start with the title "AI Context Documentation".');
-    }
-
-    const expectedSections = ['overview', 'file structure', 'conventions'];
-    for (const section of expectedSections) {
-      if (!sections.has(section)) {
-        console.error(`  Error: .contextdocs.md is missing the "${section}" section.`);
-      }
-    }
-  }
-
-  private lintContextignoreFile(content: string): void {
-    console.log('\nLinting .contextignore file');
-    console.log('  - Validating .contextignore format');
-    console.log('  - Checking for valid ignore patterns');
-    
-    const lines = content.split('\n').map(line => line.trim()).filter(line => line !== '' && !line.startsWith('#'));
-    const patterns = new Set<string>();
-    const criticalPatterns = new Set(['.context.md', '.context.yaml', '.context.json', '.contextdocs.md', '.contextignore']);
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      
-      if (!/^[!#]?[\w\-./\*\?]+$/.test(line)) {
-        console.error(`  Error: Invalid ignore pattern on line ${i + 1}: ${line}`);
-      }
-
-      if (patterns.has(line)) {
-        console.warn(`  Warning: Redundant pattern on line ${i + 1}: ${line}`);
-      }
-
-      for (const criticalPattern of criticalPatterns) {
-        if (line.endsWith(criticalPattern) || line.includes(`/${criticalPattern}`)) {
-          console.error(`  Error: Ignoring critical context file on line ${i + 1}: ${line}`);
-        }
-      }
-
-      patterns.add(line);
-    }
-
-    this.checkConflictingPatterns(Array.from(patterns));
-  }
-
-  private checkConflictingPatterns(patterns: string[]): void {
-    for (let i = 0; i < patterns.length; i++) {
-      for (let j = i + 1; j < patterns.length; j++) {
-        if (patterns[i].startsWith('!') && patterns[j] === patterns[i].slice(1) ||
-            patterns[j].startsWith('!') && patterns[i] === patterns[j].slice(1)) {
-          console.warn(`  Warning: Conflicting patterns: "${patterns[i]}" and "${patterns[j]}"`);
-        }
-      }
     }
   }
 }
