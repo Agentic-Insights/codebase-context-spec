@@ -33,7 +33,7 @@ export async function fileExists(filePath: string): Promise<boolean> {
 export function printHeader(packageVersion: string, directoryPath: string): void {
   console.log(`
 ========================================================
-AI Context Convention Linter (v${packageVersion})
+Codebase Context Specification (CCS) Linter (v${packageVersion})
 ========================================================
 `);
   console.log(`Linting directory: ${directoryPath}\n`);

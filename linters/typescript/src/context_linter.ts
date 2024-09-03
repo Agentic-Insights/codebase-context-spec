@@ -59,25 +59,36 @@ export class ContextLinter {
 
   private async lintContextFile(filePath: string): Promise<void> {
     console.log(`\nLinting file: ${filePath}`);
-    await lintFileIfExists(filePath, (fileContent) => {
+    await lintFileIfExists(filePath, async (fileContent) => {
+      let isValid = false;
       if (filePath.endsWith('.context.md')) {
-        this.lintMarkdownFile(fileContent);
+        isValid = await this.lintMarkdownFile(fileContent);
       } else if (filePath.endsWith('.context.yaml')) {
-        this.lintYamlFile(fileContent);
+        isValid = await this.lintYamlFile(fileContent);
       } else if (filePath.endsWith('.context.json')) {
-        this.lintJsonFile(fileContent);
+        isValid = await this.lintJsonFile(fileContent);
       }
+      this.printValidationResult(isValid, filePath);
     });
   }
 
-  private lintMarkdownFile(content: string): void {
+  private printValidationResult(isValid: boolean, filePath: string): void {
+    const fileName = path.basename(filePath);
+    if (isValid) {
+      console.log(`  ✅ ${fileName} passed validation`);
+    } else {
+      console.error(`  ❌ ${fileName} failed validation`);
+    }
+  }
+
+  private async lintMarkdownFile(content: string): Promise<boolean> {
     console.log('  - Validating Markdown structure');
     console.log('  - Checking YAML frontmatter');
 
     const parts = content.split('---\n');
     if (parts.length < 3) {
       console.error('  Error: Invalid markdown structure. YAML frontmatter is missing or incomplete.');
-      return;
+      return false;
     }
 
     const frontmatter = parts[1];
@@ -85,17 +96,19 @@ export class ContextLinter {
 
     try {
       const frontmatterData = yaml.load(frontmatter) as Record<string, unknown>;
-      this.contextValidator.validateContextData(frontmatterData, 'markdown');
+      await this.contextValidator.validateContextData(frontmatterData, 'markdown');
     } catch (error) {
       console.error(`  Error parsing YAML frontmatter: ${error}`);
+      return false;
     }
 
-    this.validateMarkdownContent(markdownContent);
+    return this.validateMarkdownContent(markdownContent);
   }
 
-  private validateMarkdownContent(content: string): void {
+  private validateMarkdownContent(content: string): boolean {
     const tokens = this.md.parse(content, {});
     let hasTitle = false;
+    let isValid = true;
 
     for (const token of tokens) {
       if (token.type === 'heading_open' && token.tag === 'h1' && !hasTitle) {
@@ -106,38 +119,47 @@ export class ContextLinter {
         const hrefToken = tokens[tokens.indexOf(token) + 1];
         if (hrefToken.type !== 'text' || !hrefToken.content.startsWith('http')) {
           console.error('  Warning: Link may be improperly formatted or using relative path.');
+          isValid = false;
         }
       }
 
       if (token.type === 'fence' && !token.info) {
         console.error('  Warning: Code block is missing language specification.');
+        isValid = false;
       }
     }
 
     if (!hasTitle) {
       console.error('  Error: Markdown content should start with a title (H1 heading).');
+      isValid = false;
     }
+
+    return isValid;
   }
 
-  private lintYamlFile(content: string): void {
+  private async lintYamlFile(content: string): Promise<boolean> {
     console.log('  - Validating YAML structure');
 
     try {
       const yamlData = yaml.load(content) as Record<string, unknown>;
-      this.contextValidator.validateContextData(yamlData, 'yaml');
+      await this.contextValidator.validateContextData(yamlData, 'yaml');
+      return true;
     } catch (error) {
       console.error(`  Error parsing YAML file: ${error}`);
+      return false;
     }
   }
 
-  private lintJsonFile(content: string): void {
+  private async lintJsonFile(content: string): Promise<boolean> {
     console.log('  - Validating JSON structure');
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
-      this.contextValidator.validateContextData(jsonData, 'json');
+      await this.contextValidator.validateContextData(jsonData, 'json');
+      return true;
     } catch (error) {
       console.error(`  Error parsing JSON file: ${error}`);
+      return false;
     }
   }
 }

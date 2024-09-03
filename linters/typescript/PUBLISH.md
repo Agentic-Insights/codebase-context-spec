@@ -1,4 +1,4 @@
-# Publishing AI Context Convention Linter to npm
+# Publishing Codebase Context Specification Linter to npm
 
 ## Publish via semantic-release
 

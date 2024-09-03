@@ -464,8 +464,8 @@ documentation:
 
 ## 9. Conclusion
 
-The AI Context Convention provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention and including role-specific information, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of role-specific guidelines and consistent naming conventions ensures that AI models have access to comprehensive, relevant, and well-structured information tailored to different aspects of the software development lifecycle.
+The Codebase Context Specification provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention and including role-specific information, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of role-specific guidelines and consistent naming conventions ensures that AI models have access to comprehensive, relevant, and well-structured information tailored to different aspects of the software development lifecycle.
 
 ## 10. TypeScript Linter Implementation
 
-For details on the TypeScript implementation of the linter for validating AI Context Convention files, please refer to the [TypeScript Linter README](linters/typescript/README.md).
+For details on the TypeScript implementation of the linter for validating Codebase Context Specification files, please refer to the [TypeScript Linter README](linters/typescript/README.md).
