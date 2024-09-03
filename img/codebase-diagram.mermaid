@@ -1,0 +1,27 @@
+graph TD
+    subgraph "Codebase Context Specification"
+        Root[Root Directory]
+        Spec[Specification CODEBASE-CONTEXT.md]
+        MainDoc[Main Documentation README.md]
+        Linters[Linters Directory]
+        TypeScript[TypeScript Linter]
+        Python[Python Linter]
+        
+        Root --> Spec
+        Root --> MainDoc
+        Root --> Linters
+        Linters --> TypeScript
+        Linters --> Python
+    end
+
+    subgraph "TypeScript Linter"
+        TSLinter[context_linter.ts]
+        TSTests[Tests]
+        TSREADME[TypeScript README]
+        
+        TypeScript --> TSLinter
+        TypeScript --> TSTests
+        TypeScript --> TSREADME
+    end
+
+
