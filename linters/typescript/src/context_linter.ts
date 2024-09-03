@@ -5,42 +5,25 @@ import { ContextdocsLinter } from './contextdocs_linter';
 import { ContextignoreLinter } from './contextignore_linter';
 import { getContextFiles, lintFileIfExists, fileExists, printHeader } from './utils/file_utils';
 import { kebabToCamelCase } from './utils/string_utils';
+import { allowedTopLevelFields, sectionChecks, listTypes, stringTypes, directoryTypes } from './utils/context_structure';
 
 export class ContextLinter {
   private md: MarkdownIt;
   private kebabToCamelCache: Map<string, string>;
-  private requiredFields: Set<string>;
-  private roleSpecificSections: Set<string>;
-  private sectionChecks: Record<string, Set<string>>;
   private contextdocsLinter: ContextdocsLinter;
   private contextignoreLinter: ContextignoreLinter;
 
   constructor() {
     this.md = new MarkdownIt();
     this.kebabToCamelCache = new Map();
-    this.requiredFields = new Set(['project-name', 'version', 'description', 'main-technologies']);
-    this.roleSpecificSections = new Set(['architecture', 'development', 'business-requirements', 'quality-assurance', 'deployment']);
-    this.sectionChecks = {
-      architecture: new Set(['style', 'main-components', 'data-flow']),
-      development: new Set(['setup-steps', 'build-command', 'test-command']),
-      'business-requirements': new Set(['key-features', 'target-audience', 'success-metrics']),
-      'quality-assurance': new Set(['testing-frameworks', 'coverage-threshold', 'performance-benchmarks']),
-      deployment: new Set(['platform', 'cicd-pipeline', 'staging-environment', 'production-environment'])
-    };
     this.contextdocsLinter = new ContextdocsLinter();
     this.contextignoreLinter = new ContextignoreLinter();
   }
 
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<void> {
     printHeader(packageVersion, directoryPath);
-
-    // Handle .contextignore
     await this.handleContextignore(directoryPath);
-
-    // Handle .contextdocs
     await this.handleContextdocs(directoryPath);
-
-    // Handle .context files
     await this.handleContextFiles(directoryPath);
 
     console.log('\nLinting completed.');
@@ -74,7 +57,7 @@ export class ContextLinter {
 
   private async lintContextFile(filePath: string): Promise<void> {
     console.log(`\nLinting file: ${filePath}`);
-    const content = await lintFileIfExists(filePath, (fileContent) => {
+    await lintFileIfExists(filePath, (fileContent) => {
       if (filePath.endsWith('.context.md')) {
         this.lintMarkdownFile(fileContent);
       } else if (filePath.endsWith('.context.yaml')) {
@@ -111,57 +94,67 @@ export class ContextLinter {
 
   private validateContextData(data: Record<string, unknown>, format: 'markdown' | 'yaml' | 'json'): void {
     const isJson = format === 'json';
+    const coveredFields = new Set<string>();
     
-    for (const field of this.requiredFields) {
-      const fieldName = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
-      if (!(fieldName in data)) {
-        console.error(`  Error: Missing required field '${fieldName}'.`);
-      }
-    }
-
-    for (const section of this.roleSpecificSections) {
-      const sectionName = isJson ? kebabToCamelCase(section, this.kebabToCamelCache) : section;
-      if (!(sectionName in data)) {
-        console.warn(`  Warning: Missing role-specific section '${sectionName}'.`);
+    for (const [field, value] of Object.entries(data)) {
+      const normalizedField = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
+      
+      if (allowedTopLevelFields.has(normalizedField)) {
+        coveredFields.add(normalizedField);
+        this.validateField(normalizedField, value, isJson);
       } else {
-        this.validateRoleSpecificSection(sectionName, data[sectionName] as Record<string, unknown>, isJson);
+        console.warn(`  Warning: Unexpected top-level field '${normalizedField}'.`);
       }
     }
 
-    if ('conventions' in data && !Array.isArray(data.conventions)) {
-      console.error('  Error: Field \'conventions\' must be an array.');
-    }
+    const coveragePercentage = (coveredFields.size / allowedTopLevelFields.size) * 100;
+    console.log(`  Context coverage: ${coveragePercentage.toFixed(2)}% (${coveredFields.size}/${allowedTopLevelFields.size} fields)`);
 
-    const aiPromptsField = isJson ? 'aiPrompts' : 'ai-prompts';
-    if (aiPromptsField in data && !Array.isArray(data[aiPromptsField])) {
-      console.error(`  Error: Field '${aiPromptsField}' must be an array.`);
+    for (const section of Object.keys(sectionChecks)) {
+      if (section in data) {
+        this.validateSectionFields(section, data[section] as Record<string, unknown>, isJson);
+      }
     }
   }
 
-  private validateRoleSpecificSection(sectionName: string, data: Record<string, unknown>, isJson: boolean): void {
-    const checks = this.sectionChecks[sectionName];
+  private validateField(field: string, value: unknown, isJson: boolean): void {
+    if (listTypes.has(field) && !Array.isArray(value)) {
+      console.error(`  Error: Field '${field}' should be an array.`);
+    } else if (stringTypes.has(field) && typeof value !== 'string') {
+      console.error(`  Error: Field '${field}' should be a string.`);
+    } else if (directoryTypes.has(field)) {
+      // Additional validation for directory types can be added here
+    }
+  }
+
+  private validateSectionFields(sectionName: string, data: Record<string, unknown>, isJson: boolean): void {
+    const checks = sectionChecks[sectionName];
+    const coveredFields = new Set<string>();
+
     if (checks) {
-      for (const field of checks) {
-        const fieldName = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
-        if (!(fieldName in data)) {
-          console.warn(`  Warning: Missing field '${fieldName}' in '${sectionName}' section.`);
+      for (const [field, value] of Object.entries(data)) {
+        const normalizedField = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
+        
+        if (checks.has(normalizedField)) {
+          coveredFields.add(normalizedField);
+          this.validateField(normalizedField, value, isJson);
+        } else {
+          console.warn(`  Warning: Unexpected field '${normalizedField}' in '${sectionName}' section.`);
         }
       }
+
+      const coveragePercentage = (coveredFields.size / checks.size) * 100;
+      console.log(`  ${sectionName} coverage: ${coveragePercentage.toFixed(2)}% (${coveredFields.size}/${checks.size} fields)`);
     }
   }
 
   private validateMarkdownContent(content: string): void {
     const tokens = this.md.parse(content, {});
-    const sections = new Set<string>();
     let hasTitle = false;
 
     for (const token of tokens) {
-      if (token.type === 'heading_open') {
-        if (token.tag === 'h1' && !hasTitle) {
-          hasTitle = true;
-        } else if (token.tag === 'h2') {
-          sections.add(tokens[tokens.indexOf(token) + 1].content.toLowerCase());
-        }
+      if (token.type === 'heading_open' && token.tag === 'h1' && !hasTitle) {
+        hasTitle = true;
       }
 
       if (token.type === 'link_open') {
@@ -178,20 +171,6 @@ export class ContextLinter {
 
     if (!hasTitle) {
       console.error('  Error: Markdown content should start with a title (H1 heading).');
-    }
-
-    const expectedSections = [
-      'architecture overview',
-      'development guidelines',
-      'business context',
-      'quality assurance',
-      'deployment and operations'
-    ];
-
-    for (const section of expectedSections) {
-      if (!sections.has(section)) {
-        console.warn(`  Warning: Markdown content is missing a "${section}" section.`);
-      }
     }
   }
 
@@ -214,11 +193,6 @@ export class ContextLinter {
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
       this.validateContextData(jsonData, 'json');
-      
-      // Check for invalid field types
-      if (typeof jsonData.mainTechnologies === 'string') {
-        console.error('  Error: Invalid field \'mainTechnologies\'. Expected an array, but got a string.');
-      }
     } catch (error) {
       console.error(`  Error parsing JSON file: ${error}`);
     }

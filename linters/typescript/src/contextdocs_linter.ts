@@ -10,7 +10,6 @@ export class ContextdocsLinter {
 
   public lintContextdocsFile(content: string): void {
     console.log('\nLinting .contextdocs.md file');
-    console.log('  - Validating YAML front matter');
     console.log('  - Checking for similar links in markdown content');
     
     const { data: frontmatter, content: markdownContent } = matter(content);
@@ -38,7 +37,7 @@ export class ContextdocsLinter {
         continue;
       }
 
-      const requiredFields = ['name', 'url', 'relationship', 'resources'];
+      const requiredFields = ['name', 'relationship', 'resources'];
       for (const field of requiredFields) {
         if (!(field in item)) {
           console.error(`  Error: Missing required field "${field}" in contextdocs item.`);
