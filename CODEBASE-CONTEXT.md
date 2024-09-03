@@ -47,7 +47,7 @@ Example structure:
 ```
 project_root/
 ├── .context.md
-├── .contexignore
+├── .contextignore
 ├── .contextdocs.md
 ├── src/
 │   ├── .context.yaml
@@ -319,9 +319,9 @@ Example:
 3. AI models should consider all relevant context files, prioritizing more specific contexts when appropriate.
 4. There is no strict overriding; AI judges context relevance based on the query or task.
 
-## 6. The .contexignore File
+## 6. The .contextignore File
 
-The `.contexignore` file, placed in the project root, excludes files or directories from context consideration.
+The `.contextignore` file, placed in the project root, excludes files or directories from context consideration.
 
 ### Syntax
 
@@ -416,6 +416,20 @@ contextdocs:
       - Official Documentation: https://www.typescriptlang.org/docs/
       - TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/intro.html
       - TypeScript Deep Dive: https://basarat.gitbook.io/typescript/
+
+  - name: Node.js
+    relationship: Runtime environment for TypeScript linter
+    resources:
+      - Official Documentation: https://nodejs.org/en/docs/
+      - Getting Started Guide: https://nodejs.org/en/docs/guides/getting-started-guide/
+      - Node.js Best Practices: https://github.com/goldbergyoni/nodebestpractices
+
+  - name: Jest
+    relationship: Testing framework for TypeScript linter
+    resources:
+      - Official Documentation: https://jestjs.io/docs/getting-started
+      - Testing TypeScript with Jest: https://basarat.gitbook.io/typescript/intro-1/jest
+      - Jest with TypeScript in Node.js: https://stackoverflow.com/questions/54822273/how-to-use-jest-with-typescript-in-node-js
 ```
 
 #### JSON Format (.contextdocs.json)
@@ -435,6 +449,36 @@ contextdocs:
         },
         {
           "TypeScript Deep Dive": "https://basarat.gitbook.io/typescript/"
+        }
+      ]
+    },
+    {
+      "name": "Node.js",
+      "relationship": "Runtime environment for TypeScript linter",
+      "resources": [
+        {
+          "Official Documentation": "https://nodejs.org/en/docs/"
+        },
+        {
+          "Getting Started Guide": "https://nodejs.org/en/docs/guides/getting-started-guide/"
+        },
+        {
+          "Node.js Best Practices": "https://github.com/goldbergyoni/nodebestpractices"
+        }
+      ]
+    },
+    {
+      "name": "Jest",
+      "relationship": "Testing framework for TypeScript linter",
+      "resources": [
+        {
+          "Official Documentation": "https://jestjs.io/docs/getting-started"
+        },
+        {
+          "Testing TypeScript with Jest": "https://basarat.gitbook.io/typescript/intro-1/jest"
+        },
+        {
+          "Jest with TypeScript in Node.js": "https://stackoverflow.com/questions/54822273/how-to-use-jest-with-typescript-in-node-js"
         }
       ]
     }
