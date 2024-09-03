@@ -4,20 +4,19 @@ import MarkdownIt from 'markdown-it';
 import { ContextdocsLinter } from './contextdocs_linter';
 import { ContextignoreLinter } from './contextignore_linter';
 import { getContextFiles, lintFileIfExists, fileExists, printHeader } from './utils/file_utils';
-import { kebabToCamelCase } from './utils/string_utils';
-import { allowedTopLevelFields, sectionChecks, listTypes, stringTypes, directoryTypes } from './utils/context_structure';
+import { ContextValidator } from './utils/validator';
 
 export class ContextLinter {
   private md: MarkdownIt;
-  private kebabToCamelCache: Map<string, string>;
   private contextdocsLinter: ContextdocsLinter;
   private contextignoreLinter: ContextignoreLinter;
+  private contextValidator: ContextValidator;
 
   constructor() {
     this.md = new MarkdownIt();
-    this.kebabToCamelCache = new Map();
     this.contextdocsLinter = new ContextdocsLinter();
     this.contextignoreLinter = new ContextignoreLinter();
+    this.contextValidator = new ContextValidator();
   }
 
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<void> {
@@ -84,68 +83,12 @@ export class ContextLinter {
 
     try {
       const frontmatterData = yaml.load(frontmatter) as Record<string, unknown>;
-      this.validateContextData(frontmatterData, 'markdown');
+      this.contextValidator.validateContextData(frontmatterData, 'markdown');
     } catch (error) {
       console.error(`  Error parsing YAML frontmatter: ${error}`);
     }
 
     this.validateMarkdownContent(markdownContent);
-  }
-
-  private validateContextData(data: Record<string, unknown>, format: 'markdown' | 'yaml' | 'json'): void {
-    const isJson = format === 'json';
-    const coveredFields = new Set<string>();
-    
-    for (const [field, value] of Object.entries(data)) {
-      const normalizedField = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
-      
-      if (allowedTopLevelFields.has(normalizedField)) {
-        coveredFields.add(normalizedField);
-        this.validateField(normalizedField, value, isJson);
-      } else {
-        console.warn(`  Warning: Unexpected top-level field '${normalizedField}'.`);
-      }
-    }
-
-    const coveragePercentage = (coveredFields.size / allowedTopLevelFields.size) * 100;
-    console.log(`  Context coverage: ${coveragePercentage.toFixed(2)}% (${coveredFields.size}/${allowedTopLevelFields.size} fields)`);
-
-    for (const section of Object.keys(sectionChecks)) {
-      if (section in data) {
-        this.validateSectionFields(section, data[section] as Record<string, unknown>, isJson);
-      }
-    }
-  }
-
-  private validateField(field: string, value: unknown, isJson: boolean): void {
-    if (listTypes.has(field) && !Array.isArray(value)) {
-      console.error(`  Error: Field '${field}' should be an array.`);
-    } else if (stringTypes.has(field) && typeof value !== 'string') {
-      console.error(`  Error: Field '${field}' should be a string.`);
-    } else if (directoryTypes.has(field)) {
-      // Additional validation for directory types can be added here
-    }
-  }
-
-  private validateSectionFields(sectionName: string, data: Record<string, unknown>, isJson: boolean): void {
-    const checks = sectionChecks[sectionName];
-    const coveredFields = new Set<string>();
-
-    if (checks) {
-      for (const [field, value] of Object.entries(data)) {
-        const normalizedField = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
-        
-        if (checks.has(normalizedField)) {
-          coveredFields.add(normalizedField);
-          this.validateField(normalizedField, value, isJson);
-        } else {
-          console.warn(`  Warning: Unexpected field '${normalizedField}' in '${sectionName}' section.`);
-        }
-      }
-
-      const coveragePercentage = (coveredFields.size / checks.size) * 100;
-      console.log(`  ${sectionName} coverage: ${coveragePercentage.toFixed(2)}% (${coveredFields.size}/${checks.size} fields)`);
-    }
   }
 
   private validateMarkdownContent(content: string): void {
@@ -180,7 +123,7 @@ export class ContextLinter {
 
     try {
       const yamlData = yaml.load(content) as Record<string, unknown>;
-      this.validateContextData(yamlData, 'yaml');
+      this.contextValidator.validateContextData(yamlData, 'yaml');
     } catch (error) {
       console.error(`  Error parsing YAML file: ${error}`);
     }
@@ -192,7 +135,7 @@ export class ContextLinter {
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
-      this.validateContextData(jsonData, 'json');
+      this.contextValidator.validateContextData(jsonData, 'json');
     } catch (error) {
       console.error(`  Error parsing JSON file: ${error}`);
     }
