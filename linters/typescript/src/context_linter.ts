@@ -95,7 +95,7 @@ export class ContextLinter {
     if (result.isValid) {
       console.log(`  ✅ ${fileName} passed validation`);
     } else {
-      console.error(`  ❌ ${fileName} failed validation`);
+      console.warn(`    ⚠️  Missing fields: ${result.missingFields.join(', ')}`);
     }
   }
 
