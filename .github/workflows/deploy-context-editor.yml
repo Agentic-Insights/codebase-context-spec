@@ -33,6 +33,8 @@ jobs:
           cd examples/context-editor
           npm ci
       - name: Build
+        env:
+          PUBLIC_URL: https://agentic-insights.github.io/codebase-context-spec/
         run: |
           cd examples/context-editor
           npm run build
