@@ -6,7 +6,7 @@ import matter from 'gray-matter';
 import { ContextdocsLinter } from './contextdocs_linter';
 import { ContextignoreLinter } from './contextignore_linter';
 import { getContextFiles, lintFileIfExists, fileExists, printHeader } from './utils/file_utils';
-import { ContextValidator, ValidationResult } from './utils/validator';
+import { ContextValidator, ValidationResult, SectionValidationResult } from './utils/validator';
 
 export class ContextLinter {
   private md: MarkdownIt;
@@ -78,7 +78,14 @@ export class ContextLinter {
       } else if (filePath.endsWith('.context.json')) {
         result = await this.lintJsonFile(fileContent, filePath);
       } else {
-        result = { isValid: false, coveragePercentage: 0, missingFields: [] };
+        result = {
+          isValid: false,
+          coveragePercentage: 0,
+          coveredFields: 0,
+          totalFields: 0,
+          missingFields: [],
+          sections: {}
+        };
       }
       this.printValidationResult(result, filePath);
       return result.isValid;
@@ -87,35 +94,47 @@ export class ContextLinter {
 
   private printValidationResult(result: ValidationResult, filePath: string): void {
     const fileName = path.basename(filePath);
-    const totalFields = result.missingFields.length + Math.round(result.coveragePercentage * 100 / 100);
-    console.log(`  Context coverage: ${result.coveragePercentage.toFixed(2)}% (${totalFields - result.missingFields.length}/${totalFields} fields)`);
+    console.log(`main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
+    
     if (result.missingFields.length > 0) {
-      console.log(`  Missing fields: ${result.missingFields.join(', ')}`);
+      console.warn(`⚠️  missing: ${result.missingFields.join(', ')}`);
     }
+
+    for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
+      console.log(`|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
+      
+      if (sectionResult.missingFields.length > 0) {
+        console.warn(`⚠️  missing: ${sectionResult.missingFields.join(', ')}`);
+      }
+    }
+
     if (result.isValid) {
-      console.log(`  ✅ ${fileName} passed validation`);
+      console.log(`✅ ${fileName} passed validation`);
     } else {
-      console.warn(`    ⚠️  Missing fields: ${result.missingFields.join(', ')}`);
+      console.warn(`❌ ${fileName} failed validation`);
     }
   }
 
   private async lintMarkdownFile(content: string, filePath: string): Promise<ValidationResult> {
-    console.log('  - Validating Markdown structure');
-    console.log('  - Checking YAML frontmatter');
-
     try {
       const { data: frontmatterData, content: markdownContent } = matter(content);
       const validationResult = this.contextValidator.validateContextData(frontmatterData, 'markdown');
       const markdownValid = this.validateMarkdownContent(markdownContent.trim());
       
       return {
-        isValid: validationResult.isValid && markdownValid,
-        coveragePercentage: validationResult.coveragePercentage,
-        missingFields: validationResult.missingFields
+        ...validationResult,
+        isValid: validationResult.isValid && markdownValid
       };
     } catch (error) {
       console.error(`  Error parsing Markdown file: ${error}`);
-      return { isValid: false, coveragePercentage: 0, missingFields: [] };
+      return {
+        isValid: false,
+        coveragePercentage: 0,
+        coveredFields: 0,
+        totalFields: 0,
+        missingFields: [],
+        sections: {}
+      };
     }
   }
 
@@ -163,7 +182,14 @@ export class ContextLinter {
       } else {
         console.error(`  Error parsing YAML file: ${error}`);
       }
-      return { isValid: false, coveragePercentage: 0, missingFields: [] };
+      return {
+        isValid: false,
+        coveragePercentage: 0,
+        coveredFields: 0,
+        totalFields: 0,
+        missingFields: [],
+        sections: {}
+      };
     }
   }
 
@@ -179,7 +205,14 @@ export class ContextLinter {
       } else {
         console.error(`  Error parsing JSON file: ${error}`);
       }
-      return { isValid: false, coveragePercentage: 0, missingFields: [] };
+      return {
+        isValid: false,
+        coveragePercentage: 0,
+        coveredFields: 0,
+        totalFields: 0,
+        missingFields: [],
+        sections: {}
+      };
     }
   }
 

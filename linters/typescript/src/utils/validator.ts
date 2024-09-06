@@ -1,10 +1,21 @@
 import { kebabToCamelCase } from './string_utils';
 import { allowedTopLevelFields, sectionChecks, listTypes, stringTypes, directoryTypes } from './context_structure';
 
+export interface SectionValidationResult {
+  isValid: boolean;
+  coveragePercentage: number;
+  coveredFields: number;
+  totalFields: number;
+  missingFields: string[];
+}
+
 export interface ValidationResult {
   isValid: boolean;
   coveragePercentage: number;
+  coveredFields: number;
+  totalFields: number;
   missingFields: string[];
+  sections: Record<string, SectionValidationResult>;
 }
 
 export class ContextValidator {
@@ -19,6 +30,7 @@ export class ContextValidator {
     const coveredFields = new Set<string>();
     let isValid = true;
     const allMissingFields: string[] = [];
+    const sections: Record<string, SectionValidationResult> = {};
     
     for (const [field, value] of Object.entries(data)) {
       const normalizedField = isJson ? kebabToCamelCase(field, this.kebabToCamelCache) : field;
@@ -34,20 +46,24 @@ export class ContextValidator {
 
     const { coveragePercentage, missingFields } = this.calculateCoverage(coveredFields, allowedTopLevelFields);
     allMissingFields.push(...missingFields);
-    console.log(`  Context coverage: ${coveragePercentage.toFixed(2)}% (${coveredFields.size}/${allowedTopLevelFields.size} fields)`);
-    if (missingFields.length > 0) {
-      console.log(`  Missing top-level fields: ${missingFields.join(', ')}`);
-    }
 
     for (const section of Object.keys(sectionChecks)) {
       if (section in data) {
         const sectionResult = this.validateSectionFields(section, data[section] as Record<string, unknown>, isJson);
         isValid = sectionResult.isValid && isValid;
         allMissingFields.push(...sectionResult.missingFields);
+        sections[section] = sectionResult;
       }
     }
 
-    return { isValid, coveragePercentage, missingFields: allMissingFields };
+    return {
+      isValid,
+      coveragePercentage,
+      coveredFields: coveredFields.size,
+      totalFields: allowedTopLevelFields.size,
+      missingFields: allMissingFields,
+      sections
+    };
   }
 
   private validateField(field: string, value: unknown, isJson: boolean): boolean {
@@ -64,7 +80,7 @@ export class ContextValidator {
     return isValid;
   }
 
-  private validateSectionFields(sectionName: string, data: Record<string, unknown>, isJson: boolean): ValidationResult {
+  private validateSectionFields(sectionName: string, data: Record<string, unknown>, isJson: boolean): SectionValidationResult {
     const checks = sectionChecks[sectionName];
     const coveredFields = new Set<string>();
     let isValid = true;
@@ -83,15 +99,23 @@ export class ContextValidator {
       }
 
       const { coveragePercentage, missingFields } = this.calculateCoverage(coveredFields, checks);
-      console.log(`  ${sectionName} coverage: ${coveragePercentage.toFixed(2)}% (${coveredFields.size}/${checks.size} fields)`);
-      if (missingFields.length > 0) {
-        console.log(`  Missing fields in '${sectionName}' section: ${missingFields.join(', ')}`);
-      }
 
-      return { isValid, coveragePercentage, missingFields };
+      return {
+        isValid,
+        coveragePercentage,
+        coveredFields: coveredFields.size,
+        totalFields: checks.size,
+        missingFields
+      };
     }
 
-    return { isValid: true, coveragePercentage: 100, missingFields: [] };
+    return {
+      isValid: true,
+      coveragePercentage: 100,
+      coveredFields: 0,
+      totalFields: 0,
+      missingFields: []
+    };
   }
 
   private calculateCoverage(coveredFields: Set<string>, expectedFields: Set<string>): { coveragePercentage: number, missingFields: string[] } {
