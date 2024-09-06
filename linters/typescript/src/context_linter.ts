@@ -13,14 +13,12 @@ export class ContextLinter {
   private contextdocsLinter: ContextdocsLinter;
   private contextignoreLinter: ContextignoreLinter;
   private contextValidator: ContextValidator;
-  private missingFieldsSummary: Map<string, string[]>;
 
   constructor() {
     this.md = new MarkdownIt();
     this.contextdocsLinter = new ContextdocsLinter();
     this.contextignoreLinter = new ContextignoreLinter();
     this.contextValidator = new ContextValidator();
-    this.missingFieldsSummary = new Map();
   }
 
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<boolean> {
@@ -32,14 +30,6 @@ export class ContextLinter {
 
     console.log('\nLinting completed.');
     
-    if (this.missingFieldsSummary.size > 0) {
-      console.log('\nMissing Fields Summary:');
-      for (const [file, missingFields] of this.missingFieldsSummary.entries()) {
-        console.log(`  ${file}:`);
-        console.log(`    ${missingFields.join(', ')}`);
-      }
-    }
-
     return isValid;
   }
 
@@ -90,14 +80,19 @@ export class ContextLinter {
       } else {
         result = { isValid: false, coveragePercentage: 0, missingFields: [] };
       }
-      this.printValidationResult(result.isValid, filePath);
+      this.printValidationResult(result, filePath);
       return result.isValid;
     }) || false;
   }
 
-  private printValidationResult(isValid: boolean, filePath: string): void {
+  private printValidationResult(result: ValidationResult, filePath: string): void {
     const fileName = path.basename(filePath);
-    if (isValid) {
+    const totalFields = result.missingFields.length + Math.round(result.coveragePercentage * 100 / 100);
+    console.log(`  Context coverage: ${result.coveragePercentage.toFixed(2)}% (${totalFields - result.missingFields.length}/${totalFields} fields)`);
+    if (result.missingFields.length > 0) {
+      console.log(`  Missing fields: ${result.missingFields.join(', ')}`);
+    }
+    if (result.isValid) {
       console.log(`  ✅ ${fileName} passed validation`);
     } else {
       console.error(`  ❌ ${fileName} failed validation`);
@@ -113,10 +108,6 @@ export class ContextLinter {
       const validationResult = this.contextValidator.validateContextData(frontmatterData, 'markdown');
       const markdownValid = this.validateMarkdownContent(markdownContent.trim());
       
-      if (validationResult.missingFields.length > 0) {
-        this.missingFieldsSummary.set(path.basename(filePath), validationResult.missingFields);
-      }
-
       return {
         isValid: validationResult.isValid && markdownValid,
         coveragePercentage: validationResult.coveragePercentage,
@@ -165,13 +156,7 @@ export class ContextLinter {
 
     try {
       const yamlData = this.parseYaml(content);
-      const validationResult = this.contextValidator.validateContextData(yamlData, 'yaml');
-      
-      if (validationResult.missingFields.length > 0) {
-        this.missingFieldsSummary.set(path.basename(filePath), validationResult.missingFields);
-      }
-
-      return validationResult;
+      return this.contextValidator.validateContextData(yamlData, 'yaml');
     } catch (error) {
       if (error instanceof yaml.YAMLException) {
         console.error(`  Error parsing YAML file: ${this.formatYamlError(error)}`);
@@ -187,13 +172,7 @@ export class ContextLinter {
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
-      const validationResult = this.contextValidator.validateContextData(jsonData, 'json');
-      
-      if (validationResult.missingFields.length > 0) {
-        this.missingFieldsSummary.set(path.basename(filePath), validationResult.missingFields);
-      }
-
-      return validationResult;
+      return this.contextValidator.validateContextData(jsonData, 'json');
     } catch (error) {
       if (error instanceof SyntaxError) {
         console.error(`  Error parsing JSON file: ${this.formatJsonError(error, content)}`);
