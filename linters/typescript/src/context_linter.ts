@@ -6,19 +6,21 @@ import matter from 'gray-matter';
 import { ContextdocsLinter } from './contextdocs_linter';
 import { ContextignoreLinter } from './contextignore_linter';
 import { getContextFiles, lintFileIfExists, fileExists, printHeader } from './utils/file_utils';
-import { ContextValidator } from './utils/validator';
+import { ContextValidator, ValidationResult } from './utils/validator';
 
 export class ContextLinter {
   private md: MarkdownIt;
   private contextdocsLinter: ContextdocsLinter;
   private contextignoreLinter: ContextignoreLinter;
   private contextValidator: ContextValidator;
+  private missingFieldsSummary: Map<string, string[]>;
 
   constructor() {
     this.md = new MarkdownIt();
     this.contextdocsLinter = new ContextdocsLinter();
     this.contextignoreLinter = new ContextignoreLinter();
     this.contextValidator = new ContextValidator();
+    this.missingFieldsSummary = new Map();
   }
 
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<boolean> {
@@ -29,6 +31,15 @@ export class ContextLinter {
     isValid = await this.handleContextFilesRecursively(directoryPath) && isValid;
 
     console.log('\nLinting completed.');
+    
+    if (this.missingFieldsSummary.size > 0) {
+      console.log('\nMissing Fields Summary:');
+      for (const [file, missingFields] of this.missingFieldsSummary.entries()) {
+        console.log(`  ${file}:`);
+        console.log(`    ${missingFields.join(', ')}`);
+      }
+    }
+
     return isValid;
   }
 
@@ -69,16 +80,18 @@ export class ContextLinter {
   private async lintContextFile(filePath: string): Promise<boolean> {
     console.log(`\nLinting file: ${filePath}`);
     return await lintFileIfExists(filePath, async (fileContent) => {
-      let isValid = false;
+      let result: ValidationResult;
       if (filePath.endsWith('.context.md')) {
-        isValid = await this.lintMarkdownFile(fileContent);
+        result = await this.lintMarkdownFile(fileContent, filePath);
       } else if (filePath.endsWith('.context.yaml')) {
-        isValid = await this.lintYamlFile(fileContent);
+        result = await this.lintYamlFile(fileContent, filePath);
       } else if (filePath.endsWith('.context.json')) {
-        isValid = await this.lintJsonFile(fileContent);
+        result = await this.lintJsonFile(fileContent, filePath);
+      } else {
+        result = { isValid: false, coveragePercentage: 0, missingFields: [] };
       }
-      this.printValidationResult(isValid, filePath);
-      return isValid;
+      this.printValidationResult(result.isValid, filePath);
+      return result.isValid;
     }) || false;
   }
 
@@ -91,18 +104,27 @@ export class ContextLinter {
     }
   }
 
-  private async lintMarkdownFile(content: string): Promise<boolean> {
+  private async lintMarkdownFile(content: string, filePath: string): Promise<ValidationResult> {
     console.log('  - Validating Markdown structure');
     console.log('  - Checking YAML frontmatter');
 
     try {
       const { data: frontmatterData, content: markdownContent } = matter(content);
-      const frontmatterValid = await this.contextValidator.validateContextData(frontmatterData, 'markdown');
+      const validationResult = this.contextValidator.validateContextData(frontmatterData, 'markdown');
       const markdownValid = this.validateMarkdownContent(markdownContent.trim());
-      return frontmatterValid && markdownValid;
+      
+      if (validationResult.missingFields.length > 0) {
+        this.missingFieldsSummary.set(path.basename(filePath), validationResult.missingFields);
+      }
+
+      return {
+        isValid: validationResult.isValid && markdownValid,
+        coveragePercentage: validationResult.coveragePercentage,
+        missingFields: validationResult.missingFields
+      };
     } catch (error) {
       console.error(`  Error parsing Markdown file: ${error}`);
-      return false;
+      return { isValid: false, coveragePercentage: 0, missingFields: [] };
     }
   }
 
@@ -138,35 +160,47 @@ export class ContextLinter {
     return isValid;
   }
 
-  private async lintYamlFile(content: string): Promise<boolean> {
+  private async lintYamlFile(content: string, filePath: string): Promise<ValidationResult> {
     console.log('  - Validating YAML structure');
 
     try {
       const yamlData = this.parseYaml(content);
-      return await this.contextValidator.validateContextData(yamlData, 'yaml');
+      const validationResult = this.contextValidator.validateContextData(yamlData, 'yaml');
+      
+      if (validationResult.missingFields.length > 0) {
+        this.missingFieldsSummary.set(path.basename(filePath), validationResult.missingFields);
+      }
+
+      return validationResult;
     } catch (error) {
       if (error instanceof yaml.YAMLException) {
         console.error(`  Error parsing YAML file: ${this.formatYamlError(error)}`);
       } else {
         console.error(`  Error parsing YAML file: ${error}`);
       }
-      return false;
+      return { isValid: false, coveragePercentage: 0, missingFields: [] };
     }
   }
 
-  private async lintJsonFile(content: string): Promise<boolean> {
+  private async lintJsonFile(content: string, filePath: string): Promise<ValidationResult> {
     console.log('  - Validating JSON structure');
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
-      return await this.contextValidator.validateContextData(jsonData, 'json');
+      const validationResult = this.contextValidator.validateContextData(jsonData, 'json');
+      
+      if (validationResult.missingFields.length > 0) {
+        this.missingFieldsSummary.set(path.basename(filePath), validationResult.missingFields);
+      }
+
+      return validationResult;
     } catch (error) {
       if (error instanceof SyntaxError) {
         console.error(`  Error parsing JSON file: ${this.formatJsonError(error, content)}`);
       } else {
         console.error(`  Error parsing JSON file: ${error}`);
       }
-      return false;
+      return { isValid: false, coveragePercentage: 0, missingFields: [] };
     }
   }
 
