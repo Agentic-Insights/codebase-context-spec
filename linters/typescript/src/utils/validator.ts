@@ -7,6 +7,7 @@ export interface SectionValidationResult {
   coveredFields: number;
   totalFields: number;
   missingFields: string[];
+  unexpectedFields: string[];
 }
 
 export interface ValidationResult {
@@ -83,6 +84,7 @@ export class ContextValidator {
   private validateSectionFields(sectionName: string, data: Record<string, unknown>, isJson: boolean): SectionValidationResult {
     const checks = sectionChecks[sectionName];
     const coveredFields = new Set<string>();
+    const unexpectedFields: string[] = [];
     let isValid = true;
 
     if (checks) {
@@ -93,7 +95,7 @@ export class ContextValidator {
           coveredFields.add(normalizedField);
           isValid = this.validateField(normalizedField, value, isJson) && isValid;
         } else {
-          console.warn(`  Warning: Unexpected field '${normalizedField}' in '${sectionName}' section.`);
+          unexpectedFields.push(normalizedField);
           isValid = false;
         }
       }
@@ -105,7 +107,8 @@ export class ContextValidator {
         coveragePercentage,
         coveredFields: coveredFields.size,
         totalFields: checks.size,
-        missingFields
+        missingFields,
+        unexpectedFields
       };
     }
 
@@ -114,7 +117,8 @@ export class ContextValidator {
       coveragePercentage: 100,
       coveredFields: 0,
       totalFields: 0,
-      missingFields: []
+      missingFields: [],
+      unexpectedFields: []
     };
   }
 

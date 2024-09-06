@@ -97,21 +97,23 @@ export class ContextLinter {
     console.log(`main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
     
     if (result.missingFields.length > 0) {
-      console.warn(`⚠️  missing: ${result.missingFields.join(', ')}`);
+      console.warn(`└-⚠️  Missing fields: ${result.missingFields.join(', ')}`);
     }
 
     for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
       console.log(`|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
       
       if (sectionResult.missingFields.length > 0) {
-        console.warn(`⚠️  missing: ${sectionResult.missingFields.join(', ')}`);
+        console.warn(` └-⚠️  Missing fields: ${sectionResult.missingFields.join(', ')}`);
+      }
+      
+      if (sectionResult.unexpectedFields && sectionResult.unexpectedFields.length > 0) {
+        console.warn(` └-⚠️  Unexpected fields: ${sectionResult.unexpectedFields.join(', ')}`);
       }
     }
 
-    if (result.isValid) {
-      console.log(`✅ ${fileName} passed validation`);
-    } else {
-      console.warn(`❌ ${fileName} failed validation`);
+    if (!result.isValid) {
+      console.warn(`⚠️  ${fileName} has coverage warnings`);
     }
   }
 
