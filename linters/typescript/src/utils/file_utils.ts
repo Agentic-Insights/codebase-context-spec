@@ -10,14 +10,15 @@ export async function getContextFiles(directoryPath: string): Promise<string[]> 
   );
 }
 
-export async function lintFileIfExists(filePath: string, lintFunction: (content: string) => void): Promise<void> {
+export async function lintFileIfExists(filePath: string, lintFunction: (content: string) => Promise<boolean>): Promise<boolean> {
   try {
     const content = await fs.readFile(filePath, 'utf-8');
-    lintFunction(content);
+    return await lintFunction(content);
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code !== 'ENOENT') {
       console.error(`Error reading file ${filePath}: ${error}`);
     }
+    return false;
   }
 }
 

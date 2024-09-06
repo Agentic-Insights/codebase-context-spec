@@ -8,32 +8,36 @@ export class ContextdocsLinter {
     this.md = new MarkdownIt();
   }
 
-  public lintContextdocsFile(content: string): void {
+  public async lintContextdocsFile(content: string): Promise<boolean> {
     console.log('\nLinting .contextdocs.md file');
     console.log('  - Checking for similar links in markdown content');
     
     const { data: frontmatter, content: markdownContent } = matter(content);
 
-    const frontmatterLinks = this.lintFrontmatter(frontmatter);
-    this.checkSimilarLinks(markdownContent, frontmatterLinks);
+    const frontmatterLinksResult = this.lintFrontmatter(frontmatter);
+    const similarLinksResult = this.checkSimilarLinks(markdownContent, frontmatterLinksResult.links);
+
+    return frontmatterLinksResult.isValid && similarLinksResult;
   }
 
-  private lintFrontmatter(frontmatter: Record<string, unknown>): Set<string> {
+  private lintFrontmatter(frontmatter: Record<string, unknown>): { isValid: boolean, links: Set<string> } {
     const links = new Set<string>();
+    let isValid = true;
 
     if (!frontmatter || typeof frontmatter !== 'object') {
       console.error('  Error: Invalid YAML front matter structure.');
-      return links;
+      return { isValid: false, links };
     }
 
     if (!('contextdocs' in frontmatter) || !Array.isArray(frontmatter.contextdocs)) {
       console.error('  Error: Missing or invalid "contextdocs" array in YAML front matter.');
-      return links;
+      return { isValid: false, links };
     }
 
     for (const item of frontmatter.contextdocs) {
       if (typeof item !== 'object' || item === null) {
         console.error('  Error: Invalid item in "contextdocs" array.');
+        isValid = false;
         continue;
       }
 
@@ -41,6 +45,7 @@ export class ContextdocsLinter {
       for (const field of requiredFields) {
         if (!(field in item)) {
           console.error(`  Error: Missing required field "${field}" in contextdocs item.`);
+          isValid = false;
         }
       }
 
@@ -56,20 +61,23 @@ export class ContextdocsLinter {
               links.add(url);
             } else {
               console.error(`  Error: Invalid resource URL format. Should be a string. Found: ${JSON.stringify(resource)}`);
+              isValid = false;
             }
           } else {
             console.error(`  Error: Invalid resource format. Should be an object with a single key-value pair. Found: ${JSON.stringify(resource)}`);
+            isValid = false;
           }
         }
       }
     }
 
-    return links;
+    return { isValid, links };
   }
 
-  private checkSimilarLinks(content: string, frontmatterLinks: Set<string>): void {
+  private checkSimilarLinks(content: string, frontmatterLinks: Set<string>): boolean {
     const tokens = this.md.parse(content, {});
     const markdownLinks = new Set<string>();
+    let isValid = true;
 
     for (const token of tokens) {
       if (token.type === 'link_open') {
@@ -84,7 +92,10 @@ export class ContextdocsLinter {
     for (const link of markdownLinks) {
       if (frontmatterLinks.has(link)) {
         console.warn(`  Warning: Link "${link}" appears in both frontmatter and markdown content.`);
+        isValid = false;
       }
     }
+
+    return isValid;
   }
 }

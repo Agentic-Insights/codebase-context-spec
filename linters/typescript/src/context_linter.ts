@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import MarkdownIt from 'markdown-it';
+import matter from 'gray-matter';
 import { ContextdocsLinter } from './contextdocs_linter';
 import { ContextignoreLinter } from './contextignore_linter';
 import { getContextFiles, lintFileIfExists, fileExists, printHeader } from './utils/file_utils';
@@ -20,46 +21,54 @@ export class ContextLinter {
     this.contextValidator = new ContextValidator();
   }
 
-  public async lintDirectory(directoryPath: string, packageVersion: string): Promise<void> {
+  public async lintDirectory(directoryPath: string, packageVersion: string): Promise<boolean> {
     printHeader(packageVersion, directoryPath);
-    await this.handleContextignore(directoryPath);
-    await this.handleContextdocs(directoryPath);
-    await this.handleContextFilesRecursively(directoryPath);
+    let isValid = true;
+    isValid = await this.handleContextignore(directoryPath) && isValid;
+    isValid = await this.handleContextdocs(directoryPath) && isValid;
+    isValid = await this.handleContextFilesRecursively(directoryPath) && isValid;
 
     console.log('\nLinting completed.');
+    return isValid;
   }
 
-  private async handleContextignore(directoryPath: string): Promise<void> {
+  private async handleContextignore(directoryPath: string): Promise<boolean> {
     const contextignorePath = path.join(directoryPath, '.contextignore');
-    await lintFileIfExists(contextignorePath, this.contextignoreLinter.lintContextignoreFile.bind(this.contextignoreLinter));
+    return await lintFileIfExists(contextignorePath, this.contextignoreLinter.lintContextignoreFile.bind(this.contextignoreLinter)) || true;
   }
 
-  private async handleContextdocs(directoryPath: string): Promise<void> {
+  private async handleContextdocs(directoryPath: string): Promise<boolean> {
     const contextdocsPath = path.join(directoryPath, '.contextdocs.md');
-    await lintFileIfExists(contextdocsPath, this.contextdocsLinter.lintContextdocsFile.bind(this.contextdocsLinter));
+    const result = await lintFileIfExists(contextdocsPath, this.contextdocsLinter.lintContextdocsFile.bind(this.contextdocsLinter));
 
     if (path.resolve(directoryPath) === path.resolve(process.cwd()) && !await fileExists(contextdocsPath)) {
       console.error('\nError: .contextdocs.md file is missing in the root directory.');
+      return false;
     }
+
+    return result || true;
   }
 
-  private async handleContextFilesRecursively(directoryPath: string): Promise<void> {
+  private async handleContextFilesRecursively(directoryPath: string): Promise<boolean> {
     const entries = await fs.promises.readdir(directoryPath, { withFileTypes: true });
+    let isValid = true;
 
     for (const entry of entries) {
       const fullPath = path.join(directoryPath, entry.name);
 
       if (entry.isDirectory()) {
-        await this.handleContextFilesRecursively(fullPath);
+        isValid = await this.handleContextFilesRecursively(fullPath) && isValid;
       } else if (entry.isFile() && (entry.name.endsWith('.context.md') || entry.name.endsWith('.context.yaml') || entry.name.endsWith('.context.json'))) {
-        await this.lintContextFile(fullPath);
+        isValid = await this.lintContextFile(fullPath) && isValid;
       }
     }
+
+    return isValid;
   }
 
-  private async lintContextFile(filePath: string): Promise<void> {
+  private async lintContextFile(filePath: string): Promise<boolean> {
     console.log(`\nLinting file: ${filePath}`);
-    await lintFileIfExists(filePath, async (fileContent) => {
+    return await lintFileIfExists(filePath, async (fileContent) => {
       let isValid = false;
       if (filePath.endsWith('.context.md')) {
         isValid = await this.lintMarkdownFile(fileContent);
@@ -69,7 +78,8 @@ export class ContextLinter {
         isValid = await this.lintJsonFile(fileContent);
       }
       this.printValidationResult(isValid, filePath);
-    });
+      return isValid;
+    }) || false;
   }
 
   private printValidationResult(isValid: boolean, filePath: string): void {
@@ -85,24 +95,15 @@ export class ContextLinter {
     console.log('  - Validating Markdown structure');
     console.log('  - Checking YAML frontmatter');
 
-    const parts = content.split('---\n');
-    if (parts.length < 3) {
-      console.error('  Error: Invalid markdown structure. YAML frontmatter is missing or incomplete.');
-      return false;
-    }
-
-    const frontmatter = parts[1];
-    const markdownContent = parts.slice(2).join('---\n').trim();
-
     try {
-      const frontmatterData = yaml.load(frontmatter) as Record<string, unknown>;
-      await this.contextValidator.validateContextData(frontmatterData, 'markdown');
+      const { data: frontmatterData, content: markdownContent } = matter(content);
+      const frontmatterValid = await this.contextValidator.validateContextData(frontmatterData, 'markdown');
+      const markdownValid = this.validateMarkdownContent(markdownContent.trim());
+      return frontmatterValid && markdownValid;
     } catch (error) {
-      console.error(`  Error parsing YAML frontmatter: ${error}`);
+      console.error(`  Error parsing Markdown file: ${error}`);
       return false;
     }
-
-    return this.validateMarkdownContent(markdownContent);
   }
 
   private validateMarkdownContent(content: string): boolean {
@@ -141,11 +142,14 @@ export class ContextLinter {
     console.log('  - Validating YAML structure');
 
     try {
-      const yamlData = yaml.load(content) as Record<string, unknown>;
-      await this.contextValidator.validateContextData(yamlData, 'yaml');
-      return true;
+      const yamlData = this.parseYaml(content);
+      return await this.contextValidator.validateContextData(yamlData, 'yaml');
     } catch (error) {
-      console.error(`  Error parsing YAML file: ${error}`);
+      if (error instanceof yaml.YAMLException) {
+        console.error(`  Error parsing YAML file: ${this.formatYamlError(error)}`);
+      } else {
+        console.error(`  Error parsing YAML file: ${error}`);
+      }
       return false;
     }
   }
@@ -155,11 +159,46 @@ export class ContextLinter {
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
-      await this.contextValidator.validateContextData(jsonData, 'json');
-      return true;
+      return await this.contextValidator.validateContextData(jsonData, 'json');
     } catch (error) {
-      console.error(`  Error parsing JSON file: ${error}`);
+      if (error instanceof SyntaxError) {
+        console.error(`  Error parsing JSON file: ${this.formatJsonError(error, content)}`);
+      } else {
+        console.error(`  Error parsing JSON file: ${error}`);
+      }
       return false;
     }
+  }
+
+  private parseYaml(content: string): Record<string, unknown> {
+    const documents = yaml.loadAll(content) as Record<string, unknown>[];
+    if (documents.length === 0) {
+      throw new Error('YAML content is empty');
+    }
+    return documents[0];
+  }
+
+  private formatYamlError(error: yaml.YAMLException): string {
+    return `${error.message} (line ${error.mark.line + 1}, column ${error.mark.column + 1})`;
+  }
+
+  private formatJsonError(error: SyntaxError, content: string): string {
+    const lines = content.split('\n');
+    const match = error.message.match(/at position (\d+)/);
+    if (match) {
+      let position = parseInt(match[1], 10);
+      let line = 0;
+      let column = 0;
+      for (let i = 0; i < lines.length; i++) {
+        if (position <= lines[i].length) {
+          line = i + 1;
+          column = position + 1;
+          break;
+        }
+        position -= lines[i].length + 1; // +1 for the newline character
+      }
+      return `${error.message} (line ${line}, column ${column})`;
+    }
+    return error.message;
   }
 }
