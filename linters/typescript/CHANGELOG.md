@@ -1,3 +1,22 @@
+# [1.3.0](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.2.0...v1.3.0) (2024-09-06)
+
+
+### Bug Fixes
+
+* broken image ([cf7823f](https://github.com/Agentic-Insights/codebase-context-spec/commit/cf7823f0225b3dc1fb9a0b65fafd04e51af5ea48))
+* cleanup layout ([5953c9f](https://github.com/Agentic-Insights/codebase-context-spec/commit/5953c9f10902493cc980638e3912c59e3fd669ec))
+* context files project-name ([ac5faa1](https://github.com/Agentic-Insights/codebase-context-spec/commit/ac5faa1fce1abeb378502f3d74855b689790dd02))
+* convert red x to yellow (warn) instead ([fe05a36](https://github.com/Agentic-Insights/codebase-context-spec/commit/fe05a368cda7645a03decb9691e3021068b8bf96))
+
+
+### Features
+
+* add and refine the validation errors, use grey-matter ([5120faa](https://github.com/Agentic-Insights/codebase-context-spec/commit/5120faa9a2fd8556a9c0bb7772c404348bc1c34e))
+* add missing fields collection ([fec9710](https://github.com/Agentic-Insights/codebase-context-spec/commit/fec97100bf9cce6186a2add52601db67e71771ae))
+* add missing fields report ([6ddee02](https://github.com/Agentic-Insights/codebase-context-spec/commit/6ddee023bfcb151ac6e723229fd48f50d5a49595))
+* Add Node.js and Jest context documentation ([d5142cc](https://github.com/Agentic-Insights/codebase-context-spec/commit/d5142cca795edc4c64e66623312413c36cff4c04))
+* major improvements to coverage linting and detailing what is missing, prettier output ([0cb38e1](https://github.com/Agentic-Insights/codebase-context-spec/commit/0cb38e161338b1ca3dbddf128bf3fa2b79cfc91e))
+
 # [1.2.0](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.1.0...v1.2.0) (2024-09-03)
 
 
