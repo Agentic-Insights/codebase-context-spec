@@ -47,8 +47,6 @@ To use the Codebase Context Specification with an AI assistant:
 2. Ask the AI to analyze your project's context files based on these guidelines.
 3. The AI will be able to provide more accurate and context-aware responses by following the instructions in the prompt.
 
-[A UI element graphic would be inserted here, demonstrating how the Codebase Context Specification could be integrated into development environments]
-
 Note that while this approach allows for immediate use of the specification, some features like .contextignore should eventually be applied by tooling for more robust implementation.
 
 ## Tooling Recommendations
