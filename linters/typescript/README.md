@@ -33,6 +33,8 @@ This convention allows developers to:
 
 By adopting this convention, teams can ensure that both human developers and AI assistants have access to crucial contextual information, leading to better code understanding, more accurate suggestions, and improved overall development efficiency.
 
+For more detailed information about the Codebase Context Specification, please refer to the [main repository](https://github.com/Agentic-Insights/codebase-context-spec) and the [full specification](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODEBASE-CONTEXT.md).
+
 ## 📦 Installation
 
 You can install the linter globally using npm:
@@ -61,15 +63,13 @@ Replace `<directory_to_lint>` with the path to the directory containing your Cod
 
 ## 🤖 Using with AI Assistants
 
-While this linter provides automated validation of CCS files, you can also use the Codebase Context Specification with AI assistants without any specific tooling. The [CODING-ASSISTANT-PROMPT.md](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODING-ASSISTANT-PROMPT.md) file in the root directory provides guidelines for AI assistants to understand and use the Codebase Context Specification.
+While this linter provides automated validation of CCS files, you can also use the Codebase Context Specification with AI assistants without any specific tooling. The [CODING-ASSISTANT-PROMPT.md](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODING-ASSISTANT-PROMPT.md) file in the main repository provides guidelines for AI assistants to understand and use the Codebase Context Specification.
 
 To use the Codebase Context Specification with an AI assistant:
 
 1. Include the content of CODING-ASSISTANT-PROMPT.md in your prompt to the AI assistant.
 2. Ask the AI to analyze your project's context files based on these guidelines.
 3. The AI will be able to provide more accurate and context-aware responses by following the instructions in the prompt.
-
-[A UI element graphic would be inserted here, demonstrating how the Codebase Context Specification could be integrated into development environments]
 
 Note that while this approach allows for immediate use of the specification, some features like .contextignore should eventually be applied by tooling (such as this linter) for more robust implementation.
 
@@ -104,6 +104,17 @@ To contribute to this project:
 7. Push to the branch (`git push origin feature/AmazingFeature`)
 8. Open a Pull Request
 
-## 📄 License
+## � Learn More
+
+For a deeper dive into the Codebase Context Specification, check out this [SubStack article by Vaskin](https://agenticinsights.substack.com/p/codebase-context-specification-rfc), the author of the specification.
+
+## �📄 License
 
 This project is licensed under the MIT License.
+
+## 🔗 Related Links
+
+- [Codebase Context Specification Repository](https://github.com/Agentic-Insights/codebase-context-spec)
+- [Full Specification (CODEBASE-CONTEXT.md)](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODEBASE-CONTEXT.md)
+- [NPM Package (codebase-context-lint)](https://www.npmjs.com/package/codebase-context-lint)
+- [AI Assistant Prompt (CODING-ASSISTANT-PROMPT.md)](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODING-ASSISTANT-PROMPT.md)
