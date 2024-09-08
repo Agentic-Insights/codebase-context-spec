@@ -11,16 +11,15 @@ const MarkdownContentSection: React.FC<MarkdownContentSectionProps> = ({ formDat
   return (
     <TextField
       fullWidth
-      label="Markdown Content"
+      label="Markdown Content (Optional)"
       name="markdownContent"
       value={formData.markdownContent}
       onChange={handleChange}
       margin="normal"
       multiline
       rows={10}
-      required
       error={!!errors.markdownContent}
-      helperText={errors.markdownContent || 'Start with a title (H1 heading)'}
+      helperText={errors.markdownContent || 'Add any additional markdown content here'}
     />
   );
 };
