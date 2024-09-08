@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.3.0...v1.3.1) (2024-09-08)
+
+
+### Bug Fixes
+
+* add devcontainer ([e0e21c1](https://github.com/Agentic-Insights/codebase-context-spec/commit/e0e21c1c921c2ed73d3e2bde0475ed8590665da6))
+* deployment js file static ref broken ([15b3100](https://github.com/Agentic-Insights/codebase-context-spec/commit/15b31007c318c1cd1ef67eb33547f2863919187f))
+* github pages deployment ([b2d613a](https://github.com/Agentic-Insights/codebase-context-spec/commit/b2d613ad0256498bc5d087a1ffd65a49786d1c24))
+
 # [1.3.0](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.2.0...v1.3.0) (2024-09-06)
 
 
