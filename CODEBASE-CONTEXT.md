@@ -71,110 +71,117 @@ Example:
 
 ```markdown
 ---
-project-name: MyAwesomeProject
+module-name: Codebase Context Specification
 version: 1.0.0
-description: A revolutionary web application
+description: A specification for providing explicit context information about a codebase
+related-modules:
+  - name: Context Editor
+    path: ./examples/context-editor
+  - name: TypeScript Linter
+    path: https://github.com/Agentic-Insights/codebase-context-spec/tree/main/linters/typescript
 main-technologies:
-  - Node.js
-  - React
-  - MongoDB
+  - Markdown
+  - YAML
+  - JSON
+  - TypeScript
 conventions:
-  - Use consistent naming conventions within each file type
-  - Each function should have a single responsibility
-ai-prompts:
-  - Focus on performance optimizations
-  - Suggest ways to improve error handling
+  - Follow Markdown best practices
+  - Use YAML for structured data
+  - Consistent naming conventions
+  - Use lowercase and underscores for all .ts files
 architecture:
-  style: Microservices
+  style: Documentation-driven
   main-components:
-    - Auth Service
-    - User Service
-    - Data Processing Service
-  data-flow:
-    - Client -> API Gateway -> Services -> Database
+    - Specification document
+    - Context Editor
+    - TypeScript Linter
+  data-flow: 
+    - Codebase -> .context.md files -> Linter -> Validation results
 development:
   setup-steps:
-    - Install Node.js v14+
-    - Run `npm install` in each service directory
-    - Set up MongoDB instance
+    - Clone the repository
+    - Review the specification documents
+    - Install linter dependencies
   build-command: npm run build
   test-command: npm test
 business-requirements:
   key-features:
-    - User authentication
-    - Real-time data processing
-    - Mobile-responsive UI
-  target-audience: Small to medium-sized businesses
+    - Provide a standardized format for codebase context
+    - Enable AI-assisted development with explicit context
+    - Support multiple programming languages and frameworks
+  target-audience: Developers and AI assistants
   success-metrics:
-    - User adoption rate
-    - System response time
-    - Data processing accuracy
+    - Adoption rate among developers
+    - Improved AI-assisted development accuracy
 quality-assurance:
   testing-frameworks:
     - Jest
-    - Cypress
-  coverage-threshold: 80%
+    - Pytest
+  coverage-threshold: "90%"
   performance-benchmarks:
-    - API response time < 200ms
-    - Database query time < 100ms
+    - Linting speed for large codebases
+    - Memory usage during linting
 deployment:
-  platform: AWS
+  platform: GitHub
   cicd-pipeline: GitHub Actions
-  staging-environment: dev.myawesomeproject.com
-  production-environment: myawesomeproject.com
+  staging-environment: GitHub Pages (Documentation)
+  production-environment: npm registry (Linter package)
 ---
 
-# MyAwesomeProject
+# Codebase Context Specification
 
-This document provides comprehensive context for the MyAwesomeProject, a revolutionary web application designed to streamline business processes.
+This document provides comprehensive context for the Codebase Context Specification project, which defines a standardized way to provide explicit context information about a codebase, enabling more effective AI-assisted development.
 
 ## Architecture Overview
 
-MyAwesomeProject follows a microservices architecture, consisting of the following main components:
+The Codebase Context Specification follows a documentation-driven architecture, consisting of the following main components:
 
-1. Auth Service: Handles user authentication and authorization.
-2. User Service: Manages user profiles and preferences.
-3. Data Processing Service: Processes and analyzes business data in real-time.
+1. Specification Document: The core definition of the Codebase Context format and usage.
+2. Context Editor: A tool for creating and editing .context.md files.
+3. TypeScript Linter: A linter implementation to validate .context.md files against the specification.
 
-The system uses an API Gateway to route requests to appropriate services, ensuring scalability and maintainability.
+The data flow in this system is as follows:
+Codebase -> .context.md files -> Linter -> Validation results
+
+This architecture ensures that the specification is well-defined, easy to implement, and can be validated automatically.
 
 ## Development Guidelines
 
-- Follow the conventions listed in the front matter.
-- Use feature branches and pull requests for all changes.
-- Write unit tests for all new features and bug fixes.
-- Document all public APIs using JSDoc comments.
+- Follow the conventions listed in the front matter, including Markdown best practices and consistent naming conventions.
+- Use YAML for structured data within the .context.md files.
+- When contributing to the TypeScript linter, use lowercase and underscores for all .ts files.
+- Write clear, concise documentation for all components of the specification.
+- Use feature branches and pull requests for all changes to the specification or related tools.
 
 ## Business Context
 
-The primary goal of MyAwesomeProject is to provide small to medium-sized businesses with a powerful tool for real-time data analysis and visualization. Key features include:
+The primary goal of the Codebase Context Specification is to provide developers and AI assistants with a standardized format for capturing and communicating codebase context. Key features include:
 
-- Secure user authentication
-- Real-time data processing with customizable dashboards
-- Mobile-responsive design for on-the-go access
+- A flexible, hierarchical structure for context information
+- Support for multiple file formats (Markdown, YAML, JSON)
+- Integration with existing development workflows
 
-Success will be measured by user adoption rates, system performance metrics, and data processing accuracy.
+Success will be measured by the adoption rate among developers and the improvement in AI-assisted development accuracy when using the Codebase Context Specification.
 
 ## Quality Assurance
 
-Our QA process ensures high-quality, reliable software through:
+Our QA process ensures high-quality, reliable tools and documentation through:
 
-- Comprehensive unit and integration testing using Jest
-- End-to-end testing with Cypress
-- Continuous integration and deployment via GitHub Actions
-- Regular performance testing and optimization
+- Comprehensive unit and integration testing using Jest and Pytest
+- Maintaining a test coverage threshold of 90%
+- Performance benchmarking for linting speed and memory usage
+- Regular review and updates to the specification based on community feedback
 
 ## Deployment and Operations
 
-MyAwesomeProject is deployed on AWS using a robust CI/CD pipeline:
+The Codebase Context Specification project is managed and deployed as follows:
 
-1. Developers push code to GitHub
-2. GitHub Actions run tests and build the application
-3. Successful builds are deployed to the staging environment
-4. After approval, changes are promoted to production
+1. The specification and related tools are hosted on GitHub
+2. GitHub Actions are used for continuous integration and deployment
+3. Documentation is hosted on GitHub Pages (staging environment)
+4. The TypeScript linter is published as an npm package (production environment)
 
-Monitoring and logging are handled through AWS CloudWatch and ELK stack.
-
+Regular updates and maintenance are performed to keep the specification and tools up-to-date with evolving development practices and AI capabilities.
 ```
 
 ### 4.2 YAML Format
@@ -184,57 +191,61 @@ YAML format (.context.yaml or .context.yml) should now include the expanded role
 Example:
 
 ```yaml
-project-name: MyAwesomeProject
+module-name: Codebase Context Specification
 version: 1.0.0
-description: A revolutionary web application
+description: A specification for providing explicit context information about a codebase
+related-modules:
+  - name: Context Editor
+    path: ./examples/context-editor
+  - name: TypeScript Linter
+    path: https://github.com/Agentic-Insights/codebase-context-spec/tree/main/linters/typescript
 main-technologies:
-  - Node.js
-  - React
-  - MongoDB
+  - Markdown
+  - YAML
+  - JSON
+  - TypeScript
 conventions:
-  - Use consistent naming conventions within each file type
-  - Each function should have a single responsibility
-ai-prompts:
-  - Focus on performance optimizations
-  - Suggest ways to improve error handling
+  - Follow Markdown best practices
+  - Use YAML for structured data
+  - Consistent naming conventions
+  - Use lowercase and underscores for all .ts files
 architecture:
-  style: Microservices
+  style: Documentation-driven
   main-components:
-    - Auth Service
-    - User Service
-    - Data Processing Service
-  data-flow:
-    - Client -> API Gateway -> Services -> Database
+    - Specification document
+    - Context Editor
+    - TypeScript Linter
+  data-flow: 
+    - Codebase -> .context.md files -> Linter -> Validation results
 development:
   setup-steps:
-    - Install Node.js v14+
-    - Run `npm install` in each service directory
-    - Set up MongoDB instance
+    - Clone the repository
+    - Review the specification documents
+    - Install linter dependencies
   build-command: npm run build
   test-command: npm test
 business-requirements:
   key-features:
-    - User authentication
-    - Real-time data processing
-    - Mobile-responsive UI
-  target-audience: Small to medium-sized businesses
+    - Provide a standardized format for codebase context
+    - Enable AI-assisted development with explicit context
+    - Support multiple programming languages and frameworks
+  target-audience: Developers and AI assistants
   success-metrics:
-    - User adoption rate
-    - System response time
-    - Data processing accuracy
+    - Adoption rate among developers
+    - Improved AI-assisted development accuracy
 quality-assurance:
   testing-frameworks:
     - Jest
-    - Cypress
-  coverage-threshold: 80%
+    - Pytest
+  coverage-threshold: "90%"
   performance-benchmarks:
-    - API response time < 200ms
-    - Database query time < 100ms
+    - Linting speed for large codebases
+    - Memory usage during linting
 deployment:
-  platform: AWS
+  platform: GitHub
   cicd-pipeline: GitHub Actions
-  staging-environment: dev.myawesomeproject.com
-  production-environment: myawesomeproject.com
+  staging-environment: GitHub Pages (Documentation)
+  production-environment: npm registry (Linter package)
 ```
 
 ### 4.3 JSON Format
@@ -245,71 +256,79 @@ Example:
 
 ```json
 {
-  "projectName": "MyAwesomeProject",
+  "moduleName": "Codebase Context Specification",
   "version": "1.0.0",
-  "description": "A revolutionary web application",
+  "description": "A specification for providing explicit context information about a codebase",
+  "relatedModules": [
+    {
+      "name": "Context Editor",
+      "path": "./examples/context-editor"
+    },
+    {
+      "name": "TypeScript Linter",
+      "path": "https://github.com/Agentic-Insights/codebase-context-spec/tree/main/linters/typescript"
+    }
+  ],
   "mainTechnologies": [
-    "Node.js",
-    "React",
-    "MongoDB"
+    "Markdown",
+    "YAML",
+    "JSON",
+    "TypeScript"
   ],
   "conventions": [
-    "Use consistent naming conventions within each file type",
-    "Each function should have a single responsibility"
-  ],
-  "aiPrompts": [
-    "Focus on performance optimizations",
-    "Suggest ways to improve error handling"
+    "Follow Markdown best practices",
+    "Use YAML for structured data",
+    "Consistent naming conventions",
+    "Use lowercase and underscores for all .ts files"
   ],
   "architecture": {
-    "style": "Microservices",
+    "style": "Documentation-driven",
     "mainComponents": [
-      "Auth Service",
-      "User Service",
-      "Data Processing Service"
+      "Specification document",
+      "Context Editor",
+      "TypeScript Linter"
     ],
     "dataFlow": [
-      "Client -> API Gateway -> Services -> Database"
+      "Codebase -> .context.md files -> Linter -> Validation results"
     ]
   },
   "development": {
     "setupSteps": [
-      "Install Node.js v14+",
-      "Run `npm install` in each service directory",
-      "Set up MongoDB instance"
+      "Clone the repository",
+      "Review the specification documents",
+      "Install linter dependencies"
     ],
     "buildCommand": "npm run build",
     "testCommand": "npm test"
   },
   "businessRequirements": {
     "keyFeatures": [
-      "User authentication",
-      "Real-time data processing",
-      "Mobile-responsive UI"
+      "Provide a standardized format for codebase context",
+      "Enable AI-assisted development with explicit context",
+      "Support multiple programming languages and frameworks"
     ],
-    "targetAudience": "Small to medium-sized businesses",
+    "targetAudience": "Developers and AI assistants",
     "successMetrics": [
-      "User adoption rate",
-      "System response time",
-      "Data processing accuracy"
+      "Adoption rate among developers",
+      "Improved AI-assisted development accuracy"
     ]
   },
   "qualityAssurance": {
     "testingFrameworks": [
       "Jest",
-      "Cypress"
+      "Pytest"
     ],
-    "coverageThreshold": "80%",
+    "coverageThreshold": "90%",
     "performanceBenchmarks": [
-      "API response time < 200ms",
-      "Database query time < 100ms"
+      "Linting speed for large codebases",
+      "Memory usage during linting"
     ]
   },
   "deployment": {
-    "platform": "AWS",
+    "platform": "GitHub",
     "cicdPipeline": "GitHub Actions",
-    "stagingEnvironment": "dev.myawesomeproject.com",
-    "productionEnvironment": "myawesomeproject.com"
+    "stagingEnvironment": "GitHub Pages (Documentation)",
+    "productionEnvironment": "npm registry (Linter package)"
   }
 }
 ```
