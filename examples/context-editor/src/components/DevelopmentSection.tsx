@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, TextField, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+import { Grid2, TextField, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormDataType } from './ContextForm';
 
@@ -15,8 +15,8 @@ const DevelopmentSection: React.FC<DevelopmentSectionProps> = ({ formData, handl
         <Typography>Development</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={2}>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Setup Steps"
@@ -27,8 +27,8 @@ const DevelopmentSection: React.FC<DevelopmentSectionProps> = ({ formData, handl
               rows={3}
               helperText="Optional: One setup step per line"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               label="Build Command"
@@ -37,8 +37,8 @@ const DevelopmentSection: React.FC<DevelopmentSectionProps> = ({ formData, handl
               onChange={handleNestedChange('development', 'buildCommand')}
               helperText="Optional: Command to build the project"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               label="Test Command"
@@ -47,8 +47,8 @@ const DevelopmentSection: React.FC<DevelopmentSectionProps> = ({ formData, handl
               onChange={handleNestedChange('development', 'testCommand')}
               helperText="Optional: Command to run tests"
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </AccordionDetails>
     </Accordion>
   );

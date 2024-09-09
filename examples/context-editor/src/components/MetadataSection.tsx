@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, TextField, Chip, Autocomplete } from '@mui/material';
+import { Grid2, TextField, Chip, Autocomplete } from '@mui/material';
 import { FormDataType } from './ContextForm';
 
 interface MetadataSectionProps {
@@ -11,8 +11,8 @@ interface MetadataSectionProps {
 
 const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, handleChange, handleMultiChange }) => {
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
+    <Grid2 container spacing={2}>
+      <Grid2 size={12}>
         <TextField
           fullWidth
           label="Module Name"
@@ -22,8 +22,8 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, han
           error={!!errors.moduleName}
           helperText={errors.moduleName || 'Optional: Name of the module'}
         />
-      </Grid>
-      <Grid item xs={12}>
+      </Grid2>
+      <Grid2 size={12}>
         <Autocomplete
           multiple
           freeSolo
@@ -45,8 +45,8 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, han
             />
           )}
         />
-      </Grid>
-      <Grid item xs={12} sm={6}>
+      </Grid2>
+      <Grid2 size={{ xs: 12, sm: 6 }}>
         <TextField
           fullWidth
           label="Version"
@@ -56,8 +56,8 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, han
           error={!!errors.version}
           helperText={errors.version || 'Optional: Use semantic versioning (e.g., 1.0.0)'}
         />
-      </Grid>
-      <Grid item xs={12}>
+      </Grid2>
+      <Grid2 size={12}>
         <TextField
           fullWidth
           label="Description"
@@ -69,8 +69,8 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, han
           error={!!errors.description}
           helperText={errors.description || 'Optional: Brief description of the module'}
         />
-      </Grid>
-      <Grid item xs={12}>
+      </Grid2>
+      <Grid2 size={12}>
         <Autocomplete
           multiple
           freeSolo
@@ -92,8 +92,8 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, han
             />
           )}
         />
-      </Grid>
-      <Grid item xs={12}>
+      </Grid2>
+      <Grid2 size={12}>
         <Autocomplete
           multiple
           freeSolo
@@ -115,8 +115,8 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, han
             />
           )}
         />
-      </Grid>
-      <Grid item xs={12}>
+      </Grid2>
+      <Grid2 size={12}>
         <TextField
           fullWidth
           label="Conventions"
@@ -127,8 +127,8 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, han
           rows={3}
           helperText="Optional: One convention per line"
         />
-      </Grid>
-      <Grid item xs={12}>
+      </Grid2>
+      <Grid2 size={12}>
         <TextField
           fullWidth
           label="Directives"
@@ -139,8 +139,8 @@ const MetadataSection: React.FC<MetadataSectionProps> = ({ formData, errors, han
           rows={3}
           helperText="Optional: One directive per line"
         />
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 };
 

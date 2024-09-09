@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, TextField, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+import { Grid2, TextField, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormDataType } from './ContextForm';
 
@@ -16,8 +16,8 @@ const QualityAssuranceSection: React.FC<QualityAssuranceSectionProps> = ({ formD
         <Typography>Quality Assurance</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={2}>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Testing Frameworks"
@@ -26,8 +26,8 @@ const QualityAssuranceSection: React.FC<QualityAssuranceSectionProps> = ({ formD
               onChange={handleNestedChange('qualityAssurance', 'testingFrameworks')}
               helperText="Optional: Comma-separated list"
             />
-          </Grid>
-          <Grid item xs={12} sm={6}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               label="Coverage Threshold"
@@ -39,8 +39,8 @@ const QualityAssuranceSection: React.FC<QualityAssuranceSectionProps> = ({ formD
               error={!!errors['qualityAssurance.coverageThreshold']}
               helperText={errors['qualityAssurance.coverageThreshold'] || 'Optional: Percentage (0-100)'}
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Performance Benchmarks"
@@ -51,8 +51,8 @@ const QualityAssuranceSection: React.FC<QualityAssuranceSectionProps> = ({ formD
               rows={3}
               helperText="Optional: One benchmark per line"
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </AccordionDetails>
     </Accordion>
   );

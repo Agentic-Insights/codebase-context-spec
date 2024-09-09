@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, TextField, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+import { Grid2, TextField, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormDataType } from './ContextForm';
 
@@ -15,8 +15,8 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ formData, han
         <Typography>Architecture</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={2}>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Style"
@@ -25,8 +25,8 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ formData, han
               onChange={handleNestedChange('architecture', 'style')}
               helperText="Optional: Architectural style of the module"
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Components"
@@ -37,8 +37,8 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ formData, han
               rows={3}
               helperText="Optional: One component per line"
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Data Flow"
@@ -49,8 +49,8 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ formData, han
               rows={3}
               helperText="Optional: One data flow step per line"
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </AccordionDetails>
     </Accordion>
   );

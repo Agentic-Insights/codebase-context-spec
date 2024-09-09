@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, TextField, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
+import { Grid2, TextField, Accordion, AccordionSummary, AccordionDetails, Typography } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormDataType } from './ContextForm';
 
@@ -15,8 +15,8 @@ const BusinessRequirementsSection: React.FC<BusinessRequirementsSectionProps> = 
         <Typography>Business Requirements</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
+        <Grid2 container spacing={2}>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Key Features"
@@ -27,8 +27,8 @@ const BusinessRequirementsSection: React.FC<BusinessRequirementsSectionProps> = 
               rows={3}
               helperText="Optional: One feature per line"
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Target Audience"
@@ -37,8 +37,8 @@ const BusinessRequirementsSection: React.FC<BusinessRequirementsSectionProps> = 
               onChange={handleNestedChange('businessRequirements', 'targetAudience')}
               helperText="Optional: Describe the target audience"
             />
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             <TextField
               fullWidth
               label="Success Metrics"
@@ -49,8 +49,8 @@ const BusinessRequirementsSection: React.FC<BusinessRequirementsSectionProps> = 
               rows={3}
               helperText="Optional: One metric per line"
             />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </AccordionDetails>
     </Accordion>
   );
