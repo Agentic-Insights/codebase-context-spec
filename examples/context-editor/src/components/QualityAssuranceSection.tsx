@@ -24,7 +24,7 @@ const QualityAssuranceSection: React.FC<QualityAssuranceSectionProps> = ({ formD
               name="qualityAssurance.testingFrameworks"
               value={formData.qualityAssurance.testingFrameworks}
               onChange={handleNestedChange('qualityAssurance', 'testingFrameworks')}
-              helperText="Comma-separated list"
+              helperText="Optional: Comma-separated list"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -37,7 +37,7 @@ const QualityAssuranceSection: React.FC<QualityAssuranceSectionProps> = ({ formD
               type="number"
               InputProps={{ inputProps: { min: 0, max: 100 } }}
               error={!!errors['qualityAssurance.coverageThreshold']}
-              helperText={errors['qualityAssurance.coverageThreshold'] || 'Percentage (0-100)'}
+              helperText={errors['qualityAssurance.coverageThreshold'] || 'Optional: Percentage (0-100)'}
             />
           </Grid>
           <Grid item xs={12}>
@@ -49,7 +49,7 @@ const QualityAssuranceSection: React.FC<QualityAssuranceSectionProps> = ({ formD
               onChange={handleNestedChange('qualityAssurance', 'performanceBenchmarks')}
               multiline
               rows={3}
-              helperText="One benchmark per line"
+              helperText="Optional: One benchmark per line"
             />
           </Grid>
         </Grid>

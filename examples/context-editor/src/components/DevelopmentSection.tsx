@@ -25,7 +25,7 @@ const DevelopmentSection: React.FC<DevelopmentSectionProps> = ({ formData, handl
               onChange={handleNestedChange('development', 'setupSteps')}
               multiline
               rows={3}
-              helperText="One setup step per line"
+              helperText="Optional: One setup step per line"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -35,6 +35,7 @@ const DevelopmentSection: React.FC<DevelopmentSectionProps> = ({ formData, handl
               name="development.buildCommand"
               value={formData.development.buildCommand}
               onChange={handleNestedChange('development', 'buildCommand')}
+              helperText="Optional: Command to build the project"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -44,6 +45,7 @@ const DevelopmentSection: React.FC<DevelopmentSectionProps> = ({ formData, handl
               name="development.testCommand"
               value={formData.development.testCommand}
               onChange={handleNestedChange('development', 'testCommand')}
+              helperText="Optional: Command to run tests"
             />
           </Grid>
         </Grid>

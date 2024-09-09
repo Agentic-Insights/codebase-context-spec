@@ -23,6 +23,7 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ formData, han
               name="architecture.style"
               value={formData.architecture.style}
               onChange={handleNestedChange('architecture', 'style')}
+              helperText="Optional: Architectural style of the module"
             />
           </Grid>
           <Grid item xs={12}>
@@ -34,7 +35,7 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ formData, han
               onChange={handleNestedChange('architecture', 'components')}
               multiline
               rows={3}
-              helperText="One component per line"
+              helperText="Optional: One component per line"
             />
           </Grid>
           <Grid item xs={12}>
@@ -46,7 +47,7 @@ const ArchitectureSection: React.FC<ArchitectureSectionProps> = ({ formData, han
               onChange={handleNestedChange('architecture', 'dataFlow')}
               multiline
               rows={3}
-              helperText="One data flow step per line"
+              helperText="Optional: One data flow step per line"
             />
           </Grid>
         </Grid>

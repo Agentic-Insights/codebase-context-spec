@@ -25,7 +25,7 @@ const BusinessRequirementsSection: React.FC<BusinessRequirementsSectionProps> = 
               onChange={handleNestedChange('businessRequirements', 'keyFeatures')}
               multiline
               rows={3}
-              helperText="One feature per line"
+              helperText="Optional: One feature per line"
             />
           </Grid>
           <Grid item xs={12}>
@@ -35,6 +35,7 @@ const BusinessRequirementsSection: React.FC<BusinessRequirementsSectionProps> = 
               name="businessRequirements.targetAudience"
               value={formData.businessRequirements.targetAudience}
               onChange={handleNestedChange('businessRequirements', 'targetAudience')}
+              helperText="Optional: Describe the target audience"
             />
           </Grid>
           <Grid item xs={12}>
@@ -46,7 +47,7 @@ const BusinessRequirementsSection: React.FC<BusinessRequirementsSectionProps> = 
               onChange={handleNestedChange('businessRequirements', 'successMetrics')}
               multiline
               rows={3}
-              helperText="One metric per line"
+              helperText="Optional: One metric per line"
             />
           </Grid>
         </Grid>

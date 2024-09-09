@@ -23,6 +23,7 @@ const DeploymentSection: React.FC<DeploymentSectionProps> = ({ formData, handleN
               name="deployment.platform"
               value={formData.deployment.platform}
               onChange={handleNestedChange('deployment', 'platform')}
+              helperText="Optional: Deployment platform"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -32,6 +33,7 @@ const DeploymentSection: React.FC<DeploymentSectionProps> = ({ formData, handleN
               name="deployment.cicdPipeline"
               value={formData.deployment.cicdPipeline}
               onChange={handleNestedChange('deployment', 'cicdPipeline')}
+              helperText="Optional: CI/CD pipeline details"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -41,6 +43,7 @@ const DeploymentSection: React.FC<DeploymentSectionProps> = ({ formData, handleN
               name="deployment.stagingEnvironment"
               value={formData.deployment.stagingEnvironment}
               onChange={handleNestedChange('deployment', 'stagingEnvironment')}
+              helperText="Optional: Staging environment details"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -50,6 +53,7 @@ const DeploymentSection: React.FC<DeploymentSectionProps> = ({ formData, handleN
               name="deployment.productionEnvironment"
               value={formData.deployment.productionEnvironment}
               onChange={handleNestedChange('deployment', 'productionEnvironment')}
+              helperText="Optional: Production environment details"
             />
           </Grid>
         </Grid>

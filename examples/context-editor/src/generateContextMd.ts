@@ -2,11 +2,11 @@ import yaml from 'js-yaml';
 
 interface FormData {
   moduleName: string;
-  relatedModules: string;
+  relatedModules: string[];
   version: string;
   description: string;
-  diagrams: string;
-  technologies: string;
+  diagrams: string[];
+  technologies: string[];
   conventions: string;
   directives: string;
   architecture: {
@@ -45,11 +45,11 @@ const formatList = (input: string): string[] => {
 const generateYamlFrontMatter = (data: FormData): string => {
   const frontMatterData = {
     'module-name': data.moduleName,
-    'related-modules': data.relatedModules.split(',').map(module => module.trim()),
+    'related-modules': data.relatedModules,
     version: data.version,
     description: data.description,
-    diagrams: data.diagrams.split(',').map(diagram => diagram.trim()),
-    technologies: data.technologies.split(',').map(tech => tech.trim()),
+    diagrams: data.diagrams,
+    technologies: data.technologies,
     conventions: formatList(data.conventions),
     directives: formatList(data.directives),
     architecture: {
