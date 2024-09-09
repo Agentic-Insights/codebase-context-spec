@@ -11,7 +11,7 @@ REM Combine the two images side by side
 magick convert +append temp_left.png temp_right.png temp_combined.png
 
 REM Add text overlay (optional)
-magick convert temp_combined.png -fill white -font Arial -pointsize 48 -gravity center -annotate +0-250 "CCS v1.0.0-RFC" final_og_image.png
+magick convert temp_combined.png -fill white -font Arial -pointsize 48 -gravity center final_og_image.png
 
 REM Copy the final image to the context-editor public folder
 copy final_og_image.png ..\examples\context-editor\public\og-image.png

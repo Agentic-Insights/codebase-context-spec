@@ -12,7 +12,7 @@ convert context-editor-screenshot.png -resize 600x630^ -gravity center -extent 6
 convert +append temp_left.png temp_right.png temp_combined.png
 
 # Add text overlay (optional)
-convert temp_combined.png -fill white -font Arial -pointsize 48 -gravity center -annotate +0-250 "CCS v1.0.0-RFC" final_og_image.png
+convert temp_combined.png -fill white -font Arial -pointsize 48 -gravity center final_og_image.png
 
 # Copy the final image to the context-editor public folder
 cp final_og_image.png ../examples/context-editor/public/og-image.png
