@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Box, Alert } from '@mui/material';
+import { Button, Box, Alert, Paper } from '@mui/material';
 import MetadataSection from './MetadataSection';
 import ArchitectureSection from './ArchitectureSection';
 import DevelopmentSection from './DevelopmentSection';
@@ -127,13 +127,27 @@ const ContextForm: React.FC<ContextFormProps> = ({ onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <MetadataSection formData={formData} errors={errors} handleChange={handleChange} />
-      <ArchitectureSection formData={formData} handleNestedChange={handleNestedChange} />
-      <DevelopmentSection formData={formData} handleNestedChange={handleNestedChange} />
-      <BusinessRequirementsSection formData={formData} handleNestedChange={handleNestedChange} />
-      <QualityAssuranceSection formData={formData} errors={errors} handleNestedChange={handleNestedChange} />
-      <DeploymentSection formData={formData} handleNestedChange={handleNestedChange} />
-      <MarkdownContentSection formData={formData} errors={errors} handleChange={handleChange} />
+      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: 'background.default' }}>
+        <MetadataSection formData={formData} errors={errors} handleChange={handleChange} />
+      </Paper>
+      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: 'background.default' }}>
+        <ArchitectureSection formData={formData} handleNestedChange={handleNestedChange} />
+      </Paper>
+      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: 'background.default' }}>
+        <DevelopmentSection formData={formData} handleNestedChange={handleNestedChange} />
+      </Paper>
+      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: 'background.default' }}>
+        <BusinessRequirementsSection formData={formData} handleNestedChange={handleNestedChange} />
+      </Paper>
+      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: 'background.default' }}>
+        <QualityAssuranceSection formData={formData} errors={errors} handleNestedChange={handleNestedChange} />
+      </Paper>
+      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: 'background.default' }}>
+        <DeploymentSection formData={formData} handleNestedChange={handleNestedChange} />
+      </Paper>
+      <Paper elevation={3} sx={{ p: 3, mb: 3, bgcolor: 'background.default' }}>
+        <MarkdownContentSection formData={formData} errors={errors} handleChange={handleChange} />
+      </Paper>
 
       <Box sx={{ mt: 2 }}>
         <Button type="submit" variant="contained" color="primary">

@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Container, Paper, Modal, Box, Button, Typography, Tabs, Tab, Link } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
+import DescriptionIcon from '@mui/icons-material/Description';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import BlockIcon from '@mui/icons-material/Block';
 import theme from './theme';
 import ContextForm from './components/ContextForm';
+import ContextDocsForm from './components/ContextDocsForm';
+import ContextIgnoreForm from './components/ContextIgnoreForm';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -67,28 +72,18 @@ const App: React.FC = () => {
             </Typography>
           </Box>
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="file type tabs">
-            <Tab label=".context.md" />
-            <Tab label=".contextdocs.md" />
-            <Tab label=".contextignore" />
+            <Tab icon={<DescriptionIcon />} label=".context.md" />
+            <Tab icon={<LibraryBooksIcon />} label=".contextdocs.md" />
+            <Tab icon={<BlockIcon />} label=".contextignore" />
           </Tabs>
           <TabPanel value={tabValue} index={0}>
             <ContextForm onSubmit={handleFormSubmit} />
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
-            <Typography variant="h6">
-              .contextdocs.md Editor (Placeholder)
-            </Typography>
-            <Typography>
-              This is a placeholder for the .contextdocs.md editor. Implement the form for .contextdocs.md here.
-            </Typography>
+            <ContextDocsForm onSubmit={handleFormSubmit} />
           </TabPanel>
           <TabPanel value={tabValue} index={2}>
-            <Typography variant="h6">
-              .contextignore Editor (Placeholder)
-            </Typography>
-            <Typography>
-              This is a placeholder for the .contextignore editor. Implement the form for .contextignore here.
-            </Typography>
+            <ContextIgnoreForm onSubmit={handleFormSubmit} />
           </TabPanel>
         </Paper>
 
