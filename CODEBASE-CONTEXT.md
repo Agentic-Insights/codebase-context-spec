@@ -29,17 +29,19 @@ This convention allows developers to:
 
 Context files must use one of the following extensions:
 
-- `.context.md`: Markdown format (default, supports both structured and unstructured content)
-- `.context.yaml` or `.context.yml`: YAML format
-- `.context.json`: JSON format
+<div align="center">
 
-The `.md` extension is the default and recommended format as it supports both structured (via YAML front matter) and unstructured content.
+[`.context.md`](#markdown-format-default "Markdown format (default, supports both structured and unstructured content)") | [`.context.yaml`](#yaml-format "YAML format") or [`.context.yml`](#yaml-format "YAML format") | [`.context.json`](#json-format "JSON format")
+
+</div>
+
+The `.context.md` extension is the default and recommended format as it supports both structured (via YAML front matter) and unstructured content.
 
 ### 3.2 File Locations
 
-Context files can be placed at two levels within a project:
+Context files can be placed at multiple levels within a project:
 
-- Project root: For project-wide context
+- Project root: For project-wide context (highly recommended)
 - Directories: For context specific to that directory and its contents
 
 Example structure:
@@ -312,12 +314,14 @@ Example:
 }
 ```
 
-## 5. Context Accumulation
+## 5. Context Accumulation and Usage
 
 1. Context accumulates as you traverse deeper into the directory structure.
 2. More specific contexts provide additional detail to broader contexts.
 3. AI models should consider all relevant context files, prioritizing more specific contexts when appropriate.
 4. There is no strict overriding; AI judges context relevance based on the query or task.
+5. `.context.md` files can be placed anywhere in the codebase, but having one at the root that references others is highly recommended.
+6. The root `.context.md` file should provide an overview of the project and reference other important context files throughout the codebase.
 
 ## 6. The .contextignore File
 
@@ -345,6 +349,8 @@ src/deprecated-module.js
 # Ignore all files in any directory named 'temp'
 **/temp/*
 ```
+
+**Warning:** Tooling may be required for proper implementation of `.contextignore`. AI agents may not consistently or easily use `.contextignore` as strictly as dedicated tooling can. Your mileage may vary (YMMV) depending on the AI model used.
 
 ## 7. Security Considerations
 
@@ -492,6 +498,8 @@ contextdocs:
 - For local files, the content should be read from the specified path.
 - For URLs, the content should be fetched from the provided URL.
 - For packages, the documentation should be fetched from the package's repository or documentation site, based on the package name and version.
+
+**Warning:** Tooling may be required for proper implementation of `.contextdocs`. AI agents may not consistently or easily use `.contextdocs` as strictly as dedicated tooling can. Your mileage may vary (YMMV) depending on the AI model used.
 
 ### 8.5 Use Cases
 
