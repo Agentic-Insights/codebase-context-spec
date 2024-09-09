@@ -24,11 +24,21 @@ const ContextDocsForm: React.FC<ContextDocsFormProps> = ({ onSubmit }) => {
     setContextDocs(updatedDocs);
   };
 
-  const handleResourceChange = (index: number, key: string, value: string) => {
+  const handleResourceChange = (index: number, oldKey: string, newKey: string, value: string) => {
     const updatedDocs = [...contextDocs];
+    const resources = { ...updatedDocs[index].resources };
+    
+    // Remove the old key-value pair
+    delete resources[oldKey];
+    
+    // Add the new key-value pair
+    if (newKey !== '' || value !== '') {
+      resources[newKey] = value;
+    }
+    
     updatedDocs[index] = {
       ...updatedDocs[index],
-      resources: { ...updatedDocs[index].resources, [key]: value }
+      resources: resources
     };
     setContextDocs(updatedDocs);
   };
@@ -66,13 +76,19 @@ const ContextDocsForm: React.FC<ContextDocsFormProps> = ({ onSubmit }) => {
 
   const generateContextDocsMd = () => {
     let content = '---\ncontextdocs:\n';
-    contextDocs.forEach((doc) => {
-      content += `  - name: ${doc.name}\n`;
-      content += `    relationship: ${doc.relationship}\n`;
-      content += '    resources:\n';
-      Object.entries(doc.resources).forEach(([key, value]) => {
-        content += `      - ${key}: ${value}\n`;
-      });
+    const nonEmptyDocs = contextDocs.filter(doc => doc.name || doc.relationship || Object.keys(doc.resources).length > 0);
+    nonEmptyDocs.forEach((doc) => {
+      if (doc.name || doc.relationship || Object.keys(doc.resources).length > 0) {
+        content += `  - name: ${doc.name}\n`;
+        content += `    relationship: ${doc.relationship}\n`;
+        const nonEmptyResources = Object.entries(doc.resources).filter(([key, value]) => key && value);
+        if (nonEmptyResources.length > 0) {
+          content += '    resources:\n';
+          nonEmptyResources.forEach(([key, value]) => {
+            content += `      - ${key}: ${value}\n`;
+          });
+        }
+      }
     });
     content += '---\n\n';
     content += 'This file contains a list of external dependencies and libraries used in the project. ';
@@ -106,13 +122,13 @@ const ContextDocsForm: React.FC<ContextDocsFormProps> = ({ onSubmit }) => {
               <TextField
                 label="Resource Name"
                 value={key}
-                onChange={(e) => handleResourceChange(index, e.target.value, value)}
+                onChange={(e) => handleResourceChange(index, key, e.target.value, value)}
                 sx={{ flexGrow: 1, mr: 1 }}
               />
               <TextField
                 label="URL"
                 value={value}
-                onChange={(e) => handleResourceChange(index, key, e.target.value)}
+                onChange={(e) => handleResourceChange(index, key, key, e.target.value)}
                 sx={{ flexGrow: 1, mr: 1 }}
               />
               <IconButton onClick={() => removeResource(index, key)}>
