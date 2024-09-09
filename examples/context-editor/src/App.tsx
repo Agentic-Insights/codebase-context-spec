@@ -10,6 +10,9 @@ import ContextForm from './components/ContextForm';
 import ContextDocsForm from './components/ContextDocsForm';
 import ContextIgnoreForm from './components/ContextIgnoreForm';
 
+// Conditional base path for GitHub Pages
+const BASE_PATH = process.env.NODE_ENV === 'production' ? '/codebase-context-spec' : '';
+
 const App: React.FC = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
@@ -25,7 +28,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Router>
+      <Router basename={BASE_PATH}>
         <Container maxWidth="md">
           <Paper elevation={3} sx={{ p: 4, mt: 4 }}>
             <Box sx={{ mb: 4 }}>
