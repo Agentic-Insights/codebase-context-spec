@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Codebase Context Editor",
+  "name": "Codebase Context Editor - CCS editor",
   "icons": [
     {
       "src": "favicon.ico",

@@ -1,46 +1,89 @@
-# Getting Started with Create React App
+# Codebase Context Editor
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+The Codebase Context Editor is a web-based tool designed to help developers create and manage `.context.md`, `.contextdocs.md`, and `.contextignore` files for their projects. These files are part of the [Codebase Context Specification](https://github.com/Agentic-Insights/codebase-context-spec), which aims to enhance AI-assisted development by providing explicit context information about a codebase.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Create and edit `.context.md` files with structured metadata and free-form Markdown content
+- Generate `.contextdocs.md` files to specify external documentation sources
+- Create `.contextignore` files to exclude specific files or directories from context consideration
+- Preview generated files before saving
+- User-friendly interface with tabbed navigation for different file types
 
-### `npm start`
+## Technologies Used
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- React 18.3.1
+- TypeScript 4.9.5
+- Material-UI (MUI) 6.0.2
+- Emotion for styled components
+- React Scripts 5.0.1
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Node.js (version 14 or later recommended)
+- npm (comes with Node.js)
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+   ```
+   git clone https://github.com/Agentic-Insights/codebase-context-spec.git
+   ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Navigate to the context-editor directory:
+   ```
+   cd codebase-context-spec/examples/context-editor
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Install dependencies:
+   ```
+   npm install
+   ```
 
-### `npm run eject`
+### Running the Application
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+To start the development server:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+The application will be available at `http://localhost:13000`.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### Building for Production
 
-## Learn More
+To create a production build:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+npm run build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The built files will be available in the `build` directory.
+
+## Usage
+
+1. Open the application in your web browser.
+2. Choose the type of file you want to create or edit (`.context.md`, `.contextdocs.md`, or `.contextignore`) using the tabs at the top of the page.
+3. Fill in the required information in the form.
+4. Click the "Generate" button to preview the file content.
+5. Review the generated content in the preview modal.
+6. Copy the generated content and save it to the appropriate file in your project.
+
+## Contributing
+
+Contributions to the Codebase Context Editor are welcome! Please refer to the main repository's contributing guidelines for more information on how to get involved.
+
+## License
+
+This project is part of the Codebase Context Specification and is licensed under the terms specified in the main repository.
+
+## Additional Resources
+
+- [Codebase Context Specification Repository](https://github.com/Agentic-Insights/codebase-context-spec)
+- [Documentation on .context.md files](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODEBASE-CONTEXT.md)
+- [Documentation on .contextdocs.md files](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODEBASE-CONTEXT.md#contextdocsmd)
+- [Documentation on .contextignore files](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODEBASE-CONTEXT.md#contextignore)
+
+For any questions or issues, please open an issue in the main Codebase Context Specification repository.
