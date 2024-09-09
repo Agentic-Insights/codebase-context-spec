@@ -2,10 +2,10 @@ import yaml from 'js-yaml';
 
 interface FormData {
   moduleName: string;
-  relatedModules: string[];
+  relatedModules: { name: string; path: string }[];
   version: string;
   description: string;
-  diagrams: string[];
+  diagrams: { name: string; path: string }[];
   technologies: string[];
   conventions: string;
   directives: string;

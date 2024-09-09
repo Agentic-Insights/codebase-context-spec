@@ -139,7 +139,16 @@ When generating a .context.md file:
 3. Ensure that all sections are filled with relevant and detailed information.
 4. If certain information is not available, make reasonable assumptions based on common practices in software development.
 5. Tailor the content to the specific type of project (e.g., web application, mobile app, data processing system) while maintaining the overall structure.
-6. When specifying related modules, include both the name of the module and its path. The path can be a local directory path (for modules within the same repository) or a URL (for external modules or modules in different repositories).
-7. In the diagrams section, include references to any architectural, flow, or other diagrams that help visualize the project's structure or processes. Provide both the name and path for each diagram.
+6. When specifying related modules, include both the name of the module and its path. The path must be a valid relative path specification from the current directory or .context.md file. These should be directories that contain a .context file.
+7. In the diagrams section, include references to any architectural, flow, or other diagrams that help visualize the project's structure or processes. Provide both the name and path for each diagram. Prefer .mermaid files for diagrams, but also allow other lightweight diagramming formats (see Diagram Specifications section).
+
+## Diagram Specifications
+
+When referencing diagrams in the .context.md file:
+
+1. Prefer .mermaid files for diagrams. These offer the best support for context and markdown fluency.
+2. Other allowed file formats include: .mmd, .pdf, .png, .jpg, .jpeg.
+3. The diagram path should point to a specific file, not just a directory.
+4. When possible, include a brief description of what the diagram represents in the Markdown content section.
 
 Remember, the goal is to create a .context.md file that provides valuable context for both human developers and AI assistants, enabling more effective collaboration and development on the project.

@@ -16,10 +16,10 @@ interface ContextFormProps {
 
 export type FormDataType = {
   moduleName: string;
-  relatedModules: string[];
+  relatedModules: { name: string; path: string }[];
   version: string;
   description: string;
-  diagrams: string[];
+  diagrams: { name: string; path: string }[];
   technologies: string[];
   conventions: string;
   directives: string;
@@ -116,7 +116,7 @@ const ContextForm: React.FC<ContextFormProps> = ({ onSubmit }) => {
     }));
   };
 
-  const handleMultiChange = (field: string) => (event: React.SyntheticEvent, value: string[]) => {
+  const handleMultiChange = (field: string) => (value: any) => {
     setFormData((prevData) => ({
       ...prevData,
       [field]: value,
