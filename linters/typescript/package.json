@@ -37,16 +37,17 @@
     "@types/jest": "^29.5.12",
     "@types/js-yaml": "^4.0.9",
     "@types/markdown-it": "^14.1.2",
-    "@types/node": "^22.5.1",
+    "@types/node": "^20.11.19",
     "jest": "^29.7.0",
-    "semantic-release": "^22.0.12",
+    "semantic-release": "^23.0.2",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
+    "ignore": "^5.3.1",
     "js-yaml": "^4.1.0",
-    "markdown-it": "^14.1.0"
+    "markdown-it": "^14.0.0"
   },
   "engines": {
     "node": ">=20.0.0"

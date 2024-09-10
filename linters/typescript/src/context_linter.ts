@@ -8,6 +8,10 @@ import { ContextignoreLinter } from './contextignore_linter';
 import { getContextFiles, lintFileIfExists, fileExists, printHeader } from './utils/file_utils';
 import { ContextValidator, ValidationResult, SectionValidationResult } from './utils/validator';
 
+/**
+ * ContextLinter class handles the linting of .context files (md, yaml, json)
+ * and coordinates the use of ContextignoreLinter and ContextdocsLinter.
+ */
 export class ContextLinter {
   private md: MarkdownIt;
   private contextdocsLinter: ContextdocsLinter;
@@ -21,102 +25,123 @@ export class ContextLinter {
     this.contextValidator = new ContextValidator();
   }
 
+  /**
+   * Main method to lint a directory
+   * @param directoryPath The path of the directory to lint
+   * @param packageVersion The version of the linter package
+   * @returns A boolean indicating whether the linting was successful
+   */
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<boolean> {
-    printHeader(packageVersion, directoryPath);
-    let isValid = true;
-    isValid = await this.handleContextignore(directoryPath) && isValid;
-    isValid = await this.handleContextdocs(directoryPath) && isValid;
-    isValid = await this.handleContextFilesRecursively(directoryPath) && isValid;
+    try {
+      printHeader(packageVersion, directoryPath);
+      let isValid = true;
+      
+      // Initialize ignore patterns
+      await this.initializeIgnorePatterns(directoryPath);
+      
+      isValid = await this.handleContextdocs(directoryPath) && isValid;
+      isValid = await this.handleContextFilesRecursively(directoryPath) && isValid;
 
-    console.log('\nLinting completed.');
-    
-    return isValid;
-  }
+      // Log ignored files
+      this.logIgnoredFiles(directoryPath);
 
-  private async handleContextignore(directoryPath: string): Promise<boolean> {
-    const contextignorePath = path.join(directoryPath, '.contextignore');
-    return await lintFileIfExists(contextignorePath, this.contextignoreLinter.lintContextignoreFile.bind(this.contextignoreLinter)) || true;
-  }
+      // Clear ignore cache after processing the directory
+      this.contextignoreLinter.clearCache();
 
-  private async handleContextdocs(directoryPath: string): Promise<boolean> {
-    const contextdocsPath = path.join(directoryPath, '.contextdocs.md');
-    const result = await lintFileIfExists(contextdocsPath, this.contextdocsLinter.lintContextdocsFile.bind(this.contextdocsLinter));
-
-    if (path.resolve(directoryPath) === path.resolve(process.cwd()) && !await fileExists(contextdocsPath)) {
-      console.error('\nError: .contextdocs.md file is missing in the root directory.');
+      console.log('\nLinting completed.');
+      
+      return isValid;
+    } catch (error) {
+      console.error(`Error linting directory: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
-
-    return result || true;
   }
 
+  /**
+   * Initialize ignore patterns from .contextignore file
+   * @param directoryPath The path of the directory containing .contextignore
+   */
+  private async initializeIgnorePatterns(directoryPath: string): Promise<void> {
+    const contextignorePath = path.join(directoryPath, '.contextignore');
+    if (await fileExists(contextignorePath)) {
+      const content = await fs.promises.readFile(contextignorePath, 'utf-8');
+      await this.contextignoreLinter.lintContextignoreFile(content, contextignorePath);
+    }
+  }
+
+  /**
+   * Handle .contextdocs file in the directory
+   * @param directoryPath The path of the directory to check for .contextdocs
+   * @returns A boolean indicating whether the .contextdocs file is valid
+   */
+  private async handleContextdocs(directoryPath: string): Promise<boolean> {
+    const contextdocsPath = path.join(directoryPath, '.contextdocs.md');
+    if (await fileExists(contextdocsPath)) {
+      const content = await fs.promises.readFile(contextdocsPath, 'utf-8');
+      return await this.contextdocsLinter.lintContextdocsFile(content);
+    }
+    return true;
+  }
+
+  /**
+   * Handle .context files recursively in the directory
+   * @param directoryPath The path of the directory to process
+   * @returns A boolean indicating whether all .context files are valid
+   */
   private async handleContextFilesRecursively(directoryPath: string): Promise<boolean> {
-    const entries = await fs.promises.readdir(directoryPath, { withFileTypes: true });
     let isValid = true;
+    const contextFiles = await getContextFiles(directoryPath);
+    
+    for (const filePath of contextFiles) {
+      if (!this.contextignoreLinter.isIgnored(filePath, directoryPath)) {
+        const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+        const fileExtension = path.extname(filePath);
+        let result: ValidationResult;
 
-    for (const entry of entries) {
-      const fullPath = path.join(directoryPath, entry.name);
+        switch (fileExtension) {
+          case '.md':
+            result = await this.lintMarkdownFile(fileContent, filePath);
+            break;
+          case '.yaml':
+          case '.yml':
+            result = await this.lintYamlFile(fileContent, filePath);
+            break;
+          case '.json':
+            result = await this.lintJsonFile(fileContent, filePath);
+            break;
+          default:
+            console.warn(`Unsupported file extension: ${fileExtension}`);
+            continue;
+        }
 
-      if (entry.isDirectory()) {
-        isValid = await this.handleContextFilesRecursively(fullPath) && isValid;
-      } else if (entry.isFile() && (entry.name.endsWith('.context.md') || entry.name.endsWith('.context.yaml') || entry.name.endsWith('.context.json'))) {
-        isValid = await this.lintContextFile(fullPath) && isValid;
+        this.printValidationResult(result, filePath);
+        isValid = isValid && result.isValid;
       }
     }
 
     return isValid;
   }
 
-  private async lintContextFile(filePath: string): Promise<boolean> {
-    console.log(`\nLinting file: ${filePath}`);
-    return await lintFileIfExists(filePath, async (fileContent) => {
-      let result: ValidationResult;
-      if (filePath.endsWith('.context.md')) {
-        result = await this.lintMarkdownFile(fileContent, filePath);
-      } else if (filePath.endsWith('.context.yaml')) {
-        result = await this.lintYamlFile(fileContent, filePath);
-      } else if (filePath.endsWith('.context.json')) {
-        result = await this.lintJsonFile(fileContent, filePath);
-      } else {
-        result = {
-          isValid: false,
-          coveragePercentage: 0,
-          coveredFields: 0,
-          totalFields: 0,
-          missingFields: [],
-          sections: {}
-        };
+  /**
+   * Log ignored files in the directory
+   * @param directoryPath The path of the directory to check for ignored files
+   */
+  private logIgnoredFiles(directoryPath: string): void {
+    const ignoredFiles = this.contextignoreLinter.getIgnoredFiles(directoryPath);
+    if (ignoredFiles.length > 0) {
+      console.log('\nIgnored files:');
+      for (const file of ignoredFiles) {
+        console.log(`  ${file}`);
       }
-      this.printValidationResult(result, filePath);
-      return result.isValid;
-    }) || false;
-  }
-
-  private printValidationResult(result: ValidationResult, filePath: string): void {
-    const fileName = path.basename(filePath);
-    console.log(`main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
-    
-    if (result.missingFields.length > 0) {
-      console.warn(`└-⚠️  Missing fields: ${result.missingFields.join(', ')}`);
-    }
-
-    for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
-      console.log(`|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
-      
-      if (sectionResult.missingFields.length > 0) {
-        console.warn(` └-⚠️  Missing fields: ${sectionResult.missingFields.join(', ')}`);
-      }
-      
-      if (sectionResult.unexpectedFields && sectionResult.unexpectedFields.length > 0) {
-        console.warn(` └-⚠️  Unexpected fields: ${sectionResult.unexpectedFields.join(', ')}`);
-      }
-    }
-
-    if (!result.isValid) {
-      console.warn(`⚠️  ${fileName} has coverage warnings`);
     }
   }
 
+  /**
+   * Lint a Markdown .context file
+   * @param content The content of the file
+   * @param filePath The path of the file
+   * @returns A ValidationResult object
+   */
   private async lintMarkdownFile(content: string, filePath: string): Promise<ValidationResult> {
     try {
       const { data: frontmatterData, content: markdownContent } = matter(content);
@@ -140,6 +165,11 @@ export class ContextLinter {
     }
   }
 
+  /**
+   * Validate the content of a Markdown file
+   * @param content The Markdown content to validate
+   * @returns A boolean indicating whether the content is valid
+   */
   private validateMarkdownContent(content: string): boolean {
     const tokens = this.md.parse(content, {});
     let hasTitle = false;
@@ -172,6 +202,12 @@ export class ContextLinter {
     return isValid;
   }
 
+  /**
+   * Lint a YAML .context file
+   * @param content The content of the file
+   * @param filePath The path of the file
+   * @returns A ValidationResult object
+   */
   private async lintYamlFile(content: string, filePath: string): Promise<ValidationResult> {
     console.log('  - Validating YAML structure');
 
@@ -195,6 +231,12 @@ export class ContextLinter {
     }
   }
 
+  /**
+   * Lint a JSON .context file
+   * @param content The content of the file
+   * @param filePath The path of the file
+   * @returns A ValidationResult object
+   */
   private async lintJsonFile(content: string, filePath: string): Promise<ValidationResult> {
     console.log('  - Validating JSON structure');
 
@@ -215,6 +257,36 @@ export class ContextLinter {
         missingFields: [],
         sections: {}
       };
+    }
+  }
+
+  /**
+   * Print the validation result for a .context file
+   * @param result The validation result
+   * @param filePath The path of the file
+   */
+  private printValidationResult(result: ValidationResult, filePath: string): void {
+    const fileName = path.basename(filePath);
+    console.log(`main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
+    
+    if (result.missingFields.length > 0) {
+      console.warn(`└-⚠️  Missing fields: ${result.missingFields.join(', ')}`);
+    }
+
+    for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
+      console.log(`|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
+      
+      if (sectionResult.missingFields.length > 0) {
+        console.warn(` └-⚠️  Missing fields: ${sectionResult.missingFields.join(', ')}`);
+      }
+      
+      if (sectionResult.unexpectedFields && sectionResult.unexpectedFields.length > 0) {
+        console.warn(` └-⚠️  Unexpected fields: ${sectionResult.unexpectedFields.join(', ')}`);
+      }
+    }
+
+    if (!result.isValid) {
+      console.warn(`⚠️  ${fileName} has coverage warnings`);
     }
   }
 
