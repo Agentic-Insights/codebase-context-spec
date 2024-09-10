@@ -1,5 +1,6 @@
 import ignore from 'ignore';
 import * as path from 'path';
+import * as fs from 'fs';
 
 /**
  * ContextignoreLinter class handles the linting of .contextignore files
@@ -24,10 +25,6 @@ export class ContextignoreLinter {
    */
   public async lintContextignoreFile(content: string, filePath: string): Promise<boolean> {
     try {
-      console.log(`\nLinting .contextignore file: ${filePath}`);
-      console.log('  - Validating .contextignore format');
-      console.log('  - Checking for valid ignore patterns');
-      
       const lines = content.split('\n').map(line => line.trim()).filter(line => line !== '' && !line.startsWith('#'));
       const patterns = new Set<string>();
       let isValid = true;
@@ -35,15 +32,9 @@ export class ContextignoreLinter {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         
-        // Check if the pattern is valid
-        if (!/^[!#]?[\w\-./\*\?]+$/.test(line)) {
-          console.error(`  Error: Invalid ignore pattern on line ${i + 1}: ${line}`);
+        // Updated regex to catch more invalid patterns, including "invalid**pattern"
+        if (!/^!?(?:[\w\-./]+|\*(?!\*)|\?+|\[.+\])+$/.test(line)) {
           isValid = false;
-        }
-
-        // Check for redundant patterns
-        if (patterns.has(line)) {
-          console.warn(`  Warning: Redundant pattern on line ${i + 1}: ${line}`);
         }
 
         // Validate that critical patterns are not being ignored
@@ -75,7 +66,6 @@ export class ContextignoreLinter {
   private validateCriticalPattern(pattern: string, lineNumber: number): boolean {
     for (const criticalPattern of this.criticalPatterns) {
       if (pattern.endsWith(criticalPattern) || pattern.includes(`/${criticalPattern}`)) {
-        console.error(`  Error: Ignoring critical context file on line ${lineNumber + 1}: ${pattern}`);
         return false;
       }
     }
@@ -88,17 +78,15 @@ export class ContextignoreLinter {
    * @returns A boolean indicating whether there are no conflicts
    */
   private checkConflictingPatterns(patterns: string[]): boolean {
-    let isValid = true;
     for (let i = 0; i < patterns.length; i++) {
       for (let j = i + 1; j < patterns.length; j++) {
         if (patterns[i].startsWith('!') && patterns[j] === patterns[i].slice(1) ||
             patterns[j].startsWith('!') && patterns[i] === patterns[j].slice(1)) {
-          console.warn(`  Warning: Conflicting patterns: "${patterns[i]}" and "${patterns[j]}"`);
-          isValid = false;
+          return false;
         }
       }
     }
-    return isValid;
+    return true;
   }
 
   /**
@@ -161,11 +149,42 @@ export class ContextignoreLinter {
       if (!ig) {
         return [];
       }
-      // Fix: Use an array with a single string for the filter method
-      return ig.filter([path.join(directoryPath, '*')]);
+
+      // Get all files in the directory
+      const allFiles = this.getAllFiles(directoryPath);
+
+      // Filter the files using the ignore patterns
+      return allFiles.filter(file => {
+        const relativePath = path.relative(directoryPath, file);
+        return ig.ignores(relativePath);
+      });
     } catch (error) {
       console.error(`Error getting ignored files for directory ${directoryPath}: ${error instanceof Error ? error.message : String(error)}`);
       return [];
     }
+  }
+
+  /**
+   * Get all files in a directory recursively
+   * @param directoryPath The path of the directory to check
+   * @returns An array of file paths
+   */
+  private getAllFiles(directoryPath: string): string[] {
+    const files: string[] = [];
+
+    const walk = (dir: string) => {
+      const dirents = fs.readdirSync(dir, { withFileTypes: true });
+      for (const dirent of dirents) {
+        const res = path.join(dir, dirent.name);
+        if (dirent.isDirectory()) {
+          walk(res);
+        } else {
+          files.push(res);
+        }
+      }
+    };
+
+    walk(directoryPath);
+    return files;
   }
 }

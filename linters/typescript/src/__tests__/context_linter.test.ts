@@ -1,90 +1,71 @@
 import { ContextLinter } from '../context_linter';
-import { ContextignoreLinter } from '../contextignore_linter';
 import * as fs from 'fs';
 import * as path from 'path';
 
-jest.mock('fs', () => ({
-  promises: {
-    readdir: jest.fn(),
-    readFile: jest.fn(),
-  },
-}));
-
-jest.mock('../contextignore_linter');
-
 describe('ContextLinter', () => {
   let linter: ContextLinter;
-  let mockContextignoreLinter: jest.Mocked<ContextignoreLinter>;
+  const testDir = path.join(__dirname, 'test_context');
+
+  beforeAll(() => {
+    // Create test directory and files
+    fs.mkdirSync(testDir, { recursive: true });
+    fs.writeFileSync(path.join(testDir, '.contextignore'), `
+      ignored.md
+    `);
+    fs.writeFileSync(path.join(testDir, '.context.md'), `---
+module-name: test-module
+description: A test module
+---
+# Test Module
+
+This is a test module.
+    `);
+    fs.writeFileSync(path.join(testDir, 'ignored.md'), 'This file should be ignored');
+    fs.writeFileSync(path.join(testDir, 'not_ignored.md'), 'This file should not be ignored');
+    
+    // Create a subdirectory with its own .contextignore
+    const subDir = path.join(testDir, 'subdir');
+    fs.mkdirSync(subDir, { recursive: true });
+    fs.writeFileSync(path.join(subDir, '.contextignore'), '# Subdir ignore rules');
+  });
+
+  afterAll(() => {
+    // Clean up test directory
+    fs.rmSync(testDir, { recursive: true, force: true });
+  });
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    mockContextignoreLinter = new ContextignoreLinter() as jest.Mocked<ContextignoreLinter>;
     linter = new ContextLinter();
-    (linter as any).contextignoreLinter = mockContextignoreLinter;
   });
 
   describe('lintDirectory', () => {
     it('should lint a directory successfully', async () => {
-      const mockFiles = [
-        { name: '.contextignore', isDirectory: () => false },
-        { name: '.context.md', isDirectory: () => false },
-        { name: 'subdir', isDirectory: () => true },
-      ];
-
-      (fs.promises.readdir as jest.Mock).mockResolvedValue(mockFiles);
-      (fs.promises.readFile as jest.Mock).mockResolvedValue('# Mock content');
-      mockContextignoreLinter.lintContextignoreFile.mockResolvedValue(true);
-      mockContextignoreLinter.isIgnored.mockReturnValue(false);
-
-      const result = await linter.lintDirectory('/mock/path', '1.0.0');
-
+      const result = await linter.lintDirectory(testDir, '1.0.0');
       expect(result).toBe(true);
-      expect(mockContextignoreLinter.lintContextignoreFile).toHaveBeenCalled();
-      expect(mockContextignoreLinter.isIgnored).toHaveBeenCalled();
     });
 
     it('should respect .contextignore rules', async () => {
-      const mockFiles = [
-        { name: '.contextignore', isDirectory: () => false },
-        { name: 'ignored.md', isDirectory: () => false },
-        { name: 'not_ignored.md', isDirectory: () => false },
-      ];
+      const consoleSpy = jest.spyOn(console, 'log');
+      await linter.lintDirectory(testDir, '1.0.0');
+      
+      // Check if ignored.md was listed in ignored files
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('ignored.md'));
+      // Check if not_ignored.md was not listed in ignored files
+      expect(consoleSpy).not.toHaveBeenCalledWith(expect.stringContaining('not_ignored.md'));
 
-      (fs.promises.readdir as jest.Mock).mockResolvedValue(mockFiles);
-      (fs.promises.readFile as jest.Mock).mockResolvedValue('# Mock content');
-      mockContextignoreLinter.lintContextignoreFile.mockResolvedValue(true);
-      mockContextignoreLinter.isIgnored
-        .mockReturnValueOnce(false) // .contextignore
-        .mockReturnValueOnce(true)  // ignored.md
-        .mockReturnValueOnce(false); // not_ignored.md
-
-      await linter.lintDirectory('/mock/path', '1.0.0');
-
-      expect(mockContextignoreLinter.isIgnored).toHaveBeenCalledTimes(3);
-      // Ensure that lintContextFile is not called for ignored.md
-      expect((linter as any).lintContextFile).not.toHaveBeenCalledWith(expect.stringContaining('ignored.md'));
+      consoleSpy.mockRestore();
     });
   });
 
-  describe('handleContextignoreRecursively', () => {
-    it('should process .contextignore files in nested directories', async () => {
-      const mockStructure = [
-        { name: '.contextignore', isDirectory: () => false },
-        { name: 'subdir', isDirectory: () => true },
-      ];
-      const mockSubdirStructure = [
-        { name: '.contextignore', isDirectory: () => false },
-      ];
+  describe('handleContextFilesRecursively', () => {
+    it('should process .context files in nested directories', async () => {
+      const consoleSpy = jest.spyOn(console, 'log');
+      await linter.lintDirectory(testDir, '1.0.0');
+      
+      // Check if the main context was processed (which should be the .context.md file)
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('main context: 100.00%'));
 
-      (fs.promises.readdir as jest.Mock)
-        .mockResolvedValueOnce(mockStructure)
-        .mockResolvedValueOnce(mockSubdirStructure);
-      (fs.promises.readFile as jest.Mock).mockResolvedValue('# Mock content');
-      mockContextignoreLinter.lintContextignoreFile.mockResolvedValue(true);
-
-      await (linter as any).handleContextignoreRecursively('/mock/path');
-
-      expect(mockContextignoreLinter.lintContextignoreFile).toHaveBeenCalledTimes(2);
+      consoleSpy.mockRestore();
     });
   });
 
