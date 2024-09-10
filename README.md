@@ -36,16 +36,6 @@ By adopting this convention, teams can ensure that both human developers and AI 
 - **Standardized Context Files**: Consistent use of `.context.md`, `.context.yaml`, and `.context.json` files for conveying codebase context at various levels (project-wide, directory-specific, etc.).
 - **Context-Aware Development**: Encouraging a development approach that considers and documents the broader context of code, not just its immediate functionality.
 
-## Current Version
-
-**Version**: 1.0-preview
-
-The Codebase Context Specification is currently in a preview state. We're actively seeking feedback and contributions from the developer community to refine and improve the specification before its official release.
-
-## Specification
-
-For the full specification, please refer to [CODEBASE-CONTEXT.md](./CODEBASE-CONTEXT.md).
-
 ## Linter
 
 We provide a linter to help validate your context files according to the specification. You can find the NPM package here: [codebase-context-lint](https://www.npmjs.com/package/codebase-context-lint).
