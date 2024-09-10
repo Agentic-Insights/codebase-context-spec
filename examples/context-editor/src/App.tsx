@@ -23,6 +23,8 @@ const App: React.FC = () => {
   const [generatedContent, setGeneratedContent] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [promptModalOpen, setPromptModalOpen] = useState(false);
+  const [promptContent, setPromptContent] = useState('');
 
   const handleFormSubmit = (content: string) => {
     setGeneratedContent(content);
@@ -64,6 +66,23 @@ const App: React.FC = () => {
     setSnackbarOpen(false);
   };
 
+  const handleOpenPromptModal = async () => {
+    try {
+      const response = await fetch('https://raw.githubusercontent.com/Agentic-Insights/codebase-context-spec/main/GENERATE-CONTEXT-PROMPT.md');
+      const content = await response.text();
+      setPromptContent(content);
+      setPromptModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching GENERATE-CONTEXT-PROMPT.md:', error);
+      setSnackbarMessage('Error fetching prompt content');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleClosePromptModal = () => {
+    setPromptModalOpen(false);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Router basename={BASE_PATH}>
@@ -77,12 +96,19 @@ const App: React.FC = () => {
             <Typography variant="body1" paragraph>
               This editor helps you create .context.md, .contextdocs.md, and .contextignore files for your project.
             </Typography>
-            <Typography variant="body1" paragraph>
-              GitHub Repository:{' '}
-              <MuiLink href="https://github.com/Agentic-Insights/codebase-context-spec" target="_blank" rel="noopener noreferrer">
-                https://github.com/Agentic-Insights/codebase-context-spec
-              </MuiLink>
-            </Typography>
+            <div className="link-section">
+              <Typography variant="body1" paragraph>
+                GitHub Repository:{' '}
+                <MuiLink href="https://github.com/Agentic-Insights/codebase-context-spec" target="_blank" rel="noopener noreferrer">
+                  https://github.com/Agentic-Insights/codebase-context-spec
+                </MuiLink>
+              </Typography>
+              <Typography variant="body1" paragraph>
+                <MuiLink href="#" onClick={handleOpenPromptModal}>
+                  View GENERATE-CONTEXT-PROMPT
+                </MuiLink>
+              </Typography>
+            </div>
             <NavTabs />
             <Box className="form-section">
               <Routes>
@@ -143,6 +169,29 @@ const App: React.FC = () => {
               <Box className="code-preview">
                 <pre>
                   {generatedContent}
+                </pre>
+              </Box>
+            </Box>
+          </Modal>
+
+          <Modal
+            open={promptModalOpen}
+            onClose={handleClosePromptModal}
+            aria-labelledby="prompt-modal-title"
+            aria-describedby="prompt-modal-description"
+          >
+            <Box className="modal-content">
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography id="prompt-modal-title" variant="h6" component="h2">
+                  GENERATE-CONTEXT-PROMPT
+                </Typography>
+                <IconButton onClick={handleClosePromptModal} size="small">
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+              <Box className="code-preview">
+                <pre>
+                  {promptContent}
                 </pre>
               </Box>
             </Box>

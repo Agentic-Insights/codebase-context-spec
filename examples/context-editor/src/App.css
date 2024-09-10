@@ -63,6 +63,22 @@ body {
   overflow-y: auto;
 }
 
+/* New styles for links */
+.link-section {
+  margin-bottom: 1rem;
+}
+
+.link-section a {
+  color: #1976d2;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.link-section a:hover {
+  color: #0f4c8a;
+  text-decoration: underline;
+}
+
 @media (max-width: 600px) {
   .header {
     flex-direction: column;
