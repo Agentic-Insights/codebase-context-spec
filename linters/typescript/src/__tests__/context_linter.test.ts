@@ -14,7 +14,34 @@ describe('ContextLinter', () => {
     `);
     fs.writeFileSync(path.join(testDir, '.context.md'), `---
 module-name: test-module
+related-modules: []
+version: 1.0.0
 description: A test module
+diagrams: []
+technologies: ['TypeScript', 'Jest']
+conventions: ['Use camelCase for variables']
+directives: []
+architecture:
+  style: 'Modular'
+  components: ['Component A', 'Component B']
+  data-flow: ['Component A -> Component B']
+development:
+  setup-steps: ['Install dependencies', 'Configure environment']
+  build-command: 'npm run build'
+  test-command: 'npm test'
+business-requirements:
+  key-features: ['Feature 1', 'Feature 2']
+  target-audience: 'Developers'
+  success-metrics: ['Code coverage', 'Performance']
+quality-assurance:
+  testing-frameworks: ['Jest']
+  coverage-threshold: '80%'
+  performance-benchmarks: ['Load time < 1s']
+deployment:
+  platform: 'AWS'
+  cicd-pipeline: 'GitHub Actions'
+  staging-environment: 'staging.example.com'
+  production-environment: 'production.example.com'
 ---
 # Test Module
 

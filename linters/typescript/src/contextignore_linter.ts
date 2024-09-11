@@ -11,10 +11,13 @@ export class ContextignoreLinter {
   private criticalPatterns: Set<string>;
   // Cache of ignore instances for each directory
   private ignoreCache: Map<string, ReturnType<typeof ignore>>;
+  // Store error messages
+  private errorMessages: string[];
 
   constructor() {
     this.criticalPatterns = new Set(['.context.md', '.context.yaml', '.context.json', '.contextdocs.md', '.contextignore']);
     this.ignoreCache = new Map();
+    this.errorMessages = [];
   }
 
   /**
@@ -25,6 +28,7 @@ export class ContextignoreLinter {
    */
   public async lintContextignoreFile(content: string, filePath: string): Promise<boolean> {
     try {
+      this.errorMessages = []; // Reset error messages
       const relativePath = path.relative(process.cwd(), filePath);
       console.log(`\nLinting file: ${relativePath}`);
       console.log('- Validating .contextignore format');
@@ -39,7 +43,7 @@ export class ContextignoreLinter {
         
         // Updated regex to catch more invalid patterns, including "invalid**pattern"
         if (!/^!?(?:[\w\-./]+|\*(?!\*)|\?+|\[.+\])+$/.test(line)) {
-          console.error(`  Error: Invalid pattern at line ${i + 1}: ${line}`);
+          this.errorMessages.push(`Error: Invalid pattern at line ${i + 1}: ${line}`);
           isValid = false;
         }
 
@@ -61,7 +65,7 @@ export class ContextignoreLinter {
       console.log(''); // Add a blank line for better readability
       return isValid;
     } catch (error) {
-      console.error(`Error linting .contextignore file ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
+      this.errorMessages.push(`Error linting .contextignore file ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
   }
@@ -75,7 +79,7 @@ export class ContextignoreLinter {
   private validateCriticalPattern(pattern: string, lineNumber: number): boolean {
     for (const criticalPattern of this.criticalPatterns) {
       if (pattern.endsWith(criticalPattern) || pattern.includes(`/${criticalPattern}`)) {
-        console.error(`  Error: Pattern at line ${lineNumber + 1} ignores critical file: ${criticalPattern}`);
+        this.errorMessages.push(`Error: Pattern at line ${lineNumber + 1} ignores critical file: ${criticalPattern}`);
         return false;
       }
     }
@@ -92,7 +96,7 @@ export class ContextignoreLinter {
       for (let j = i + 1; j < patterns.length; j++) {
         if (patterns[i].startsWith('!') && patterns[j] === patterns[i].slice(1) ||
             patterns[j].startsWith('!') && patterns[i] === patterns[j].slice(1)) {
-          console.error(`  Error: Conflicting patterns found: ${patterns[i]} and ${patterns[j]}`);
+          this.errorMessages.push(`Error: Conflicting patterns found: ${patterns[i]} and ${patterns[j]}`);
           return false;
         }
       }
@@ -110,7 +114,7 @@ export class ContextignoreLinter {
       const ig = ignore().add(patterns);
       this.ignoreCache.set(path.dirname(filePath), ig);
     } catch (error) {
-      console.error(`Error updating ignore cache for ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
+      this.errorMessages.push(`Error updating ignore cache for ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -137,7 +141,7 @@ export class ContextignoreLinter {
 
       return false;
     } catch (error) {
-      console.error(`Error checking if file ${filePath} is ignored: ${error instanceof Error ? error.message : String(error)}`);
+      this.errorMessages.push(`Error checking if file ${filePath} is ignored: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
   }
@@ -170,7 +174,7 @@ export class ContextignoreLinter {
         return ig.ignores(relativePath);
       });
     } catch (error) {
-      console.error(`Error getting ignored files for directory ${directoryPath}: ${error instanceof Error ? error.message : String(error)}`);
+      this.errorMessages.push(`Error getting ignored files for directory ${directoryPath}: ${error instanceof Error ? error.message : String(error)}`);
       return [];
     }
   }
@@ -197,5 +201,13 @@ export class ContextignoreLinter {
 
     walk(directoryPath);
     return files;
+  }
+
+  /**
+   * Get the error messages
+   * @returns An array of error messages
+   */
+  public getErrorMessages(): string[] {
+    return this.errorMessages;
   }
 }

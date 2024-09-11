@@ -33,6 +33,7 @@ describe('ContextignoreLinter', () => {
       const content = await fs.promises.readFile(path.join(testDir, '.contextignore'), 'utf-8');
       const result = await linter.lintContextignoreFile(content, path.join(testDir, '.contextignore'));
       expect(result).toBe(true);
+      expect(linter.getErrorMessages()).toHaveLength(0);
     });
 
     it('should detect invalid patterns', async () => {
@@ -44,6 +45,7 @@ describe('ContextignoreLinter', () => {
       `;
       const result = await linter.lintContextignoreFile(content, 'test/.contextignore');
       expect(result).toBe(false);
+      expect(linter.getErrorMessages()).toContain('Error: Invalid pattern at line 4: invalid**pattern');
     });
 
     it('should detect attempts to ignore critical files', async () => {
@@ -54,6 +56,19 @@ describe('ContextignoreLinter', () => {
       `;
       const result = await linter.lintContextignoreFile(content, 'test/.contextignore');
       expect(result).toBe(false);
+      expect(linter.getErrorMessages()).toContain('Error: Pattern at line 3 ignores critical file: .context.md');
+    });
+
+    it('should not produce errors for valid patterns', async () => {
+      const content = `
+        node_modules/
+        *.log
+        /build
+        !important.log
+      `;
+      const result = await linter.lintContextignoreFile(content, 'test/.contextignore');
+      expect(result).toBe(true);
+      expect(linter.getErrorMessages()).toHaveLength(0);
     });
   });
 
