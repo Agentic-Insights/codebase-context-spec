@@ -197,12 +197,10 @@ Fix any errors or warnings by reviewing the codebase and filling in the missing 
 
 Usage of official linter for .context.md and .contextdocs.md files:
 
-1. Install if it's not already installed:
-  npm install -g codebase-context-lint
-2. Run the linter from the directory the files are in:
-  codebase-context-lint .
-3. Repair and re-run until you have full coverage for both files.
-4. Pay special attention to the format of the resources in .contextdocs.md, ensuring they are objects with single key-value pairs.
+1. Run the linter from the directory the files are in:
+  `npx codebase-context-lint .`
+2. Repair and re-run until you have full coverage for both files.
+3. Pay special attention to the format of the resources in .contextdocs.md, ensuring they are objects with single key-value pairs.
 
 By following these guidelines and instructions, you should be able to create comprehensive and properly formatted .context.md and .contextdocs.md files that will pass the linter checks and provide valuable context for the project.
 
