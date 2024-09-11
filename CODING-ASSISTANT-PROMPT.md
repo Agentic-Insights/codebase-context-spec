@@ -17,7 +17,7 @@ Follow these guidelines:
 
 4. For .context.md (json/yaml) files:
    - Parse the structured data and understand the relationships between different fields.
-   - Look for key sections such as module-name, related-modules, description, main-technologies, conventions, and ai-prompts.
+   - Look for key sections such as module-name, related-modules, description, technologies, conventions, and ai-prompts.
 
 5. When encountering a .contextdocs.md file:
    - Understand that it specifies external documentation sources.

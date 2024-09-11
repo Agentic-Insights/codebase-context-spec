@@ -19,7 +19,7 @@ Include the following sections in the YAML front matter:
 2. version
 3. description
 4. related-modules (if any)
-5. technologies (not main-technologies)
+5. technologies
 6. conventions
 7. directives
 8. diagrams

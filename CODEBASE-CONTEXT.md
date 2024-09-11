@@ -79,7 +79,7 @@ related-modules:
     path: ./examples/context-editor
   - name: TypeScript Linter
     path: https://github.com/Agentic-Insights/codebase-context-spec/tree/main/linters/typescript
-main-technologies:
+technologies:
   - Markdown
   - YAML
   - JSON
@@ -199,7 +199,7 @@ related-modules:
     path: ./examples/context-editor
   - name: TypeScript Linter
     path: https://github.com/Agentic-Insights/codebase-context-spec/tree/main/linters/typescript
-main-technologies:
+technologies:
   - Markdown
   - YAML
   - JSON
