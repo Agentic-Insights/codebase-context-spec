@@ -17,6 +17,16 @@ Welcome to the [Codebase Context Specification (CCS)](./CODEBASE-CONTEXT.md) rep
 - [Context File Example (.context.md)](.context.md)
 - [AI Assistant Prompt (CODING-ASSISTANT-PROMPT.md)](CODING-ASSISTANT-PROMPT.md)
 
+## Supported Node.js Versions
+
+This project supports the following Node.js versions:
+
+- Node.js 18.x
+- Node.js 20.x
+- Node.js 22.x
+
+We recommend using the latest LTS (Long Term Support) version of Node.js for optimal performance and security.
+
 ## Codebase Context: A New Convention
 
 The Codebase Context Specification introduces a convention similar to `.env` and `.editorconfig` systems, but focused on documenting your code for both AI and humans. Just as `.env` files manage environment variables and `.editorconfig` ensures consistent coding styles, CCS files (`.context.md`, `.context.yaml`, `.context.json`) provide a standardized way to capture and communicate the context of your codebase.
@@ -56,7 +66,13 @@ To install the linter:
 npm install -g codebase-context-lint
 ```
 
+Note: Make sure you're using a supported Node.js version (18.x, 20.x, or 22.x) when installing and running the linter.
+
 For more information on using the linter, please refer to the [linter's README](./linters/typescript/README.md).
+
+## Recent Updates
+
+We've recently updated our dependencies to address security vulnerabilities and improve compatibility with different Node.js versions. If you encounter any issues after updating, please report them in our GitHub issues.
 
 ## Using with AI Assistants
 

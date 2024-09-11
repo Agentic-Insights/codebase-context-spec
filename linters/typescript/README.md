@@ -35,13 +35,25 @@ By adopting this convention, teams can ensure that both human developers and AI 
 
 For more detailed information about the Codebase Context Specification, please refer to the [main repository](https://github.com/Agentic-Insights/codebase-context-spec) and the [full specification](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODEBASE-CONTEXT.md).
 
-## 📦 Installation
+## � Supported Node.js Versions
+
+This linter supports the following Node.js versions:
+
+- Node.js 18.x
+- Node.js 20.x
+- Node.js 22.x
+
+We recommend using the latest LTS (Long Term Support) version of Node.js for optimal performance and security.
+
+## �📦 Installation
 
 You can install the linter globally using npm:
 
 ```
 npm install -g codebase-context-lint
 ```
+
+Note: Make sure you're using a supported Node.js version (18.x, 20.x, or 22.x) when installing and running the linter.
 
 ## 🚀 Usage
 
@@ -131,6 +143,10 @@ To contribute to this project:
 6. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 7. Push to the branch (`git push origin feature/AmazingFeature`)
 8. Open a Pull Request
+
+## 🔄 Recent Updates
+
+We've recently updated our dependencies to address security vulnerabilities and improve compatibility with different Node.js versions. If you encounter any issues after updating, please report them in our GitHub issues.
 
 ## 📖 Learn More
 

@@ -25,6 +25,11 @@ export class ContextignoreLinter {
    */
   public async lintContextignoreFile(content: string, filePath: string): Promise<boolean> {
     try {
+      const relativePath = path.relative(process.cwd(), filePath);
+      console.log(`\nLinting file: ${relativePath}`);
+      console.log('- Validating .contextignore format');
+      console.log('- Checking for valid ignore patterns');
+
       const lines = content.split('\n').map(line => line.trim()).filter(line => line !== '' && !line.startsWith('#'));
       const patterns = new Set<string>();
       let isValid = true;
@@ -34,6 +39,7 @@ export class ContextignoreLinter {
         
         // Updated regex to catch more invalid patterns, including "invalid**pattern"
         if (!/^!?(?:[\w\-./]+|\*(?!\*)|\?+|\[.+\])+$/.test(line)) {
+          console.error(`  Error: Invalid pattern at line ${i + 1}: ${line}`);
           isValid = false;
         }
 
@@ -48,8 +54,11 @@ export class ContextignoreLinter {
 
       if (isValid) {
         this.updateIgnoreCache(filePath, Array.from(patterns));
+      } else {
+        console.warn('⚠️  File has validation warnings');
       }
 
+      console.log(''); // Add a blank line for better readability
       return isValid;
     } catch (error) {
       console.error(`Error linting .contextignore file ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
@@ -66,6 +75,7 @@ export class ContextignoreLinter {
   private validateCriticalPattern(pattern: string, lineNumber: number): boolean {
     for (const criticalPattern of this.criticalPatterns) {
       if (pattern.endsWith(criticalPattern) || pattern.includes(`/${criticalPattern}`)) {
+        console.error(`  Error: Pattern at line ${lineNumber + 1} ignores critical file: ${criticalPattern}`);
         return false;
       }
     }
@@ -82,6 +92,7 @@ export class ContextignoreLinter {
       for (let j = i + 1; j < patterns.length; j++) {
         if (patterns[i].startsWith('!') && patterns[j] === patterns[i].slice(1) ||
             patterns[j].startsWith('!') && patterns[i] === patterns[j].slice(1)) {
+          console.error(`  Error: Conflicting patterns found: ${patterns[i]} and ${patterns[j]}`);
           return false;
         }
       }

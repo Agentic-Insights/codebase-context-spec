@@ -34,10 +34,20 @@ export class ContextLinter {
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<boolean> {
     try {
       printHeader(packageVersion, directoryPath);
+      console.log(`Linting directory: ${this.normalizePath(directoryPath)}\n`);
       let isValid = true;
       
       // Initialize ignore patterns
       await this.initializeIgnorePatterns(directoryPath);
+      
+      // Lint .context.md file in the root directory
+      const rootContextFile = path.join(directoryPath, '.context.md');
+      if (await fileExists(rootContextFile)) {
+        const content = await fs.promises.readFile(rootContextFile, 'utf-8');
+        const result = await this.lintMarkdownFile(content, rootContextFile);
+        this.printValidationResult(result, rootContextFile);
+        isValid = isValid && result.isValid;
+      }
       
       isValid = await this.handleContextdocs(directoryPath) && isValid;
       isValid = await this.handleContextFilesRecursively(directoryPath) && isValid;
@@ -48,7 +58,7 @@ export class ContextLinter {
       // Clear ignore cache after processing the directory
       this.contextignoreLinter.clearCache();
 
-      console.log('\nLinting completed.');
+      console.log('Linting completed.');
       
       return isValid;
     } catch (error) {
@@ -78,7 +88,7 @@ export class ContextLinter {
     const contextdocsPath = path.join(directoryPath, '.contextdocs.md');
     if (await fileExists(contextdocsPath)) {
       const content = await fs.promises.readFile(contextdocsPath, 'utf-8');
-      return await this.contextdocsLinter.lintContextdocsFile(content);
+      return await this.contextdocsLinter.lintContextdocsFile(content, contextdocsPath);
     }
     return true;
   }
@@ -131,7 +141,7 @@ export class ContextLinter {
     if (ignoredFiles.length > 0) {
       console.log('\nIgnored files:');
       for (const file of ignoredFiles) {
-        console.log(`  ${file}`);
+        console.log(`  ${this.normalizePath(file)}`);
       }
     }
   }
@@ -266,28 +276,20 @@ export class ContextLinter {
    * @param filePath The path of the file
    */
   private printValidationResult(result: ValidationResult, filePath: string): void {
-    const fileName = path.basename(filePath);
+    const relativePath = this.normalizePath(path.relative(process.cwd(), filePath));
+    console.log(`Linting file: ${relativePath}`);
+    
     console.log(`main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
     
-    if (result.missingFields.length > 0) {
-      console.warn(`└-⚠️  Missing fields: ${result.missingFields.join(', ')}`);
-    }
-
     for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
       console.log(`|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
-      
-      if (sectionResult.missingFields.length > 0) {
-        console.warn(` └-⚠️  Missing fields: ${sectionResult.missingFields.join(', ')}`);
-      }
-      
-      if (sectionResult.unexpectedFields && sectionResult.unexpectedFields.length > 0) {
-        console.warn(` └-⚠️  Unexpected fields: ${sectionResult.unexpectedFields.join(', ')}`);
-      }
     }
-
+    
     if (!result.isValid) {
-      console.warn(`⚠️  ${fileName} has coverage warnings`);
+      console.warn(`⚠️  File has coverage warnings`);
     }
+    
+    console.log(''); // Add a blank line for better readability
   }
 
   private parseYaml(content: string): Record<string, unknown> {
@@ -320,5 +322,9 @@ export class ContextLinter {
       return `${error.message} (line ${line}, column ${column})`;
     }
     return error.message;
+  }
+
+  private normalizePath(filePath: string): string {
+    return filePath.replace(/\\/g, '/');
   }
 }

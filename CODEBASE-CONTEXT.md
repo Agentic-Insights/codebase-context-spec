@@ -371,17 +371,11 @@ src/deprecated-module.js
 
 **Warning:** Tooling may be required for proper implementation of `.contextignore`. AI agents may not consistently or easily use `.contextignore` as strictly as dedicated tooling can. Your mileage may vary (YMMV) depending on the AI model used.
 
-## 7. Security Considerations
-
-1. Avoid including sensitive information (API keys, passwords) in context files.
-2. Be cautious with proprietary algorithms or trade secrets.
-3. Use `.gitignore` to exclude sensitive context files from version control if necessary.
-
-## 8. The .contextdocs File
+## 7. The .contextdocs File
 
 The `.contextdocs` file allows developers to specify external documentation sources that should be incorporated into the project's context. This feature is particularly useful for including documentation from dependencies, libraries, or related projects.
 
-### 8.1 Location and Naming
+### 7.1 Location and Naming
 
 - The `.contextdocs` file should be placed in the root directory of the project.
 - It must use one of the following extensions:
@@ -389,7 +383,7 @@ The `.contextdocs` file allows developers to specify external documentation sour
   - `.contextdocs.yaml` or `.contextdocs.yml`
   - `.contextdocs.json`
 
-### 8.2 File Structure
+### 7.2 File Structure
 
 The `.contextdocs` file should contain an array of documentation sources. Each source can be:
 
@@ -397,7 +391,7 @@ The `.contextdocs` file should contain an array of documentation sources. Each s
 - A URL to a markdown file
 - A package name with associated documentation files
 
-### 8.3 Examples
+### 7.3 Examples
 
 #### Markdown Format (.contextdocs.md) - Default
 
@@ -511,7 +505,7 @@ contextdocs:
 }
 ```
 
-### 8.4 Behavior
+### 7.4 Behavior
 
 - When an AI model or related tool is processing the project context, it should fetch and incorporate the specified documentation.
 - For local files, the content should be read from the specified path.
@@ -520,24 +514,24 @@ contextdocs:
 
 **Warning:** Tooling may be required for proper implementation of `.contextdocs`. AI agents may not consistently or easily use `.contextdocs` as strictly as dedicated tooling can. Your mileage may vary (YMMV) depending on the AI model used.
 
-### 8.5 Use Cases
+### 7.5 Use Cases
 
 - Including documentation for key dependencies
 - Referencing company-wide coding standards or guidelines
 - Incorporating design documents or architectural overviews
 - Linking to relevant external resources or tutorials
 
-### 8.6 Considerations
+### 7.6 Considerations
 
 - Ensure that URLs point to stable, version-controlled documentation to maintain consistency.
 - Be mindful of the total volume of documentation to avoid overwhelming the AI model with irrelevant information.
 - Regularly review and update the `.contextdocs` file to ensure all referenced documentation remains relevant and up-to-date.
 - Consider implementing caching mechanisms for external documentation to improve performance and reduce network requests.
 
-## 9. Conclusion
+## 8. Conclusion
 
 The Codebase Context Specification provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention and including role-specific information, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of role-specific guidelines and consistent naming conventions ensures that AI models have access to comprehensive, relevant, and well-structured information tailored to different aspects of the software development lifecycle.
 
-## 10. TypeScript Linter Implementation
+## 9. TypeScript Linter Implementation
 
 For details on the TypeScript implementation of the linter for validating Codebase Context Specification files, please refer to the [TypeScript Linter README](linters/typescript/README.md).
