@@ -34,7 +34,6 @@ export class ContextLinter {
   public async lintDirectory(directoryPath: string, packageVersion: string): Promise<boolean> {
     try {
       printHeader(packageVersion, directoryPath);
-      console.log(`Linting directory: ${this.normalizePath(directoryPath)}\n`);
       let isValid = true;
       
       // Initialize ignore patterns
@@ -104,28 +103,38 @@ export class ContextLinter {
     
     for (const filePath of contextFiles) {
       if (!this.contextignoreLinter.isIgnored(filePath, directoryPath)) {
-        const fileContent = await fs.promises.readFile(filePath, 'utf-8');
-        const fileExtension = path.extname(filePath);
+        const fullPath = path.join(directoryPath, filePath);
+        const fileContent = await fs.promises.readFile(fullPath, 'utf-8');
+        const fileExtension = path.extname(fullPath);
         let result: ValidationResult;
 
         switch (fileExtension) {
           case '.md':
-            result = await this.lintMarkdownFile(fileContent, filePath);
+            result = await this.lintMarkdownFile(fileContent, fullPath);
             break;
           case '.yaml':
           case '.yml':
-            result = await this.lintYamlFile(fileContent, filePath);
+            result = await this.lintYamlFile(fileContent, fullPath);
             break;
           case '.json':
-            result = await this.lintJsonFile(fileContent, filePath);
+            result = await this.lintJsonFile(fileContent, fullPath);
             break;
           default:
             console.warn(`Unsupported file extension: ${fileExtension}`);
             continue;
         }
 
-        this.printValidationResult(result, filePath);
+        this.printValidationResult(result, fullPath);
         isValid = isValid && result.isValid;
+      }
+    }
+
+    // Recursively process subdirectories
+    const subdirectories = await fs.promises.readdir(directoryPath, { withFileTypes: true });
+    for (const dirent of subdirectories) {
+      if (dirent.isDirectory() && !this.contextignoreLinter.isIgnored(dirent.name, directoryPath)) {
+        const subdirectoryPath = path.join(directoryPath, dirent.name);
+        isValid = await this.handleContextFilesRecursively(subdirectoryPath) && isValid;
       }
     }
 
