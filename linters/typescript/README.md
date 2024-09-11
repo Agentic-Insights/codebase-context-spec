@@ -35,13 +35,25 @@ By adopting this convention, teams can ensure that both human developers and AI 
 
 For more detailed information about the Codebase Context Specification, please refer to the [main repository](https://github.com/Agentic-Insights/codebase-context-spec) and the [full specification](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODEBASE-CONTEXT.md).
 
-## 📦 Installation
+## � Supported Node.js Versions
+
+This linter supports the following Node.js versions:
+
+- Node.js 18.x
+- Node.js 20.x
+- Node.js 22.x
+
+We recommend using the latest LTS (Long Term Support) version of Node.js for optimal performance and security.
+
+## �📦 Installation
 
 You can install the linter globally using npm:
 
 ```
 npm install -g codebase-context-lint
 ```
+
+Note: Make sure you're using a supported Node.js version (18.x, 20.x, or 22.x) when installing and running the linter.
 
 ## 🚀 Usage
 
@@ -58,8 +70,36 @@ Replace `<directory_to_lint>` with the path to the directory containing your Cod
 - 🔍 Validates the structure and content of `.context.md`, `.context.yaml`, and `.context.json` files
 - ✅ Checks for required fields and sections
 - 📄 Verifies the format of `.contextdocs.md` files
-- 🚫 Validates ignore patterns in `.contextignore` files
+- 🚫 Supports and validates `.contextignore` files for excluding specific files or directories
 - 💬 Provides detailed error messages and warnings
+
+## 📁 .contextignore Files
+
+`.contextignore` files allow you to specify patterns for files and directories that should be ignored by the Codebase Context Lint. This is useful for excluding generated files, dependencies, or any other content that doesn't need context documentation.
+
+### How to use .contextignore
+
+1. Create a file named `.contextignore` in any directory of your project.
+2. Add patterns to the file, one per line. These patterns follow the same rules as `.gitignore` files.
+3. The linter will respect these ignore patterns when processing files in that directory and its subdirectories.
+
+Example `.contextignore` file:
+
+```
+# Ignore node_modules directory
+node_modules/
+
+# Ignore all .log files
+*.log
+
+# Ignore a specific file
+path/to/specific/file.js
+
+# Ignore all files in a specific directory
+path/to/ignore/*
+```
+
+The linter will validate the syntax of your `.contextignore` files and warn about any problematic patterns, such as attempting to ignore critical context files.
 
 ## 🤖 Using with AI Assistants
 
@@ -71,7 +111,7 @@ To use the Codebase Context Specification with an AI assistant:
 2. Ask the AI to analyze your project's context files based on these guidelines.
 3. The AI will be able to provide more accurate and context-aware responses by following the instructions in the prompt.
 
-Note that while this approach allows for immediate use of the specification, some features like .contextignore should eventually be applied by tooling (such as this linter) for more robust implementation.
+Note that while this approach allows for immediate use of the specification, some features like .contextignore are best implemented by tooling (such as this linter) for more robust and consistent application.
 
 ## 🛠️ Development
 
@@ -104,11 +144,15 @@ To contribute to this project:
 7. Push to the branch (`git push origin feature/AmazingFeature`)
 8. Open a Pull Request
 
-## � Learn More
+## 🔄 Recent Updates
+
+We've recently updated our dependencies to address security vulnerabilities and improve compatibility with different Node.js versions. If you encounter any issues after updating, please report them in our GitHub issues.
+
+## 📖 Learn More
 
 For a deeper dive into the Codebase Context Specification, check out this [SubStack article by Vaskin](https://agenticinsights.substack.com/p/codebase-context-specification-rfc), the author of the specification.
 
-## �📄 License
+## 📄 License
 
 This project is licensed under the MIT License.
 

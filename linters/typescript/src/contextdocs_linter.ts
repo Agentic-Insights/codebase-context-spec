@@ -1,5 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import matter from 'gray-matter';
+import * as path from 'path';
 
 export class ContextdocsLinter {
   private md: MarkdownIt;
@@ -8,15 +9,23 @@ export class ContextdocsLinter {
     this.md = new MarkdownIt();
   }
 
-  public async lintContextdocsFile(content: string): Promise<boolean> {
-    console.log('\nLinting .contextdocs.md file');
-    console.log('  - Checking for similar links in markdown content');
+  public async lintContextdocsFile(content: string, filePath: string): Promise<boolean> {
+    const relativePath = path.relative(process.cwd(), filePath);
+    console.log(`\nLinting file: ${relativePath}`);
     
     const { data: frontmatter, content: markdownContent } = matter(content);
 
     const frontmatterLinksResult = this.lintFrontmatter(frontmatter);
     const similarLinksResult = this.checkSimilarLinks(markdownContent, frontmatterLinksResult.links);
 
+    console.log('- Validating YAML front matter structure');
+    console.log('- Checking for similar links in markdown content');
+
+    if (!frontmatterLinksResult.isValid || !similarLinksResult) {
+      console.warn('⚠️  File has validation warnings');
+    }
+
+    console.log(''); // Add a blank line for better readability
     return frontmatterLinksResult.isValid && similarLinksResult;
   }
 
