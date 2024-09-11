@@ -1,3 +1,28 @@
+# [1.4.0](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.3.1...v1.4.0) (2024-09-11)
+
+
+### Bug Fixes
+
+* 404 on the root url link for .context.md ([548e050](https://github.com/Agentic-Insights/codebase-context-spec/commit/548e050977d089fb0b2f959b22de377f6201d214))
+* add color and icons ([bc51dcd](https://github.com/Agentic-Insights/codebase-context-spec/commit/bc51dcd3cf05cbdf814787519f9aaf3eca5f7903))
+* add contextignore recursively ([13221b0](https://github.com/Agentic-Insights/codebase-context-spec/commit/13221b0a2f39830c0bfd218fd4fd64137501a2f9))
+* add further dotcontext ignore support, normalize linter output ([a166724](https://github.com/Agentic-Insights/codebase-context-spec/commit/a166724dffe6c0c6e3ded4e398a78feec905feb1))
+* add the new prompt to generate .context files ([faff9e2](https://github.com/Agentic-Insights/codebase-context-spec/commit/faff9e2787353358241b3afd11b06a68f3a465d4))
+* context form now poperly supports diagrams and modules and validates them as pathspec/url elements for linking purposes ([eec3277](https://github.com/Agentic-Insights/codebase-context-spec/commit/eec32777f8edb1d7c3721b4e5ad3aa89727972ca))
+* doc bundle area and wording ([ca53726](https://github.com/Agentic-Insights/codebase-context-spec/commit/ca5372655cd78a548692d5ff31e0734c4ecc5747))
+* make everything optional on context file form ([a36ab27](https://github.com/Agentic-Insights/codebase-context-spec/commit/a36ab271792081748442388293c9c29e007eec72))
+* make form optional, fix type checking ([9ab3491](https://github.com/Agentic-Insights/codebase-context-spec/commit/9ab3491bd3170aba269367d0664d7b2f942e13f2))
+* remove deprecated Grid for Grid2 in MUI ([e3e488f](https://github.com/Agentic-Insights/codebase-context-spec/commit/e3e488fec4ea465c39ece07e1c6a45b30cc2e9cb))
+* resource entry and empty resource in output ([ba54314](https://github.com/Agentic-Insights/codebase-context-spec/commit/ba543143fc898f21bab4783c648e6afc0c49ea9a))
+* take out unused icon ref ([118fcdd](https://github.com/Agentic-Insights/codebase-context-spec/commit/118fcdd15f25b094ca8f5ae45c92c64707a15a65))
+* tests for .contextignore files ([9162f5e](https://github.com/Agentic-Insights/codebase-context-spec/commit/9162f5e3b61f9777c10d290ff6f356a4589d6bd3))
+
+
+### Features
+
+* Add .contextignore support and normalize linter output ([943a7b7](https://github.com/Agentic-Insights/codebase-context-spec/commit/943a7b7f2724791cd8f747c65fdbdb3611b1f0eb))
+* copy, download, and preview ([b913115](https://github.com/Agentic-Insights/codebase-context-spec/commit/b9131152beec83659161b21a47d8f0756aa96c9b))
+
 ## [1.3.1](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.3.0...v1.3.1) (2024-09-08)
 
 
