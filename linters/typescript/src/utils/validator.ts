@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { kebabToCamelCase } from './string_utils';
 import { allowedTopLevelFields, sectionChecks, listTypes, stringTypes, directoryTypes } from './context_structure';
 
@@ -76,9 +78,43 @@ export class ContextValidator {
       console.error(`  Error: Field '${field}' should be a string.`);
       isValid = false;
     } else if (directoryTypes.has(field)) {
-      // Additional validation for directory types can be added here
+      if (field === 'related-modules' && Array.isArray(value)) {
+        for (const modulePath of value) {
+          if (typeof modulePath === 'string' && !this.isValidRelatedModule(modulePath)) {
+            console.error(`  Error: Related module '${modulePath}' is not a valid directory containing a .context file.`);
+            isValid = false;
+          }
+        }
+      } else if (field === 'diagrams' && Array.isArray(value)) {
+        for (const diagramPath of value) {
+          if (typeof diagramPath === 'string' && !this.isValidDiagram(diagramPath)) {
+            console.error(`  Error: Diagram '${diagramPath}' is not a valid file or URL.`);
+            isValid = false;
+          }
+        }
+      }
     }
     return isValid;
+  }
+
+  private isValidRelatedModule(modulePath: string): boolean {
+    if (!fs.existsSync(modulePath) || !fs.statSync(modulePath).isDirectory()) {
+      return false;
+    }
+    const contextFiles = ['.context.md', '.context.json', '.context.yaml', '.context.yml'];
+    return contextFiles.some(file => fs.existsSync(path.join(modulePath, file)));
+  }
+
+  private isValidDiagram(diagramPath: string): boolean {
+    if (diagramPath.startsWith('http://') || diagramPath.startsWith('https://')) {
+      // Assume URLs are valid diagrams
+      return true;
+    }
+    if (!fs.existsSync(diagramPath)) {
+      return false;
+    }
+    const allowedExtensions = ['.mermaid', '.mmd', '.pdf', '.png', '.jpeg', '.jpg'];
+    return allowedExtensions.includes(path.extname(diagramPath).toLowerCase());
   }
 
   private validateSectionFields(sectionName: string, data: Record<string, unknown>, isJson: boolean): SectionValidationResult {

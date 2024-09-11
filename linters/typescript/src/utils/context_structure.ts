@@ -53,5 +53,6 @@ export const stringTypes: Set<string> = new Set([
 ]);
 
 export const directoryTypes: Set<string> = new Set([
-  'related-modules'
+  'related-modules',
+  'diagrams'
 ]);
