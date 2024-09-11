@@ -1,3 +1,11 @@
+## [1.4.1](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.4.0...v1.4.1) (2024-09-11)
+
+
+### Bug Fixes
+
+* context files ([884280b](https://github.com/Agentic-Insights/codebase-context-spec/commit/884280b839253b8bac5d4542b07d43de56843872))
+* recursion and diagram / related modules checks ([e47ee1e](https://github.com/Agentic-Insights/codebase-context-spec/commit/e47ee1e919dc780bef6f7d442e63544aa44c2465))
+
 # [1.4.0](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.3.1...v1.4.0) (2024-09-11)
 
 
