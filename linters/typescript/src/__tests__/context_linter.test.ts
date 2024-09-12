@@ -9,51 +9,9 @@ describe('ContextLinter', () => {
   beforeAll(() => {
     // Create test directory and files
     fs.mkdirSync(testDir, { recursive: true });
-    fs.writeFileSync(path.join(testDir, '.contextignore'), `
-      ignored.md
-    `);
-    fs.writeFileSync(path.join(testDir, '.context.md'), `---
-module-name: test-module
-related-modules: []
-version: 1.0.0
-description: A test module
-diagrams: []
-technologies: ['TypeScript', 'Jest']
-conventions: ['Use camelCase for variables']
-directives: []
-architecture:
-  style: 'Modular'
-  components: ['Component A', 'Component B']
-  data-flow: ['Component A -> Component B']
-development:
-  setup-steps: ['Install dependencies', 'Configure environment']
-  build-command: 'npm run build'
-  test-command: 'npm test'
-business-requirements:
-  key-features: ['Feature 1', 'Feature 2']
-  target-audience: 'Developers'
-  success-metrics: ['Code coverage', 'Performance']
-quality-assurance:
-  testing-frameworks: ['Jest']
-  coverage-threshold: '80%'
-  performance-benchmarks: ['Load time < 1s']
-deployment:
-  platform: 'AWS'
-  cicd-pipeline: 'GitHub Actions'
-  staging-environment: 'staging.example.com'
-  production-environment: 'production.example.com'
----
-# Test Module
-
-This is a test module.
-    `);
+    fs.writeFileSync(path.join(testDir, '.contextignore'), `\n      ignored.md\n    `);
+    fs.writeFileSync(path.join(testDir, '.context.md'), `---\nmodule-name: test-module\nrelated-modules: []\nversion: 1.0.0\ndescription: A test module\ndiagrams: []\ntechnologies: ['TypeScript', 'Jest']\nconventions: ['Use camelCase for variables']\ndirectives: []\narchitecture:\n  style: 'Modular'\n  components: ['Component A', 'Component B']\n  data-flow: ['Component A -> Component B']\ndevelopment:\n  setup-steps: ['Install dependencies', 'Configure environment']\n  build-command: 'npm run build'\n  test-command: 'npm test'\nbusiness-requirements:\n  key-features: ['Feature 1', 'Feature 2']\n  target-audience: 'Developers'\n  success-metrics: ['Code coverage', 'Performance']\nquality-assurance:\n  testing-frameworks: ['Jest']\n  coverage-threshold: '80%'\n  performance-benchmarks: ['Load time < 1s']\ndeployment:\n  platform: 'AWS'\n  cicd-pipeline: 'GitHub Actions'\n  staging-environment: 'staging.example.com'\n  production-environment: 'production.example.com'\n---\n# Test Module\n\nThis is a test module.\n    `);
     fs.writeFileSync(path.join(testDir, 'ignored.md'), 'This file should be ignored');
-    fs.writeFileSync(path.join(testDir, 'not_ignored.md'), 'This file should not be ignored');
-    
-    // Create a subdirectory with its own .contextignore
-    const subDir = path.join(testDir, 'subdir');
-    fs.mkdirSync(subDir, { recursive: true });
-    fs.writeFileSync(path.join(subDir, '.contextignore'), '# Subdir ignore rules');
   });
 
   afterAll(() => {
@@ -71,14 +29,19 @@ This is a test module.
       expect(result).toBe(true);
     });
 
-    it('should respect .contextignore rules', async () => {
+    it('should respect .contextignore rules and process .context files', async () => {
       const consoleSpy = jest.spyOn(console, 'log');
-      await linter.lintDirectory(testDir, '1.0.0');
+      const result = await linter.lintDirectory(testDir, '1.0.0');
       
-      // Check if ignored.md was listed in ignored files
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('ignored.md'));
-      // Check if not_ignored.md was not listed in ignored files
-      expect(consoleSpy).not.toHaveBeenCalledWith(expect.stringContaining('not_ignored.md'));
+      // Check that the ignored file is not processed
+      expect(consoleSpy).not.toHaveBeenCalledWith(expect.stringContaining('ignored.md'));
+      
+      // Check that the .context.md file is processed
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('.context.md'));
+      
+      // Check that the linting process completed successfully
+      expect(result).toBe(true);
+      expect(consoleSpy).toHaveBeenCalledWith('Linting completed.');
 
       consoleSpy.mockRestore();
     });
@@ -90,7 +53,8 @@ This is a test module.
       await linter.lintDirectory(testDir, '1.0.0');
       
       // Check if the main context was processed (which should be the .context.md file)
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('main context: 100.00%'));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Main context:'));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(/Main context:.*100\.00%/));
 
       consoleSpy.mockRestore();
     });

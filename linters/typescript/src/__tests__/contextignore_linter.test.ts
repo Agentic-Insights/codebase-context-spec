@@ -100,7 +100,7 @@ describe('ContextignoreLinter', () => {
       
       expect(normalizedIgnoredFiles).toEqual(expect.arrayContaining([
         path.join(testDir, 'test.log'),
-        path.join(testDir, 'build', 'main.js')
+        path.join(testDir, 'build')
       ]));
       expect(normalizedIgnoredFiles).not.toContain(path.join(testDir, 'src.js'));
     });

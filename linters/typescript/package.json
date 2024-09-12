@@ -10,7 +10,7 @@
     "build": "tsc",
     "start": "node dist/cli.js",
     "lint": "node dist/cli.js",
-    "test": "jest",
+    "test": "tsc && jest",
     "prepublishOnly": "npm run build",
     "semantic-release": "semantic-release",
     "check-updates": "npm outdated"
