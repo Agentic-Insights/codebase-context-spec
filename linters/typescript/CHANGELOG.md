@@ -1,3 +1,12 @@
+## [1.4.2](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.4.1...v1.4.2) (2024-09-12)
+
+
+### Bug Fixes
+
+* added logging and clean up file traversal ([f02d9ab](https://github.com/Agentic-Insights/codebase-context-spec/commit/f02d9ab7be24b5ae81f4c5687b1c3c576a5767cc))
+* change output and fix tests ([8c07847](https://github.com/Agentic-Insights/codebase-context-spec/commit/8c07847afcabc977918773991535ec43ed9d6464))
+* fix the recursion and logging ([8249570](https://github.com/Agentic-Insights/codebase-context-spec/commit/824957058542da74f044964e7cf48ece20f757ea))
+
 ## [1.4.1](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.4.0...v1.4.1) (2024-09-11)
 
 
