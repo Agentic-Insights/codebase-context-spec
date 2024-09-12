@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { Container, Paper, Modal, Box, Button, Typography, Tabs, Tab, Link as MuiLink, Tooltip, IconButton, Snackbar } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Container, Paper, Box, Button, Typography, Tabs, Tab, Link as MuiLink, Tooltip, IconButton, Snackbar, Grid, Accordion, AccordionSummary, AccordionDetails, Modal } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import BlockIcon from '@mui/icons-material/Block';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DownloadIcon from '@mui/icons-material/Download';
-import PreviewIcon from '@mui/icons-material/Visibility';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import theme from './theme';
 import ContextForm from './components/ContextForm';
@@ -18,28 +19,78 @@ import './App.css';
 // Conditional base path for GitHub Pages
 const BASE_PATH = process.env.NODE_ENV === 'production' ? '/codebase-context-spec' : '';
 
+const PromptViewer: React.FC<{ title: string, content: string, onCopy: () => void }> = ({ title, content, onCopy }) => {
+  return (
+    <Box mb={2}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+        <Typography variant="h6">{title}</Typography>
+        <Button startIcon={<ContentCopyIcon />} onClick={onCopy}>
+          Copy
+        </Button>
+      </Box>
+      <Box className="code-preview" style={{ maxHeight: '300px', overflow: 'auto' }}>
+        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+          {content}
+        </pre>
+      </Box>
+    </Box>
+  );
+};
+
+const SpecificationViewer: React.FC<{ content: string, onCopy: () => void }> = ({ content, onCopy }) => {
+  return (
+    <Box height="100%" display="flex" flexDirection="column">
+      <Box display="flex" justifyContent="flex-end" mb={2}>
+        <Button startIcon={<ContentCopyIcon />} onClick={onCopy}>
+          Copy Specification
+        </Button>
+      </Box>
+      <Box flexGrow={1} overflow="auto">
+        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0 }}>
+          {content}
+        </pre>
+      </Box>
+    </Box>
+  );
+};
+
 const App: React.FC = () => {
-  const [previewOpen, setPreviewOpen] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [promptModalOpen, setPromptModalOpen] = useState(false);
-  const [promptContent, setPromptContent] = useState('');
+  const [codebaseContextContent, setCodebaseContextContent] = useState('');
+  const [codingAssistantPromptContent, setCodingAssistantPromptContent] = useState('');
+  const [generateContextPromptContent, setGenerateContextPromptContent] = useState('');
+  const [specModalOpen, setSpecModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchPrompts = async () => {
+      try {
+        const [codebaseContext, codingAssistantPrompt, generateContextPrompt] = await Promise.all([
+          fetch('https://raw.githubusercontent.com/Agentic-Insights/codebase-context-spec/main/CODEBASE-CONTEXT.md').then(res => res.text()),
+          fetch('https://raw.githubusercontent.com/Agentic-Insights/codebase-context-spec/main/CODING-ASSISTANT-PROMPT.md').then(res => res.text()),
+          fetch('https://raw.githubusercontent.com/Agentic-Insights/codebase-context-spec/main/GENERATE-CONTEXT-PROMPT.md').then(res => res.text())
+        ]);
+
+        setCodebaseContextContent(codebaseContext);
+        setCodingAssistantPromptContent(codingAssistantPrompt);
+        setGenerateContextPromptContent(generateContextPrompt);
+      } catch (error) {
+        console.error('Error fetching prompts:', error);
+        setSnackbarMessage('Error fetching prompts');
+        setSnackbarOpen(true);
+      }
+    };
+
+    fetchPrompts();
+  }, []);
 
   const handleFormSubmit = (content: string) => {
     setGeneratedContent(content);
   };
 
-  const handleOpenPreview = () => {
-    setPreviewOpen(true);
-  };
-
-  const handleClosePreview = () => {
-    setPreviewOpen(false);
-  };
-
-  const handleCopyToClipboard = () => {
-    navigator.clipboard.writeText(generatedContent).then(() => {
+  const handleCopyToClipboard = (content: string) => {
+    navigator.clipboard.writeText(content).then(() => {
       setSnackbarMessage('Copied to clipboard!');
       setSnackbarOpen(true);
     }, (err) => {
@@ -66,49 +117,58 @@ const App: React.FC = () => {
     setSnackbarOpen(false);
   };
 
-  const handleOpenPromptModal = async () => {
-    try {
-      const response = await fetch('https://raw.githubusercontent.com/Agentic-Insights/codebase-context-spec/main/GENERATE-CONTEXT-PROMPT.md');
-      const content = await response.text();
-      setPromptContent(content);
-      setPromptModalOpen(true);
-    } catch (error) {
-      console.error('Error fetching GENERATE-CONTEXT-PROMPT.md:', error);
-      setSnackbarMessage('Error fetching prompt content');
-      setSnackbarOpen(true);
-    }
+  const handleOpenSpecModal = () => {
+    setSpecModalOpen(true);
   };
 
-  const handleClosePromptModal = () => {
-    setPromptModalOpen(false);
+  const handleCloseSpecModal = () => {
+    setSpecModalOpen(false);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <Router basename={BASE_PATH}>
-        <Container className="container" maxWidth="md">
+        <Container className="container" maxWidth="lg">
           <Paper className="paper" elevation={3}>
-            <Box className="header">
+            <Box className="header" display="flex" justifyContent="space-between" alignItems="center">
               <Typography className="title" variant="h4" component="h1">
                 Codebase Context Editor
               </Typography>
+              <Box display="flex" alignItems="center">
+                <Button variant="outlined" onClick={handleOpenSpecModal} sx={{ mr: 2 }}>
+                  View Latest Specification
+                </Button>
+                <MuiLink href="https://github.com/Agentic-Insights/codebase-context-spec" target="_blank" rel="noopener noreferrer">
+                  <GitHubIcon fontSize="large" />
+                </MuiLink>
+              </Box>
             </Box>
             <Typography variant="body1" paragraph>
               This editor helps you create .context.md, .contextdocs.md, and .contextignore files for your project.
             </Typography>
-            <div className="link-section">
-              <Typography variant="body1" paragraph>
-                GitHub Repository:{' '}
-                <MuiLink href="https://github.com/Agentic-Insights/codebase-context-spec" target="_blank" rel="noopener noreferrer">
-                  https://github.com/Agentic-Insights/codebase-context-spec
-                </MuiLink>
-              </Typography>
-              <Typography variant="body1" paragraph>
-                <MuiLink href="#" onClick={handleOpenPromptModal}>
-                  View GENERATE-CONTEXT-PROMPT
-                </MuiLink>
-              </Typography>
-            </div>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography>View Prompts</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <PromptViewer 
+                      title="CODING-ASSISTANT-PROMPT.md" 
+                      content={codingAssistantPromptContent} 
+                      onCopy={() => handleCopyToClipboard(codingAssistantPromptContent)} 
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                    <PromptViewer 
+                      title="GENERATE-CONTEXT-PROMPT.md" 
+                      content={generateContextPromptContent} 
+                      onCopy={() => handleCopyToClipboard(generateContextPromptContent)} 
+                    />
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
             <NavTabs />
             <Box className="form-section">
               <Routes>
@@ -118,19 +178,9 @@ const App: React.FC = () => {
               </Routes>
             </Box>
             <Box className="action-buttons">
-              <Tooltip title="Preview generated content" arrow>
-                <Button
-                  onClick={handleOpenPreview}
-                  variant="contained"
-                  startIcon={<PreviewIcon />}
-                  disabled={!generatedContent}
-                >
-                  Preview
-                </Button>
-              </Tooltip>
               <Tooltip title="Copy to clipboard" arrow>
                 <Button
-                  onClick={handleCopyToClipboard}
+                  onClick={() => handleCopyToClipboard(generatedContent)}
                   variant="contained"
                   startIcon={<ContentCopyIcon />}
                   disabled={!generatedContent}
@@ -152,47 +202,38 @@ const App: React.FC = () => {
           </Paper>
 
           <Modal
-            open={previewOpen}
-            onClose={handleClosePreview}
-            aria-labelledby="preview-modal-title"
-            aria-describedby="preview-modal-description"
+            open={specModalOpen}
+            onClose={handleCloseSpecModal}
+            aria-labelledby="spec-modal-title"
           >
-            <Box className="modal-content">
+            <Box 
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '80%',
+                height: '80%',
+                bgcolor: 'background.paper',
+                boxShadow: 24,
+                p: 4,
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography id="preview-modal-title" variant="h6" component="h2">
-                  Preview of generated content
+                <Typography id="spec-modal-title" variant="h6" component="h2">
+                  Latest Specification (CODEBASE-CONTEXT.md)
                 </Typography>
-                <IconButton onClick={handleClosePreview} size="small">
+                <IconButton onClick={handleCloseSpecModal} size="small">
                   <CloseIcon />
                 </IconButton>
               </Box>
-              <Box className="code-preview">
-                <pre>
-                  {generatedContent}
-                </pre>
-              </Box>
-            </Box>
-          </Modal>
-
-          <Modal
-            open={promptModalOpen}
-            onClose={handleClosePromptModal}
-            aria-labelledby="prompt-modal-title"
-            aria-describedby="prompt-modal-description"
-          >
-            <Box className="modal-content">
-              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography id="prompt-modal-title" variant="h6" component="h2">
-                  GENERATE-CONTEXT-PROMPT
-                </Typography>
-                <IconButton onClick={handleClosePromptModal} size="small">
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-              <Box className="code-preview">
-                <pre>
-                  {promptContent}
-                </pre>
+              <Box flexGrow={1} overflow="hidden">
+                <SpecificationViewer 
+                  content={codebaseContextContent} 
+                  onCopy={() => handleCopyToClipboard(codebaseContextContent)} 
+                />
               </Box>
             </Box>
           </Modal>
