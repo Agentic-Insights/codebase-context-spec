@@ -8,6 +8,19 @@
 
 Welcome to the [Codebase Context Specification (CCS)](./CODEBASE-CONTEXT.md) repository! This project establishes a standardized method for embedding rich contextual information within codebases to enhance understanding for both AI and human developers. By providing a clear and consistent way to communicate project structure, conventions, and key concepts, we significantly improve code comprehension and facilitate more effective collaboration between humans and AI in software development.
 
+## Codebase Context Editor
+
+To help you get started with creating context files for your project, we've developed the Codebase Context Editor. This tool simplifies the process of generating .context.md, .contextdocs.md, and .contextignore files that adhere to the Codebase Context Specification.
+
+[**Get Started with the Codebase Context Editor**](https://agentic-insights.github.io/codebase-context-spec/)
+
+The Codebase Context Editor provides an intuitive interface for:
+- Creating and editing context files
+- Viewing and copying AI prompts for context generation
+- Validating your context files against the specification
+
+Whether you're new to the Codebase Context Specification or an experienced user, the editor can significantly streamline your workflow.
+
 ## Quick Links
 
 - [Full Specification (CODEBASE-CONTEXT.md)](./CODEBASE-CONTEXT.md)

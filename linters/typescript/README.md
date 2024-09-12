@@ -21,6 +21,19 @@
 
 This is a CLI linter for validating Codebase Context Specification (CCS) files, including `.context.md`, `.context.yaml`, `.context.json`, `.contextdocs.md`, and `.contextignore` files. The Codebase Context Specification is a convention for documenting your code to enhance understanding for both AI and human developers.
 
+## Codebase Context Editor
+
+To help you get started with creating context files for your project, we've developed the Codebase Context Editor. This tool simplifies the process of generating .context.md, .contextdocs.md, and .contextignore files that adhere to the Codebase Context Specification.
+
+[**Get Started with the Codebase Context Editor**](https://agentic-insights.github.io/codebase-context-spec/)
+
+The Codebase Context Editor provides an intuitive interface for:
+- Creating and editing context files
+- Viewing and copying AI prompts for context generation
+- Validating your context files against the specification
+
+Whether you're new to the Codebase Context Specification or an experienced user, the editor can significantly streamline your workflow.
+
 ## 📚 What is Codebase Context?
 
 Codebase Context is a convention similar to `.env` and `.editorconfig` systems, but focused on documenting your code for both AI and humans. Just as `.env` files manage environment variables and `.editorconfig` ensures consistent coding styles, CCS files provide a standardized way to capture and communicate the context of your codebase.
@@ -35,7 +48,7 @@ By adopting this convention, teams can ensure that both human developers and AI 
 
 For more detailed information about the Codebase Context Specification, please refer to the [main repository](https://github.com/Agentic-Insights/codebase-context-spec) and the [full specification](https://github.com/Agentic-Insights/codebase-context-spec/blob/main/CODEBASE-CONTEXT.md).
 
-## � Supported Node.js Versions
+## Supported Node.js Versions
 
 This linter supports the following Node.js versions:
 
