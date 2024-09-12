@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Paper, Box, Button, Typography, Link as MuiLink, Snackbar, IconButton, Grid, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Container, Paper, Box, Button, Typography, Link as MuiLink, Snackbar, IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Divider } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
@@ -13,6 +13,7 @@ import PromptViewer from './components/PromptViewer';
 import NavTabs from './components/NavTabs';
 import SpecificationModal from './components/SpecificationModal';
 import ActionButtons from './components/ActionButtons';
+import OptionsDescription from './components/OptionsDescription';
 import { handleCopyToClipboard, handleDownload } from './utils/helpers';
 import usePrompts from './hooks/usePrompts';
 import useSnackbar from './hooks/useSnackbar';
@@ -57,12 +58,30 @@ const App: React.FC = () => {
                 </MuiLink>
               </Box>
             </Box>
-            <Typography variant="body1" paragraph>
+            <Typography variant="body1" paragraph sx={{ mb: 3 }}>
               This editor helps you create .context.md, .contextdocs.md, and .contextignore files for your project.
             </Typography>
-            <Accordion>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>View Prompts</Typography>
+            
+            <OptionsDescription />
+            
+            <Divider sx={{ my: 3 }} />
+            
+            <Accordion sx={{ 
+              mb: 3, 
+              '&.MuiAccordion-root': {
+                borderLeft: `6px solid ${theme.palette.secondary.main}`,
+              }
+            }}>
+              <AccordionSummary 
+                expandIcon={<ExpandMoreIcon />}
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  '&.Mui-expanded': {
+                    minHeight: 48,
+                  },
+                }}
+              >
+                <Typography variant="h6" color="secondary">View Prompts</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Grid container spacing={2}>
