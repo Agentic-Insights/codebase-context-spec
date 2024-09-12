@@ -269,10 +269,28 @@ const NavTabs: React.FC = () => {
   const currentForm = getCurrentForm(location.pathname);
 
   return (
-    <Tabs value={currentForm} aria-label="file type tabs">
-      <Tab icon={<DescriptionIcon />} label=".context.md" component={Link} to="/" />
-      <Tab icon={<LibraryBooksIcon />} label=".contextdocs.md" component={Link} to="/contextdocs" />
-      <Tab icon={<BlockIcon />} label=".contextignore" component={Link} to="/contextignore" />
+    <Tabs value={currentForm} aria-label="file type tabs" variant="fullWidth">
+      <Tab 
+        icon={<DescriptionIcon />} 
+        label=".context.md" 
+        component={Link} 
+        to="/" 
+        sx={{ textTransform: 'lowercase' }}
+      />
+      <Tab 
+        icon={<LibraryBooksIcon />} 
+        label=".contextdocs.md" 
+        component={Link} 
+        to="/contextdocs" 
+        sx={{ textTransform: 'lowercase' }}
+      />
+      <Tab 
+        icon={<BlockIcon />} 
+        label=".contextignore" 
+        component={Link} 
+        to="/contextignore" 
+        sx={{ textTransform: 'lowercase' }}
+      />
     </Tabs>
   );
 };
