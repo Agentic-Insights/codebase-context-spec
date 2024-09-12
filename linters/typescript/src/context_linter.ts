@@ -8,6 +8,13 @@ import { ContextignoreLinter } from './contextignore_linter';
 import { getContextFiles, lintFileIfExists, fileExists, printHeader } from './utils/file_utils';
 import { ContextValidator, ValidationResult, SectionValidationResult } from './utils/validator';
 
+export enum LogLevel {
+  ERROR,
+  WARN,
+  INFO,
+  DEBUG
+}
+
 /**
  * ContextLinter class handles the linting of .context files (md, yaml, json)
  * and coordinates the use of ContextignoreLinter and ContextdocsLinter.
@@ -17,12 +24,31 @@ export class ContextLinter {
   private contextdocsLinter: ContextdocsLinter;
   private contextignoreLinter: ContextignoreLinter;
   private contextValidator: ContextValidator;
+  private logLevel: LogLevel;
 
-  constructor() {
+  constructor(logLevel: LogLevel = LogLevel.INFO) {
     this.md = new MarkdownIt();
-    this.contextdocsLinter = new ContextdocsLinter();
-    this.contextignoreLinter = new ContextignoreLinter();
-    this.contextValidator = new ContextValidator();
+    this.contextdocsLinter = new ContextdocsLinter(logLevel);
+    this.contextignoreLinter = new ContextignoreLinter(logLevel);
+    this.contextValidator = new ContextValidator(logLevel);
+    this.logLevel = logLevel;
+  }
+
+  private log(level: LogLevel, message: string): void {
+    if (level <= this.logLevel) {
+      switch (level) {
+        case LogLevel.ERROR:
+          console.error(message);
+          break;
+        case LogLevel.WARN:
+          console.warn(message);
+          break;
+        case LogLevel.INFO:
+        case LogLevel.DEBUG:
+          console.log(message);
+          break;
+      }
+    }
   }
 
   /**
@@ -54,16 +80,24 @@ export class ContextLinter {
       // Log ignored files
       this.logIgnoredFiles(directoryPath);
 
-      // Clear ignore cache after processing the directory
-      this.contextignoreLinter.clearCache();
+      // Clear all caches after processing the directory
+      this.clearAllCaches();
 
-      console.log('Linting completed.');
+      this.log(LogLevel.INFO, 'Linting completed.');
       
       return isValid;
     } catch (error) {
-      console.error(`Error linting directory: ${error instanceof Error ? error.message : String(error)}`);
+      this.log(LogLevel.ERROR, `Error linting directory: ${error instanceof Error ? error.message : String(error)}`);
       return false;
     }
+  }
+
+  /**
+   * Clear all caches from linter components
+   */
+  private clearAllCaches(): void {
+    this.contextignoreLinter.clearCache();
+    this.contextValidator.clearCache();
   }
 
   /**
@@ -120,7 +154,7 @@ export class ContextLinter {
             result = await this.lintJsonFile(fileContent, fullPath);
             break;
           default:
-            console.warn(`Unsupported file extension: ${fileExtension}`);
+            this.log(LogLevel.WARN, `Unsupported file extension: ${fileExtension}`);
             continue;
         }
 
@@ -148,9 +182,9 @@ export class ContextLinter {
   private logIgnoredFiles(directoryPath: string): void {
     const ignoredFiles = this.contextignoreLinter.getIgnoredFiles(directoryPath);
     if (ignoredFiles.length > 0) {
-      console.log('\nIgnored files:');
+      this.log(LogLevel.INFO, '\nIgnored files:');
       for (const file of ignoredFiles) {
-        console.log(`  ${this.normalizePath(file)}`);
+        this.log(LogLevel.INFO, `  ${this.normalizePath(file)}`);
       }
     }
   }
@@ -172,7 +206,7 @@ export class ContextLinter {
         isValid: validationResult.isValid && markdownValid
       };
     } catch (error) {
-      console.error(`  Error parsing Markdown file: ${error}`);
+      this.log(LogLevel.ERROR, `  Error parsing Markdown file: ${error}`);
       return {
         isValid: false,
         coveragePercentage: 0,
@@ -202,19 +236,19 @@ export class ContextLinter {
       if (token.type === 'link_open') {
         const hrefToken = tokens[tokens.indexOf(token) + 1];
         if (hrefToken.type !== 'text' || !hrefToken.content.startsWith('http')) {
-          console.error('  Warning: Link may be improperly formatted or using relative path.');
+          this.log(LogLevel.WARN, '  Warning: Link may be improperly formatted or using relative path.');
           isValid = false;
         }
       }
 
       if (token.type === 'fence' && !token.info) {
-        console.error('  Warning: Code block is missing language specification.');
+        this.log(LogLevel.WARN, '  Warning: Code block is missing language specification.');
         isValid = false;
       }
     }
 
     if (!hasTitle) {
-      console.error('  Error: Markdown content should start with a title (H1 heading).');
+      this.log(LogLevel.ERROR, '  Error: Markdown content should start with a title (H1 heading).');
       isValid = false;
     }
 
@@ -228,16 +262,16 @@ export class ContextLinter {
    * @returns A ValidationResult object
    */
   private async lintYamlFile(content: string, filePath: string): Promise<ValidationResult> {
-    console.log('  - Validating YAML structure');
+    this.log(LogLevel.INFO, '  - Validating YAML structure');
 
     try {
       const yamlData = this.parseYaml(content);
       return this.contextValidator.validateContextData(yamlData, 'yaml');
     } catch (error) {
       if (error instanceof yaml.YAMLException) {
-        console.error(`  Error parsing YAML file: ${this.formatYamlError(error)}`);
+        this.log(LogLevel.ERROR, `  Error parsing YAML file: ${this.formatYamlError(error)}`);
       } else {
-        console.error(`  Error parsing YAML file: ${error}`);
+        this.log(LogLevel.ERROR, `  Error parsing YAML file: ${error}`);
       }
       return {
         isValid: false,
@@ -257,16 +291,16 @@ export class ContextLinter {
    * @returns A ValidationResult object
    */
   private async lintJsonFile(content: string, filePath: string): Promise<ValidationResult> {
-    console.log('  - Validating JSON structure');
+    this.log(LogLevel.INFO, '  - Validating JSON structure');
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
       return this.contextValidator.validateContextData(jsonData, 'json');
     } catch (error) {
       if (error instanceof SyntaxError) {
-        console.error(`  Error parsing JSON file: ${this.formatJsonError(error, content)}`);
+        this.log(LogLevel.ERROR, `  Error parsing JSON file: ${this.formatJsonError(error, content)}`);
       } else {
-        console.error(`  Error parsing JSON file: ${error}`);
+        this.log(LogLevel.ERROR, `  Error parsing JSON file: ${error}`);
       }
       return {
         isValid: false,
@@ -286,19 +320,19 @@ export class ContextLinter {
    */
   private printValidationResult(result: ValidationResult, filePath: string): void {
     const relativePath = this.normalizePath(path.relative(process.cwd(), filePath));
-    console.log(`Linting file: ${relativePath}`);
+    this.log(LogLevel.INFO, `Linting file: ${relativePath}`);
     
-    console.log(`main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
+    this.log(LogLevel.INFO, `main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
     
     for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
-      console.log(`|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
+      this.log(LogLevel.INFO, `|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
     }
     
     if (!result.isValid) {
-      console.warn(`⚠️  File has coverage warnings`);
+      this.log(LogLevel.WARN, `⚠️  File has coverage warnings`);
     }
     
-    console.log(''); // Add a blank line for better readability
+    this.log(LogLevel.INFO, ''); // Add a blank line for better readability
   }
 
   private parseYaml(content: string): Record<string, unknown> {

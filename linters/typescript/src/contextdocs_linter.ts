@@ -1,31 +1,51 @@
 import MarkdownIt from 'markdown-it';
 import matter from 'gray-matter';
 import * as path from 'path';
+import { LogLevel } from './context_linter';
 
 export class ContextdocsLinter {
   private md: MarkdownIt;
+  private logLevel: LogLevel;
 
-  constructor() {
+  constructor(logLevel: LogLevel = LogLevel.INFO) {
     this.md = new MarkdownIt();
+    this.logLevel = logLevel;
+  }
+
+  private log(level: LogLevel, message: string): void {
+    if (level <= this.logLevel) {
+      switch (level) {
+        case LogLevel.ERROR:
+          console.error(message);
+          break;
+        case LogLevel.WARN:
+          console.warn(message);
+          break;
+        case LogLevel.INFO:
+        case LogLevel.DEBUG:
+          console.log(message);
+          break;
+      }
+    }
   }
 
   public async lintContextdocsFile(content: string, filePath: string): Promise<boolean> {
     const relativePath = path.relative(process.cwd(), filePath);
-    console.log(`\nLinting file: ${relativePath}`);
+    this.log(LogLevel.INFO, `\nLinting file: ${relativePath}`);
     
     const { data: frontmatter, content: markdownContent } = matter(content);
 
     const frontmatterLinksResult = this.lintFrontmatter(frontmatter);
     const similarLinksResult = this.checkSimilarLinks(markdownContent, frontmatterLinksResult.links);
 
-    console.log('- Validating YAML front matter structure');
-    console.log('- Checking for similar links in markdown content');
+    this.log(LogLevel.INFO, '- Validating YAML front matter structure');
+    this.log(LogLevel.INFO, '- Checking for similar links in markdown content');
 
     if (!frontmatterLinksResult.isValid || !similarLinksResult) {
-      console.warn('⚠️  File has validation warnings');
+      this.log(LogLevel.WARN, '⚠️  File has validation warnings');
     }
 
-    console.log(''); // Add a blank line for better readability
+    this.log(LogLevel.INFO, ''); // Add a blank line for better readability
     return frontmatterLinksResult.isValid && similarLinksResult;
   }
 
@@ -34,18 +54,18 @@ export class ContextdocsLinter {
     let isValid = true;
 
     if (!frontmatter || typeof frontmatter !== 'object') {
-      console.error('  Error: Invalid YAML front matter structure.');
+      this.log(LogLevel.ERROR, '  Error: Invalid YAML front matter structure.');
       return { isValid: false, links };
     }
 
     if (!('contextdocs' in frontmatter) || !Array.isArray(frontmatter.contextdocs)) {
-      console.error('  Error: Missing or invalid "contextdocs" array in YAML front matter.');
+      this.log(LogLevel.ERROR, '  Error: Missing or invalid "contextdocs" array in YAML front matter.');
       return { isValid: false, links };
     }
 
     for (const item of frontmatter.contextdocs) {
       if (typeof item !== 'object' || item === null) {
-        console.error('  Error: Invalid item in "contextdocs" array.');
+        this.log(LogLevel.ERROR, '  Error: Invalid item in "contextdocs" array.');
         isValid = false;
         continue;
       }
@@ -53,7 +73,7 @@ export class ContextdocsLinter {
       const requiredFields = ['name', 'relationship', 'resources'];
       for (const field of requiredFields) {
         if (!(field in item)) {
-          console.error(`  Error: Missing required field "${field}" in contextdocs item.`);
+          this.log(LogLevel.ERROR, `  Error: Missing required field "${field}" in contextdocs item.`);
           isValid = false;
         }
       }
@@ -69,11 +89,11 @@ export class ContextdocsLinter {
             if (typeof url === 'string') {
               links.add(url);
             } else {
-              console.error(`  Error: Invalid resource URL format. Should be a string. Found: ${JSON.stringify(resource)}`);
+              this.log(LogLevel.ERROR, `  Error: Invalid resource URL format. Should be a string. Found: ${JSON.stringify(resource)}`);
               isValid = false;
             }
           } else {
-            console.error(`  Error: Invalid resource format. Should be an object with a single key-value pair. Found: ${JSON.stringify(resource)}`);
+            this.log(LogLevel.ERROR, `  Error: Invalid resource format. Should be an object with a single key-value pair. Found: ${JSON.stringify(resource)}`);
             isValid = false;
           }
         }
@@ -100,7 +120,7 @@ export class ContextdocsLinter {
 
     for (const link of markdownLinks) {
       if (frontmatterLinks.has(link)) {
-        console.warn(`  Warning: Link "${link}" appears in both frontmatter and markdown content.`);
+        this.log(LogLevel.WARN, `  Warning: Link "${link}" appears in both frontmatter and markdown content.`);
         isValid = false;
       }
     }
