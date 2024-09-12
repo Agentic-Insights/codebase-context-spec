@@ -1,12 +1,13 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-export async function getContextFiles(directoryPath: string): Promise<string[]> {
+export async function getContextFiles(directoryPath: string, isIgnored: (filePath: string, relativeTo: string) => boolean): Promise<string[]> {
   const files = await fs.readdir(directoryPath);
   return files.filter(file => 
-    file.endsWith('.context.md') || 
-    file.endsWith('.context.yaml') || 
-    file.endsWith('.context.json')
+    (file.endsWith('.context.md') || 
+     file.endsWith('.context.yaml') || 
+     file.endsWith('.context.json')) &&
+    !isIgnored(file, directoryPath)
   );
 }
 

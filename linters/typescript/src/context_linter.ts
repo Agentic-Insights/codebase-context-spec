@@ -133,34 +133,32 @@ export class ContextLinter {
    */
   private async handleContextFilesRecursively(directoryPath: string): Promise<boolean> {
     let isValid = true;
-    const contextFiles = await getContextFiles(directoryPath);
+    const contextFiles = await getContextFiles(directoryPath, (filePath, relativeTo) => this.contextignoreLinter.isIgnored(filePath, relativeTo));
     
     for (const filePath of contextFiles) {
-      if (!this.contextignoreLinter.isIgnored(filePath, directoryPath)) {
-        const fullPath = path.join(directoryPath, filePath);
-        const fileContent = await fs.promises.readFile(fullPath, 'utf-8');
-        const fileExtension = path.extname(fullPath);
-        let result: ValidationResult;
+      const fullPath = path.join(directoryPath, filePath);
+      const fileContent = await fs.promises.readFile(fullPath, 'utf-8');
+      const fileExtension = path.extname(fullPath);
+      let result: ValidationResult;
 
-        switch (fileExtension) {
-          case '.md':
-            result = await this.lintMarkdownFile(fileContent, fullPath);
-            break;
-          case '.yaml':
-          case '.yml':
-            result = await this.lintYamlFile(fileContent, fullPath);
-            break;
-          case '.json':
-            result = await this.lintJsonFile(fileContent, fullPath);
-            break;
-          default:
-            this.log(LogLevel.WARN, `Unsupported file extension: ${fileExtension}`);
-            continue;
-        }
-
-        this.printValidationResult(result, fullPath);
-        isValid = isValid && result.isValid;
+      switch (fileExtension) {
+        case '.md':
+          result = await this.lintMarkdownFile(fileContent, fullPath);
+          break;
+        case '.yaml':
+        case '.yml':
+          result = await this.lintYamlFile(fileContent, fullPath);
+          break;
+        case '.json':
+          result = await this.lintJsonFile(fileContent, fullPath);
+          break;
+        default:
+          this.log(LogLevel.WARN, `Unsupported file extension: ${fileExtension}`);
+          continue;
       }
+
+      this.printValidationResult(result, fullPath);
+      isValid = isValid && result.isValid;
     }
 
     // Recursively process subdirectories
@@ -180,11 +178,13 @@ export class ContextLinter {
    * @param directoryPath The path of the directory to check for ignored files
    */
   private logIgnoredFiles(directoryPath: string): void {
-    const ignoredFiles = this.contextignoreLinter.getIgnoredFiles(directoryPath);
-    if (ignoredFiles.length > 0) {
-      this.log(LogLevel.INFO, '\nIgnored files:');
-      for (const file of ignoredFiles) {
-        this.log(LogLevel.INFO, `  ${this.normalizePath(file)}`);
+    if (this.logLevel === LogLevel.DEBUG) {
+      const ignoredFiles = this.contextignoreLinter.getIgnoredFiles(directoryPath);
+      if (ignoredFiles.length > 0) {
+        this.log(LogLevel.DEBUG, '\nIgnored files:');
+        for (const file of ignoredFiles) {
+          this.log(LogLevel.DEBUG, `  ${this.normalizePath(file)}`);
+        }
       }
     }
   }
@@ -262,7 +262,7 @@ export class ContextLinter {
    * @returns A ValidationResult object
    */
   private async lintYamlFile(content: string, filePath: string): Promise<ValidationResult> {
-    this.log(LogLevel.INFO, '  - Validating YAML structure');
+    this.log(LogLevel.DEBUG, '  - Validating YAML structure');
 
     try {
       const yamlData = this.parseYaml(content);
@@ -291,7 +291,7 @@ export class ContextLinter {
    * @returns A ValidationResult object
    */
   private async lintJsonFile(content: string, filePath: string): Promise<ValidationResult> {
-    this.log(LogLevel.INFO, '  - Validating JSON structure');
+    this.log(LogLevel.DEBUG, '  - Validating JSON structure');
 
     try {
       const jsonData = JSON.parse(content) as Record<string, unknown>;
@@ -322,10 +322,23 @@ export class ContextLinter {
     const relativePath = this.normalizePath(path.relative(process.cwd(), filePath));
     this.log(LogLevel.INFO, `Linting file: ${relativePath}`);
     
-    this.log(LogLevel.INFO, `main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
+    // Display main context coverage information at INFO level
+    this.log(LogLevel.INFO, `Main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
     
-    for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
-      this.log(LogLevel.INFO, `|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
+    // Display section names at INFO level
+    const sectionNames = Object.keys(result.sections);
+    if (sectionNames.length > 0) {
+      this.log(LogLevel.INFO, 'Sections:');
+      sectionNames.forEach(sectionName => {
+        this.log(LogLevel.INFO, `  - ${sectionName}`);
+      });
+    }
+    
+    // Display detailed section coverage information at DEBUG level
+    if (this.logLevel === LogLevel.DEBUG) {
+      for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
+        this.log(LogLevel.DEBUG, `|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
+      }
     }
     
     if (!result.isValid) {

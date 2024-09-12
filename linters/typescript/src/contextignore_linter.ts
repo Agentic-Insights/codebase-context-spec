@@ -13,11 +13,13 @@ export class ContextignoreLinter {
   // Cache of ignore instances for each directory
   private ignoreCache: Map<string, ReturnType<typeof ignore>>;
   private logLevel: LogLevel;
+  private errorMessages: string[];
 
   constructor(logLevel: LogLevel = LogLevel.INFO) {
     this.criticalPatterns = new Set(['.context.md', '.context.yaml', '.context.json', '.contextdocs.md', '.contextignore']);
     this.ignoreCache = new Map();
     this.logLevel = logLevel;
+    this.errorMessages = [];
   }
 
   private log(level: LogLevel, message: string): void {
@@ -25,6 +27,7 @@ export class ContextignoreLinter {
       switch (level) {
         case LogLevel.ERROR:
           console.error(message);
+          this.errorMessages.push(message);
           break;
         case LogLevel.WARN:
           console.warn(message);
@@ -38,17 +41,33 @@ export class ContextignoreLinter {
   }
 
   /**
+   * Get the collected error messages
+   * @returns An array of error messages
+   */
+  public getErrorMessages(): string[] {
+    return this.errorMessages;
+  }
+
+  /**
+   * Clear the collected error messages
+   */
+  public clearErrorMessages(): void {
+    this.errorMessages = [];
+  }
+
+  /**
    * Lint a .contextignore file
    * @param content The content of the .contextignore file
    * @param filePath The path of the .contextignore file
    * @returns A boolean indicating whether the file is valid
    */
   public async lintContextignoreFile(content: string, filePath: string): Promise<boolean> {
+    this.clearErrorMessages();
     try {
       const relativePath = path.relative(process.cwd(), filePath);
-      this.log(LogLevel.INFO, `\nLinting file: ${relativePath}`);
-      this.log(LogLevel.INFO, '- Validating .contextignore format');
-      this.log(LogLevel.INFO, '- Checking for valid ignore patterns');
+      this.log(LogLevel.DEBUG, `\nLinting file: ${relativePath}`);
+      this.log(LogLevel.DEBUG, '- Validating .contextignore format');
+      this.log(LogLevel.DEBUG, '- Checking for valid ignore patterns');
 
       const lines = content.split('\n').map(line => line.trim()).filter(line => line !== '' && !line.startsWith('#'));
       const patterns = new Set<string>();
@@ -78,7 +97,7 @@ export class ContextignoreLinter {
         this.log(LogLevel.WARN, '⚠️  File has validation warnings');
       }
 
-      this.log(LogLevel.INFO, ''); // Add a blank line for better readability
+      this.log(LogLevel.DEBUG, ''); // Add a blank line for better readability
       return isValid;
     } catch (error) {
       this.log(LogLevel.ERROR, `Error linting .contextignore file ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
@@ -150,11 +169,14 @@ export class ContextignoreLinter {
         const ig = this.ignoreCache.get(currentDir);
         if (ig) {
           const relativeFilePath = path.relative(currentDir, filePath);
-          return ig.ignores(relativeFilePath);
+          const ignored = ig.ignores(relativeFilePath);
+          this.log(LogLevel.DEBUG, `File ${filePath} is ${ignored ? 'ignored' : 'not ignored'}`);
+          return ignored;
         }
         currentDir = path.dirname(currentDir);
       }
 
+      this.log(LogLevel.DEBUG, `File ${filePath} is not ignored (no .contextignore found)`);
       return false;
     } catch (error) {
       this.log(LogLevel.ERROR, `Error checking if file ${filePath} is ignored: ${error instanceof Error ? error.message : String(error)}`);
@@ -181,41 +203,25 @@ export class ContextignoreLinter {
         return [];
       }
 
-      // Get all files in the directory
-      const allFiles = this.getAllFiles(directoryPath);
+      const ignoredFiles: string[] = [];
+      const walk = (dir: string) => {
+        const dirents = fs.readdirSync(dir, { withFileTypes: true });
+        for (const dirent of dirents) {
+          const res = path.join(dir, dirent.name);
+          const relativePath = path.relative(directoryPath, res);
+          if (ig.ignores(relativePath)) {
+            ignoredFiles.push(res);
+          } else if (dirent.isDirectory()) {
+            walk(res);
+          }
+        }
+      };
 
-      // Filter the files using the ignore patterns
-      return allFiles.filter(file => {
-        const relativePath = path.relative(directoryPath, file);
-        return ig.ignores(relativePath);
-      });
+      walk(directoryPath);
+      return ignoredFiles;
     } catch (error) {
       this.log(LogLevel.ERROR, `Error getting ignored files for directory ${directoryPath}: ${error instanceof Error ? error.message : String(error)}`);
       return [];
     }
-  }
-
-  /**
-   * Get all files in a directory recursively
-   * @param directoryPath The path of the directory to check
-   * @returns An array of file paths
-   */
-  private getAllFiles(directoryPath: string): string[] {
-    const files: string[] = [];
-
-    const walk = (dir: string) => {
-      const dirents = fs.readdirSync(dir, { withFileTypes: true });
-      for (const dirent of dirents) {
-        const res = path.join(dir, dirent.name);
-        if (dirent.isDirectory()) {
-          walk(res);
-        } else {
-          files.push(res);
-        }
-      }
-    };
-
-    walk(directoryPath);
-    return files;
   }
 }
