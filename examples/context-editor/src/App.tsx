@@ -45,8 +45,12 @@ const App: React.FC = () => {
                 Codebase Context Editor
               </Typography>
               <Box display="flex" alignItems="center">
-                <Button variant="outlined" onClick={() => setSpecModalOpen(true)} sx={{ mr: 2 }}>
-                  View Latest Specification
+                <Button 
+                  className="viewLatestSpec" 
+                  onClick={() => setSpecModalOpen(true)} 
+                  sx={{ mr: 2 }}
+                >
+                  View Latest Specification v1.0.0-RFC
                 </Button>
                 <MuiLink href="https://github.com/Agentic-Insights/codebase-context-spec" target="_blank" rel="noopener noreferrer">
                   <GitHubIcon fontSize="large" />
