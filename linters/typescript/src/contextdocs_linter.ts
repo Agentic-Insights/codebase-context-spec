@@ -37,9 +37,7 @@ export class ContextdocsLinter {
 
     const frontmatterLinksResult = this.lintFrontmatter(frontmatter);
     const similarLinksResult = this.checkSimilarLinks(markdownContent, frontmatterLinksResult.links);
-
     this.log(LogLevel.INFO, '- Validating YAML front matter structure');
-    this.log(LogLevel.INFO, '- Checking for similar links in markdown content');
 
     if (!frontmatterLinksResult.isValid || !similarLinksResult) {
       this.log(LogLevel.WARN, '⚠️  File has validation warnings');

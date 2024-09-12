@@ -70,7 +70,7 @@ export class ContextLinter {
       if (await fileExists(rootContextFile)) {
         const content = await fs.promises.readFile(rootContextFile, 'utf-8');
         const result = await this.lintMarkdownFile(content, rootContextFile);
-        this.printValidationResult(result, rootContextFile);
+        this.printValidationResult(result, rootContextFile, this.logLevel === LogLevel.DEBUG);
         isValid = isValid && result.isValid;
       }
       
@@ -157,7 +157,7 @@ export class ContextLinter {
           continue;
       }
 
-      this.printValidationResult(result, fullPath);
+      this.printValidationResult(result, fullPath, this.logLevel === LogLevel.DEBUG);
       isValid = isValid && result.isValid;
     }
 
@@ -317,31 +317,31 @@ export class ContextLinter {
    * Print the validation result for a .context file
    * @param result The validation result
    * @param filePath The path of the file
+   * @param isDebug Whether the linter is in debug mode
    */
-  private printValidationResult(result: ValidationResult, filePath: string): void {
+  private printValidationResult(result: ValidationResult, filePath: string, isDebug: boolean): void {
     const relativePath = this.normalizePath(path.relative(process.cwd(), filePath));
     this.log(LogLevel.INFO, `Linting file: ${relativePath}`);
+    
+    if (isDebug) {
+      this.log(LogLevel.INFO, '(Debug mode: ON)');
+    }
     
     // Display main context coverage information at INFO level
     this.log(LogLevel.INFO, `Main context: ${result.coveragePercentage.toFixed(2)}% (${result.coveredFields}/${result.totalFields} top level fields)`);
     
-    // Display section names at INFO level
-    const sectionNames = Object.keys(result.sections);
-    if (sectionNames.length > 0) {
-      this.log(LogLevel.INFO, 'Sections:');
-      sectionNames.forEach(sectionName => {
-        this.log(LogLevel.INFO, `  - ${sectionName}`);
-      });
-    }
-    
-    // Display detailed section coverage information at DEBUG level
-    if (this.logLevel === LogLevel.DEBUG) {
-      for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
-        this.log(LogLevel.DEBUG, `|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
+    // Display detailed section coverage information
+    let incompleteSections = false;
+    for (const [sectionName, sectionResult] of Object.entries(result.sections)) {
+      if (isDebug || sectionResult.coveragePercentage < 100) {
+        this.log(LogLevel.INFO, `|- ${sectionName}: ${sectionResult.coveragePercentage.toFixed(2)}% (${sectionResult.coveredFields}/${sectionResult.totalFields} fields)`);
+        if (sectionResult.coveragePercentage < 100) {
+          incompleteSections = true;
+        }
       }
     }
     
-    if (!result.isValid) {
+    if (!result.isValid || incompleteSections) {
       this.log(LogLevel.WARN, `⚠️  File has coverage warnings`);
     }
     
