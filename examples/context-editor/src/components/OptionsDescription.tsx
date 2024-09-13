@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Box, List, ListItem, ListItemText, Paper } from '@mui/material';
+import { Typography, List, ListItem, ListItemText, Paper } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
 const OptionsDescription: React.FC = () => {
