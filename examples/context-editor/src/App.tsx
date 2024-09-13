@@ -81,7 +81,7 @@ const App: React.FC = () => {
                   },
                 }}
               >
-                <Typography variant="h6" color="secondary">View Prompts</Typography>
+                <Typography variant="h6" color="secondary">Prompts: Generate draft  & Usage / custom instructions</Typography>
               </AccordionSummary>
               <AccordionDetails>
                 <Grid container spacing={2}>
