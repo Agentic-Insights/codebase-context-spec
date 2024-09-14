@@ -62,6 +62,25 @@ npm run build
 
 The built files will be available in the `build` directory.
 
+## Deploying to Cloudflare Pages
+
+The Codebase Context Editor can be easily deployed to Cloudflare Pages. Follow these steps:
+
+1. Fork the repository or push your changes to your GitHub account.
+
+2. Log in to your Cloudflare account and go to the Pages section.
+
+3. Click on "Create a project" and select your repository.
+
+4. Configure your build settings:
+   - Build command: `npm run build`
+   - Build output directory: `build`
+   - Root directory: `examples/context-editor`
+
+5. Click on "Save and Deploy".
+
+Cloudflare Pages will automatically deploy your site and provide you with a URL. It will also automatically redeploy when you push changes to your repository.
+
 ## Usage
 
 1. Open the application in your web browser.
