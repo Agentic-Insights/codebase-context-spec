@@ -1,7 +1,7 @@
 /*
-  X-Frame-Options: DENY
+  X-Frame-Options: ALLOW-FROM https://codebase-context-spec.pages.dev
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self' https: *.github.io; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: *.github.io; style-src 'self' 'unsafe-inline' https: *.github.io; img-src 'self' data: https: *.github.io; connect-src 'self' https: *.github.io; font-src 'self' https: *.github.io; frame-src 'self' https: *.github.io;
+  Content-Security-Policy: default-src 'self' https: *.github.io; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: *.github.io; style-src 'self' 'unsafe-inline' https: *.github.io; img-src 'self' data: https: *.github.io; connect-src 'self' https: *.github.io; font-src 'self' https: *.github.io; frame-src 'self' https: *.github.io; frame-ancestors 'self' https://codebase-context-spec.pages.dev;
   Permissions-Policy: camera=(), microphone=(), geolocation=()
