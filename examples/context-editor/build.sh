@@ -1,13 +1,20 @@
 #!/bin/bash
 
+# Navigate to the project directory
+cd examples/context-editor
+
+# Run the existing build command
+npm run build
+
 # Generate version number
 VERSION=$(date +'%Y.%m.%d-%H%M%S')
 
 # Ensure public directory exists
 mkdir -p public
 
-# Copy files to public directory
-cp -R src/* public/
+# Copy built files to public directory
+# Assuming the build output is in a 'build' directory, adjust if different
+cp -R build/* public/
 
 # Create version file
 echo $VERSION > public/version.txt
