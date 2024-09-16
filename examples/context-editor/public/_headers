@@ -3,5 +3,5 @@
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;
+  Content-Security-Policy: default-src 'self' https: *.github.io; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: *.github.io; style-src 'self' 'unsafe-inline' https: *.github.io; img-src 'self' data: https: *.github.io; connect-src 'self' https: *.github.io; font-src 'self' https: *.github.io; frame-src 'self' https: *.github.io;
   Permissions-Policy: camera=(), microphone=(), geolocation=()
