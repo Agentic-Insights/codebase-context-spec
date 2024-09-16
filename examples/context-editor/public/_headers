@@ -2,5 +2,5 @@
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self' https: *.github.io context.agenticinsights.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes' https: *.github.io context.agenticinsights.com; style-src 'self' 'unsafe-inline' https: *.github.io context.agenticinsights.com; img-src 'self' data: https: *.github.io context.agenticinsights.com; connect-src 'self' https: *.github.io context.agenticinsights.com; font-src 'self' https: *.github.io context.agenticinsights.com; frame-src 'self' https: *.github.io context.agenticinsights.com; frame-ancestors *;
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self';
+  Permissions-Policy: camera=(), microphone=(), geolocation()
