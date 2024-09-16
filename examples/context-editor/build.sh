@@ -1,20 +1,15 @@
 #!/bin/bash
 
-# Navigate to the project directory
-cd examples/context-editor
-
-# Run the existing build command
-npm run build
-
 # Generate version number
 VERSION=$(date +'%Y.%m.%d-%H%M%S')
 
 # Ensure public directory exists
 mkdir -p public
 
-# Copy built files to public directory
-# Assuming the build output is in a 'build' directory, adjust if different
-cp -R build/* public/
+# Copy required MD files from root
+cp ../../CODEBASE-CONTEXT.md public/
+cp ../../CODING-ASSISTANT-PROMPT.md public/
+cp ../../GENERATE-CONTEXT-PROMPT.md public/
 
 # Create version file
 echo $VERSION > public/version.txt
@@ -41,4 +36,4 @@ cat << EOF > public/version.html
 </html>
 EOF
 
-echo "Build completed. Version: $VERSION"
+echo "Publish step completed. Version: $VERSION"
