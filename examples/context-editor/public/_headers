@@ -2,5 +2,5 @@
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self' https://context.agenticinsights.com https://*.cloudflareinsights.com https://*.githubusercontent.com https://*.amazoncognito.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://context.agenticinsights.com https://*.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://context.agenticinsights.com; img-src 'self' data: https://context.agenticinsights.com; font-src 'self' https://context.agenticinsights.com; frame-ancestors 'self' https://context.agenticinsights.com; connect-src 'self' https://context.agenticinsights.com https://*.amazoncognito.com;
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  # Content-Security-Policy: default-src 'self' https://context.agenticinsights.com https://*.cloudflareinsights.com https://*.githubusercontent.com https://*.amazoncognito.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://context.agenticinsights.com https://*.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://context.agenticinsights.com; img-src 'self' data: https://context.agenticinsights.com; font-src 'self' https://context.agenticinsights.com; frame-ancestors 'self' https://context.agenticinsights.com; connect-src 'self' https://context.agenticinsights.com https://*.amazoncognito.com;
+  # Permissions-Policy: camera=(), microphone=(), geolocation=()
