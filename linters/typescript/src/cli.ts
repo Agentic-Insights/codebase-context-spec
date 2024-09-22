@@ -19,30 +19,63 @@ function parseLogLevel(logLevelArg: string): LogLevel {
   }
 }
 
+function printUsage() {
+  console.log(`
+Usage: codebase-context-lint <directory_to_lint> [options]
+
+Codebase Context Linter
+This tool validates context files (.context.md, .context.yaml, .context.json),
+.contextdocs.md, and .contextignore according to the Codebase Context Specification.
+
+Arguments:
+  <directory_to_lint>  The directory containing the files to lint
+
+Options:
+  --log-level <level>  Set the logging level (error, warn, info, debug)
+                       Default: info
+  --help, -h           Show this help message
+
+Examples:
+  codebase-context-lint .
+  codebase-context-lint /path/to/project --log-level debug
+
+For more information, visit: https://github.com/Agentic-Insights/codebase-context-spec
+`);
+}
+
 async function main() {
   const args = process.argv.slice(2);
   let directoryToLint: string | undefined;
   let logLevel = LogLevel.INFO;
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === '--log-level' && i + 1 < args.length) {
-      logLevel = parseLogLevel(args[i + 1]);
-      i++; // Skip the next argument as it's the log level value
-    } else if (!directoryToLint) {
-      directoryToLint = args[i];
+    switch (args[i]) {
+      case '--log-level':
+        if (i + 1 < args.length) {
+          logLevel = parseLogLevel(args[++i]);
+        } else {
+          console.error('Error: --log-level requires a value');
+          process.exit(1);
+        }
+        break;
+      case '--help':
+      case '-h':
+        printUsage();
+        process.exit(0);
+      default:
+        if (!directoryToLint) {
+          directoryToLint = args[i];
+        } else {
+          console.error(`Error: Unexpected argument '${args[i]}'`);
+          printUsage();
+          process.exit(1);
+        }
     }
   }
 
   if (!directoryToLint) {
-    console.error(`
-Usage: codebase-context-lint <directory_to_lint> [--log-level <level>]
-
-Codebase Context Linter
-This tool validates context files, including .contextdocs.md and .contextignore, according to the Codebase Context Specification.
-
-Options:
-  --log-level <level>  Set the logging level (error, warn, info, debug). Default: info
-`);
+    console.error('Error: Directory to lint is required');
+    printUsage();
     process.exit(1);
   }
 

@@ -77,8 +77,8 @@ export class ContextLinter {
       isValid = await this.handleContextdocs(directoryPath) && isValid;
       isValid = await this.handleContextFilesRecursively(directoryPath) && isValid;
 
-      // Log ignored files
-      this.logIgnoredFiles(directoryPath);
+      // Report on .contextignore usage
+      this.reportContextignoreUsage(directoryPath);
 
       // Clear all caches after processing the directory
       this.clearAllCaches();
@@ -109,6 +109,9 @@ export class ContextLinter {
     if (await fileExists(contextignorePath)) {
       const content = await fs.promises.readFile(contextignorePath, 'utf-8');
       await this.contextignoreLinter.lintContextignoreFile(content, contextignorePath);
+      this.log(LogLevel.INFO, `Found .contextignore file at ${this.normalizePath(contextignorePath)}`);
+    } else {
+      this.log(LogLevel.INFO, 'No .contextignore file found. All files will be processed.');
     }
   }
 
@@ -174,19 +177,33 @@ export class ContextLinter {
   }
 
   /**
-   * Log ignored files in the directory
+   * Report on .contextignore usage
    * @param directoryPath The path of the directory to check for ignored files
    */
-  private logIgnoredFiles(directoryPath: string): void {
+  private reportContextignoreUsage(directoryPath: string): void {
+    const ignoredFiles = this.contextignoreLinter.getIgnoredFiles(directoryPath);
+    const ignoredDirectories = this.contextignoreLinter.getIgnoredDirectories(directoryPath);
+    
+    this.log(LogLevel.INFO, '\n.contextignore Usage Report:');
+    this.log(LogLevel.INFO, `Total ignored files: ${ignoredFiles.length}`);
+    this.log(LogLevel.INFO, `Total ignored directories: ${ignoredDirectories.length}`);
+    
     if (this.logLevel === LogLevel.DEBUG) {
-      const ignoredFiles = this.contextignoreLinter.getIgnoredFiles(directoryPath);
       if (ignoredFiles.length > 0) {
         this.log(LogLevel.DEBUG, '\nIgnored files:');
         for (const file of ignoredFiles) {
           this.log(LogLevel.DEBUG, `  ${this.normalizePath(file)}`);
         }
       }
+      if (ignoredDirectories.length > 0) {
+        this.log(LogLevel.DEBUG, '\nIgnored directories:');
+        for (const dir of ignoredDirectories) {
+          this.log(LogLevel.DEBUG, `  ${this.normalizePath(dir)}`);
+        }
+      }
     }
+    
+    this.log(LogLevel.INFO, ''); // Add a blank line for better readability
   }
 
   /**
