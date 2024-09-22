@@ -224,4 +224,40 @@ export class ContextignoreLinter {
       return [];
     }
   }
+
+  /**
+   * Get a list of ignored directories in a directory
+   * @param directoryPath The path of the directory to check
+   * @returns An array of ignored directory paths
+   */
+  public getIgnoredDirectories(directoryPath: string): string[] {
+    try {
+      const ig = this.ignoreCache.get(directoryPath);
+      if (!ig) {
+        return [];
+      }
+
+      const ignoredDirectories: string[] = [];
+      const walk = (dir: string) => {
+        const dirents = fs.readdirSync(dir, { withFileTypes: true });
+        for (const dirent of dirents) {
+          if (dirent.isDirectory()) {
+            const res = path.join(dir, dirent.name);
+            const relativePath = path.relative(directoryPath, res);
+            if (ig.ignores(relativePath)) {
+              ignoredDirectories.push(res);
+            } else {
+              walk(res);
+            }
+          }
+        }
+      };
+
+      walk(directoryPath);
+      return ignoredDirectories;
+    } catch (error) {
+      this.log(LogLevel.ERROR, `Error getting ignored directories for directory ${directoryPath}: ${error instanceof Error ? error.message : String(error)}`);
+      return [];
+    }
+  }
 }
