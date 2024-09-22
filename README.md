@@ -8,6 +8,69 @@
 
 Welcome to the [Codebase Context Specification (CCS)](./CODEBASE-CONTEXT.md) repository! This project establishes a standardized method for embedding rich contextual information within codebases to enhance understanding for both AI and human developers. By providing a clear and consistent way to communicate project structure, conventions, and key concepts, we significantly improve code comprehension and facilitate more effective collaboration between humans and AI in software development.
 
+## Quick Links
+
+- [Full Specification (CODEBASE-CONTEXT.md)](./CODEBASE-CONTEXT.md)
+- [GitHub Repository](https://github.com/Agentic-Insights/codebase-context-spec)
+- [NPM Package (codebase-context-lint)](https://www.npmjs.com/package/codebase-context-lint)
+- [SubStack Article by Vaskin](https://agenticinsights.substack.com/p/codebase-context-specification-rfc)
+- [Context File Example (.context.md)](.context.md)
+- [AI Assistant Prompt (CODING-ASSISTANT-PROMPT.md)](CODING-ASSISTANT-PROMPT.md)
+
+## Installation
+
+To install the Codebase Context Linter globally, use npm:
+
+```bash
+npm install -g codebase-context-lint
+```
+
+## CLI Usage
+
+After global installation, you can use the `codebase-context-lint` command to lint your project:
+
+```bash
+codebase-context-lint [directory_to_lint] [options]
+```
+
+You can also use npx to run the linter without installing it globally:
+
+```bash
+npx codebase-context-lint [directory_to_lint] [options]
+```
+
+If no directory is specified, the linter will default to the current directory.
+
+Options:
+- `--log-level <level>`: Set the logging level (error, warn, info, debug). Default: info
+- `--help`, `-h`: Show the help message
+
+Examples:
+```bash
+codebase-context-lint
+codebase-context-lint .
+codebase-context-lint /path/to/project --log-level debug
+npx codebase-context-lint
+npx codebase-context-lint /path/to/project --log-level debug
+```
+
+The linter will validate your .context.md, .context.yaml, .context.json, .contextdocs.md, and .contextignore files according to the Codebase Context Specification.
+
+## Library Usage
+
+You can also use the Codebase Context Linter as a library in your TypeScript or JavaScript projects:
+
+```typescript
+import { ContextLinter, LogLevel } from 'codebase-context-lint';
+
+const linter = new ContextLinter(LogLevel.INFO);
+const isValid = await linter.lintDirectory('/path/to/your/project', '1.0.0');
+
+console.log(`Linting result: ${isValid ? 'Valid' : 'Invalid'}`);
+```
+
+Note: The linter will automatically create any necessary directories when writing files.
+
 ## Codebase Context Editor
 
 To help you get started with creating context files for your project, we've developed the Codebase Context Editor. This tool simplifies the process of generating .context.md, .contextdocs.md, and .contextignore files that adhere to the Codebase Context Specification.
@@ -20,15 +83,6 @@ The Codebase Context Editor provides an intuitive interface for:
 - Validating your context files against the specification
 
 Whether you're new to the Codebase Context Specification or an experienced user, the editor can significantly streamline your workflow.
-
-## Quick Links
-
-- [Full Specification (CODEBASE-CONTEXT.md)](./CODEBASE-CONTEXT.md)
-- [GitHub Repository](https://github.com/Agentic-Insights/codebase-context-spec)
-- [NPM Package (codebase-context-lint)](https://www.npmjs.com/package/codebase-context-lint)
-- [SubStack Article by Vaskin](https://agenticinsights.substack.com/p/codebase-context-specification-rfc)
-- [Context File Example (.context.md)](.context.md)
-- [AI Assistant Prompt (CODING-ASSISTANT-PROMPT.md)](CODING-ASSISTANT-PROMPT.md)
 
 ## Supported Node.js Versions
 
@@ -58,20 +112,6 @@ By adopting this convention, teams can ensure that both human developers and AI 
 - **AI-Human Collaborative Documentation**: Guidelines for creating documentation that's easily parsed by AI models while remaining human-readable and maintainable.
 - **Standardized Context Files**: Consistent use of `.context.md`, `.context.yaml`, and `.context.json` files for conveying codebase context at various levels (project-wide, directory-specific, etc.).
 - **Context-Aware Development**: Encouraging a development approach that considers and documents the broader context of code, not just its immediate functionality.
-
-## Linter
-
-We provide a linter to help validate your context files according to the specification. You can find the NPM package here: [codebase-context-lint](https://www.npmjs.com/package/codebase-context-lint).
-
-To install the linter:
-
-```bash
-npm install -g codebase-context-lint
-```
-
-Note: Make sure you're using a supported Node.js version (18.x, 20.x, or 22.x) when installing and running the linter.
-
-For more information on using the linter, please refer to the [linter's README](./linters/typescript/README.md).
 
 ## Recent Updates
 
@@ -122,7 +162,7 @@ All contributions will be reviewed and discussed openly. Significant changes may
 
 ## Version History
 
-- 1.0-preview: Initial preview release of the Codebase Context Specification
+- 1.0.0-RFC: Initial RFC release of the Codebase Context Specification
 
 ## Learn More
 
