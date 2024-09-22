@@ -1,3 +1,21 @@
+## [1.4.3](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.4.2...v1.4.3) (2024-09-22)
+
+
+### Bug Fixes
+
+*  for cf pages ([5af691c](https://github.com/Agentic-Insights/codebase-context-spec/commit/5af691c7378b0d0c32dc61a1a72e965c4d47a153))
+* add build for cfpages ([d1a5954](https://github.com/Agentic-Insights/codebase-context-spec/commit/d1a5954c923d0d0440e204e61febad3a3dd7d271))
+* again ([97c8b49](https://github.com/Agentic-Insights/codebase-context-spec/commit/97c8b49249d0f18d8054d3371aa326df9114c57c))
+* again ([9d0e6b8](https://github.com/Agentic-Insights/codebase-context-spec/commit/9d0e6b810be7f71d02be9fd49374cfbaee8d9edf))
+* correct pages pub ([15806a0](https://github.com/Agentic-Insights/codebase-context-spec/commit/15806a0a3fe9c4fcad1da7f2497ca8bee154bc3a))
+* csp changes ([2562ee7](https://github.com/Agentic-Insights/codebase-context-spec/commit/2562ee76d3fb0282380c0fa2db5e0c2dfc936b04))
+* forgot lock ([9c6f77e](https://github.com/Agentic-Insights/codebase-context-spec/commit/9c6f77ec1cde4d16c0f72c74ecbfb95b2c02f183))
+* header inline style ([bf83867](https://github.com/Agentic-Insights/codebase-context-spec/commit/bf83867b0dd16c81abe8069872bcec106038fe5e))
+* headers with new domain ([97485f5](https://github.com/Agentic-Insights/codebase-context-spec/commit/97485f5d480234a2312fca5f9592f0e78d23abee))
+* npm run build added ([8f02942](https://github.com/Agentic-Insights/codebase-context-spec/commit/8f029420ff63dc53050ac9703c3d1acd2259e791))
+* pub/build flow ([c7ff397](https://github.com/Agentic-Insights/codebase-context-spec/commit/c7ff397f77812425ad4868d6d675ae6c8f635456))
+* unused reference removed ([7845715](https://github.com/Agentic-Insights/codebase-context-spec/commit/78457158bbe96239c772d74d58624873c5315f18))
+
 ## [1.4.2](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.4.1...v1.4.2) (2024-09-12)
 
 

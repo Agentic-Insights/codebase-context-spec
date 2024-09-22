@@ -1,6 +1,6 @@
 {
   "name": "codebase-context-lint",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "linter for .context.md and related CCS files",
   "main": "dist/context_linter.js",
   "bin": {
