@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Container, Paper, Box, Typography, Link as MuiLink, Snackbar, IconButton, Accordion, AccordionSummary, AccordionDetails, Divider, Button } from '@mui/material';
+import { Container, Paper, Box, Typography, Link as MuiLink, Snackbar, IconButton, Accordion, AccordionSummary, AccordionDetails, Button } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
@@ -46,10 +46,15 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <Container className="container" maxWidth="lg">
         <Paper className="paper" elevation={3}>
-          <Box className="header" display="flex" justifyContent="space-between" alignItems="center">
-            <Typography className="title" variant="h4" component="h1">
-              Codebase Context Editor
-            </Typography>
+          <Box className="header" display="flex" justifyContent="space-between" alignItems="flex-start" mb={4}>
+            <Box>
+              <Typography className="title" variant="h4" component="h1" gutterBottom>
+                Codebase Context Suite
+              </Typography>
+              <Typography variant="subtitle1">
+                A comprehensive tool for managing codebase context, generating prompts, and enhancing development workflows.
+              </Typography>
+            </Box>
             <Box display="flex" alignItems="center">
               <Button 
                 onClick={() => setSpecModalOpen(true)} 
@@ -65,50 +70,50 @@ const App: React.FC = () => {
             </Box>
           </Box>
 
-          <Divider sx={{ my: 3 }} />
-
           <NavTabs value={selectedTab} onChange={handleTabChange} />
 
-          {selectedTab === 0 && (
-            <Box>
-              <Typography variant="h5" sx={{ mb: 2 }}>Coding Assistant Prompts</Typography>
-              <Accordion defaultExpanded>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography>Claude-dev Prompt</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <PromptViewer 
-                    title="CLAUDE-DEV Prompt"
-                    subtitle="CLAUDE-DEV-PROMPT.md"
-                    explanation={codingAssistantPrompts['claude-dev']?.explanation || ''}
-                    content={codingAssistantPrompts['claude-dev']?.content || ''}
-                    onCopy={() => handleCopy(codingAssistantPrompts['claude-dev']?.content || '')}
-                  />
-                </AccordionDetails>
-              </Accordion>
-              {/* Add other coding assistant prompts here if needed */}
-            </Box>
-          )}
+          <Box mt={2}>
+            {selectedTab === 0 && (
+              <Box>
+                <Typography variant="h5" sx={{ mb: 2 }}>Coding Assistant Prompts</Typography>
+                <Accordion defaultExpanded>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography>Claude-dev Prompt</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <PromptViewer 
+                      title="CLAUDE-DEV Prompt"
+                      subtitle="CLAUDE-DEV-PROMPT.md"
+                      explanation={codingAssistantPrompts['claude-dev']?.explanation || ''}
+                      content={codingAssistantPrompts['claude-dev']?.content || ''}
+                      onCopy={() => handleCopy(codingAssistantPrompts['claude-dev']?.content || '')}
+                    />
+                  </AccordionDetails>
+                </Accordion>
+                {/* Add other coding assistant prompts here if needed */}
+              </Box>
+            )}
 
-          {selectedTab === 1 && (
-            <Box>
-              <Typography variant="h5" sx={{ mb: 2 }}>Generate Context Files</Typography>
-              <PromptViewer 
-                title="Generate Context Prompt" 
-                subtitle="GENERATE-CONTEXT-PROMPT.md"
-                explanation={generateContextPrompt.explanation}
-                content={generateContextPrompt.content} 
-                onCopy={() => handleCopy(generateContextPrompt.content)} 
-              />
-            </Box>
-          )}
+            {selectedTab === 1 && (
+              <Box>
+                <Typography variant="h5" sx={{ mb: 2 }}>Generate Context Files</Typography>
+                <PromptViewer 
+                  title="Generate Context Prompt" 
+                  subtitle="GENERATE-CONTEXT-PROMPT.md"
+                  explanation={generateContextPrompt.explanation}
+                  content={generateContextPrompt.content} 
+                  onCopy={() => handleCopy(generateContextPrompt.content)} 
+                />
+              </Box>
+            )}
 
-          {selectedTab === 2 && (
-            <Box>
-              <Typography variant="h5" sx={{ mb: 2 }}>Manual Context Form</Typography>
-              <ContextForm onSubmit={handleContextFormSubmit} />
-            </Box>
-          )}
+            {selectedTab === 2 && (
+              <Box>
+                <Typography variant="h5" sx={{ mb: 2 }}>Manual Context Form</Typography>
+                <ContextForm onSubmit={handleContextFormSubmit} />
+              </Box>
+            )}
+          </Box>
         </Paper>
 
         <SpecificationModal
