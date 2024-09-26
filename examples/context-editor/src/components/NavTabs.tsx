@@ -1,50 +1,34 @@
 import React from 'react';
 import { Tabs, Tab } from '@mui/material';
-import { Link, useLocation } from 'react-router-dom';
 import DescriptionIcon from '@mui/icons-material/Description';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import BlockIcon from '@mui/icons-material/Block';
 
-const NavTabs: React.FC = () => {
-  const location = useLocation();
-  const currentForm = getCurrentForm(location.pathname);
+interface NavTabsProps {
+  value: number;
+  onChange: (event: React.SyntheticEvent, newValue: number) => void;
+}
 
+const NavTabs: React.FC<NavTabsProps> = ({ value, onChange }) => {
   return (
-    <Tabs value={currentForm} aria-label="file type tabs" variant="fullWidth">
+    <Tabs value={value} onChange={onChange} aria-label="file type tabs" variant="fullWidth">
       <Tab 
         icon={<DescriptionIcon />} 
-        label=".context.md" 
-        component={Link} 
-        to="/" 
-        sx={{ textTransform: 'lowercase' }}
+        label="Coding Assistant Prompts" 
+        sx={{ textTransform: 'none' }}
       />
       <Tab 
         icon={<LibraryBooksIcon />} 
-        label=".contextdocs.md" 
-        component={Link} 
-        to="/contextdocs" 
-        sx={{ textTransform: 'lowercase' }}
+        label="Generate Context Files" 
+        sx={{ textTransform: 'none' }}
       />
       <Tab 
         icon={<BlockIcon />} 
-        label=".contextignore" 
-        component={Link} 
-        to="/contextignore" 
-        sx={{ textTransform: 'lowercase' }}
+        label="Manual Context Form" 
+        sx={{ textTransform: 'none' }}
       />
     </Tabs>
   );
-};
-
-const getCurrentForm = (pathname: string) => {
-  switch (pathname) {
-    case '/contextdocs':
-      return 1;
-    case '/contextignore':
-      return 2;
-    default:
-      return 0;
-  }
 };
 
 export default NavTabs;
