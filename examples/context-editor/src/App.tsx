@@ -1,39 +1,43 @@
 import React, { useState } from 'react';
-import { Container, Paper, Box, Button, Typography, Link as MuiLink, Snackbar, IconButton, Grid, Accordion, AccordionSummary, AccordionDetails, Divider } from '@mui/material';
+import { Container, Paper, Box, Button, Typography, Link as MuiLink, Snackbar, IconButton, Accordion, AccordionSummary, AccordionDetails, Divider, Select, MenuItem, FormControl, InputLabel, SelectChangeEvent } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import theme from './theme';
-import ContextForm from './components/ContextForm';
-import ContextDocsForm from './components/ContextDocsForm';
-import ContextIgnoreForm from './components/ContextIgnoreForm';
 import PromptViewer from './components/PromptViewer';
-import NavTabs from './components/NavTabs';
 import SpecificationModal from './components/SpecificationModal';
-import ActionButtons from './components/ActionButtons';
-import OptionsDescription from './components/OptionsDescription';
-import { handleCopyToClipboard, handleDownload } from './utils/helpers';
+import { handleCopyToClipboard } from './utils/helpers';
 import usePrompts from './hooks/usePrompts';
 import useSnackbar from './hooks/useSnackbar';
 import './App.css';
 
-// Conditional base path for GitHub Pages
 const BASE_PATH = process.env.NODE_ENV === 'production' ? '/codebase-context-spec' : '';
 
 const App: React.FC = () => {
-  const [generatedContent, setGeneratedContent] = useState('');
   const [specModalOpen, setSpecModalOpen] = useState(false);
+  const [selectedTool, setSelectedTool] = useState('');
+  const [loadedPrompt, setLoadedPrompt] = useState<string | null>(null);
 
   const { snackbarOpen, snackbarMessage, showSnackbar, closeSnackbar } = useSnackbar();
-  const { codebaseContext, generateContextPrompt, codingAssistantPrompt } = usePrompts(
+  const { codebaseContext, generateContextPrompt, codingAssistantPrompts } = usePrompts(
     showSnackbar,
     (open: boolean) => open ? showSnackbar('') : closeSnackbar()
   );
 
-  const handleFormSubmit = (content: string) => {
-    setGeneratedContent(content);
+  const handleToolChange = (event: SelectChangeEvent<string>) => {
+    setSelectedTool(event.target.value as string);
+    setLoadedPrompt(null);
+  };
+
+  const handleLoadPrompt = () => {
+    if (selectedTool && codingAssistantPrompts[selectedTool]) {
+      setLoadedPrompt(selectedTool);
+      showSnackbar(`Loaded ${selectedTool} prompt`);
+    } else {
+      showSnackbar('Please select a valid tool first');
+    }
   };
 
   return (
@@ -49,6 +53,8 @@ const App: React.FC = () => {
                 <Button 
                   className="viewLatestSpec" 
                   onClick={() => setSpecModalOpen(true)} 
+                  variant="contained"
+                  color="primary"
                   sx={{ mr: 2 }}
                 >
                   View Latest Specification v1.0.0-RFC
@@ -58,67 +64,60 @@ const App: React.FC = () => {
                 </MuiLink>
               </Box>
             </Box>
-            <Typography variant="body1" paragraph sx={{ mb: 3 }}>
-              This editor helps you create .context.md, .contextdocs.md, and .contextignore files for your project.
-            </Typography>
-            
-            <OptionsDescription />
-            
+
             <Divider sx={{ my: 3 }} />
+
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <FormControl sx={{ minWidth: 200, mr: 2 }}>
+                <InputLabel id="coding-tool-select-label">Select Coding Tool</InputLabel>
+                <Select
+                  labelId="coding-tool-select-label"
+                  value={selectedTool}
+                  onChange={handleToolChange}
+                  label="Select Coding Tool"
+                >
+                  <MenuItem value="claude-dev">Claude-dev</MenuItem>
+                  <MenuItem value="aider">Aider</MenuItem>
+                  <MenuItem value="cody">Cody</MenuItem>
+                  {/* Add more tools as needed */}
+                </Select>
+              </FormControl>
+              <Button variant="contained" color="secondary" onClick={handleLoadPrompt}>
+                Load Prompt
+              </Button>
+            </Box>
+
+            <Typography variant="h5" sx={{ mb: 2 }}>Coding Assistant Prompts</Typography>
             
-            <Accordion sx={{ 
-              mb: 3, 
-              '&.MuiAccordion-root': {
-                borderLeft: `6px solid ${theme.palette.secondary.main}`,
-              }
-            }}>
-              <AccordionSummary 
-                expandIcon={<ExpandMoreIcon />}
-                sx={{
-                  backgroundColor: theme.palette.background.paper,
-                  '&.Mui-expanded': {
-                    minHeight: 48,
-                  },
-                }}
-              >
-                <Typography variant="h6" color="secondary">Prompts: Generate draft  & Usage / custom instructions</Typography>
+            {loadedPrompt && codingAssistantPrompts[loadedPrompt] && (
+              <PromptViewer 
+                title={`${loadedPrompt.toUpperCase()} Prompt`}
+                subtitle={`${loadedPrompt.toUpperCase()}-PROMPT.md`}
+                explanation={codingAssistantPrompts[loadedPrompt].explanation}
+                content={codingAssistantPrompts[loadedPrompt].content}
+                onCopy={() => handleCopyToClipboard(codingAssistantPrompts[loadedPrompt].content, showSnackbar, () => showSnackbar(''))}
+              />
+            )}
+
+            <Divider sx={{ my: 3 }} />
+
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Typography variant="h6">Generate Context Files</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
-                    <PromptViewer 
-                      title="Generate Context Prompt" 
-                      subtitle="GENERATE-CONTEXT-PROMPT.md"
-                      explanation={generateContextPrompt.explanation}
-                      content={generateContextPrompt.content} 
-                      onCopy={() => handleCopyToClipboard(generateContextPrompt.content, showSnackbar, () => showSnackbar(''))} 
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={6}>
-                    <PromptViewer 
-                      title="Coding Assistant Prompt" 
-                      subtitle="CODING-ASSISTANT-PROMPT.md"
-                      explanation={codingAssistantPrompt.explanation}
-                      content={codingAssistantPrompt.content} 
-                      onCopy={() => handleCopyToClipboard(codingAssistantPrompt.content, showSnackbar, () => showSnackbar(''))} 
-                    />
-                  </Grid>
-                </Grid>
+                <Typography variant="body2" paragraph>
+                  Use the 'Generate Context Prompt' to get an AI agent to draft your context files.
+                </Typography>
+                <PromptViewer 
+                  title="Generate Context Prompt" 
+                  subtitle="GENERATE-CONTEXT-PROMPT.md"
+                  explanation={generateContextPrompt.explanation}
+                  content={generateContextPrompt.content} 
+                  onCopy={() => handleCopyToClipboard(generateContextPrompt.content, showSnackbar, () => showSnackbar(''))} 
+                />
               </AccordionDetails>
             </Accordion>
-            <NavTabs />
-            <Box className="form-section">
-              <Routes>
-                <Route path="/" element={<ContextForm onSubmit={handleFormSubmit} />} />
-                <Route path="/contextdocs" element={<ContextDocsForm onSubmit={handleFormSubmit} />} />
-                <Route path="/contextignore" element={<ContextIgnoreForm onSubmit={handleFormSubmit} />} />
-              </Routes>
-            </Box>
-            <ActionButtons
-              generatedContent={generatedContent}
-              onCopy={() => handleCopyToClipboard(generatedContent, showSnackbar, () => showSnackbar(''))}
-              onDownload={() => handleDownload(generatedContent, 'generated_context.md', showSnackbar, () => showSnackbar(''))}
-            />
           </Paper>
 
           <SpecificationModal
