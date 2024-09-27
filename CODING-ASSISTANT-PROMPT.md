@@ -47,6 +47,6 @@ Follow these guidelines:
 
 10. Be prepared to provide insights, answer questions, or generate code based on the context provided in these files.
 
-11. If you encounter a siutation where the .context.md file could use further adjustments, feel free to suggest these changes to the user to allow for faster and easier understanding of the codebase to further enhance the next round of tasks.
+11. If you encounter a situation where the .context.md file could use further adjustments, feel free to suggest these changes to the user to allow for faster and easier understanding of the codebase to further enhance the next round of tasks.
 
 Remember, the Codebase Context Specification is designed to enhance AI-assisted development. Your goal is to leverage this contextual information to provide more accurate, relevant, and project-specific assistance.
