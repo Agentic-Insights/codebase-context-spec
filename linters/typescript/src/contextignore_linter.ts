@@ -161,11 +161,10 @@ export class ContextignoreLinter {
    */
   public isIgnored(filePath: string, relativeTo: string): boolean {
     try {
-      const directoryPath = path.dirname(filePath);
-      let currentDir = directoryPath;
+      let currentDir = path.dirname(filePath);
 
       // Traverse up the directory tree to find the nearest .contextignore file
-      while (currentDir.length >= relativeTo.length) {
+      do {
         const ig = this.ignoreCache.get(currentDir);
         if (ig) {
           const relativeFilePath = path.relative(currentDir, filePath);
@@ -174,7 +173,7 @@ export class ContextignoreLinter {
           return ignored;
         }
         currentDir = path.dirname(currentDir);
-      }
+      } while (currentDir.length >= relativeTo.length && currentDir !== path.dirname(currentDir));
 
       this.log(LogLevel.DEBUG, `File ${filePath} is not ignored (no .contextignore found)`);
       return false;
