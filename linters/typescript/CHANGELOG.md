@@ -1,3 +1,16 @@
+# [1.5.0](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.4.3...v1.5.0) (2024-09-28)
+
+
+### Bug Fixes
+
+* Infinite loop when checking ignored files without a .contextignore file created ([10f8e17](https://github.com/Agentic-Insights/codebase-context-spec/commit/10f8e176d44e685cfad21f51cdb28e525892cdc2))
+
+
+### Features
+
+* add new top level tabs ([cb1ac6a](https://github.com/Agentic-Insights/codebase-context-spec/commit/cb1ac6a90549ca5a49a1f54133aa5a3be3ca6148))
+* **dev:** Add ts-node for quick local testing ([62ed68e](https://github.com/Agentic-Insights/codebase-context-spec/commit/62ed68e7d8490c72d64397f0460709c399ee360a))
+
 ## [1.4.3](https://github.com/Agentic-Insights/codebase-context-spec/compare/v1.4.2...v1.4.3) (2024-09-22)
 
 
