@@ -77,8 +77,6 @@ description: A specification for providing explicit context information about a 
 related-modules:
   - name: Context Editor
     path: ./examples/context-editor
-  - name: TypeScript Linter
-    path: https://github.com/Agentic-Insights/codebase-context-spec/tree/main/linters/typescript
 technologies:
   - Markdown
   - YAML
@@ -94,14 +92,14 @@ architecture:
   main-components:
     - Specification document
     - Context Editor
-    - TypeScript Linter
+    - CLI Tool
   data-flow: 
-    - Codebase -> .context.md files -> Linter -> Validation results
+    - Codebase -> .context.md files -> CLI -> Validation results
 development:
   setup-steps:
     - Clone the repository
     - Review the specification documents
-    - Install linter dependencies
+    - Install dependencies
   build-command: npm run build
   test-command: npm test
 business-requirements:
@@ -119,13 +117,13 @@ quality-assurance:
     - Pytest
   coverage-threshold: "90%"
   performance-benchmarks:
-    - Linting speed for large codebases
-    - Memory usage during linting
+    - Processing speed for large codebases
+    - Memory usage during processing
 deployment:
   platform: GitHub
   cicd-pipeline: GitHub Actions
   staging-environment: GitHub Pages (Documentation)
-  production-environment: npm registry (Linter package)
+  production-environment: npm registry (CLI package)
 ---
 
 # Codebase Context Specification
@@ -138,10 +136,10 @@ The Codebase Context Specification follows a documentation-driven architecture, 
 
 1. Specification Document: The core definition of the Codebase Context format and usage.
 2. Context Editor: A tool for creating and editing .context.md files.
-3. TypeScript Linter: A linter implementation to validate .context.md files against the specification.
+3. CLI Tool: A command-line tool to validate .context.md files against the specification.
 
 The data flow in this system is as follows:
-Codebase -> .context.md files -> Linter -> Validation results
+Codebase -> .context.md files -> CLI -> Validation results
 
 This architecture ensures that the specification is well-defined, easy to implement, and can be validated automatically.
 
@@ -149,7 +147,7 @@ This architecture ensures that the specification is well-defined, easy to implem
 
 - Follow the conventions listed in the front matter, including Markdown best practices and consistent naming conventions.
 - Use YAML for structured data within the .context.md files.
-- When contributing to the TypeScript linter, use lowercase and underscores for all .ts files.
+- When contributing to the project, use lowercase and underscores for all .ts files.
 - Write clear, concise documentation for all components of the specification.
 - Use feature branches and pull requests for all changes to the specification or related tools.
 
@@ -169,7 +167,7 @@ Our QA process ensures high-quality, reliable tools and documentation through:
 
 - Comprehensive unit and integration testing using Jest and Pytest
 - Maintaining a test coverage threshold of 90%
-- Performance benchmarking for linting speed and memory usage
+- Performance benchmarking for processing speed and memory usage
 - Regular review and updates to the specification based on community feedback
 
 ## Deployment and Operations
@@ -179,7 +177,7 @@ The Codebase Context Specification project is managed and deployed as follows:
 1. The specification and related tools are hosted on GitHub
 2. GitHub Actions are used for continuous integration and deployment
 3. Documentation is hosted on GitHub Pages (staging environment)
-4. The TypeScript linter is published as an npm package (production environment)
+4. The CLI tool is published as an npm package (production environment)
 
 Regular updates and maintenance are performed to keep the specification and tools up-to-date with evolving development practices and AI capabilities.
 ```
@@ -197,8 +195,6 @@ description: A specification for providing explicit context information about a 
 related-modules:
   - name: Context Editor
     path: ./examples/context-editor
-  - name: TypeScript Linter
-    path: https://github.com/Agentic-Insights/codebase-context-spec/tree/main/linters/typescript
 technologies:
   - Markdown
   - YAML
@@ -214,14 +210,14 @@ architecture:
   main-components:
     - Specification document
     - Context Editor
-    - TypeScript Linter
+    - CLI Tool
   data-flow: 
-    - Codebase -> .context.md files -> Linter -> Validation results
+    - Codebase -> .context.md files -> CLI -> Validation results
 development:
   setup-steps:
     - Clone the repository
     - Review the specification documents
-    - Install linter dependencies
+    - Install dependencies
   build-command: npm run build
   test-command: npm test
 business-requirements:
@@ -239,13 +235,13 @@ quality-assurance:
     - Pytest
   coverage-threshold: "90%"
   performance-benchmarks:
-    - Linting speed for large codebases
-    - Memory usage during linting
+    - Processing speed for large codebases
+    - Memory usage during processing
 deployment:
   platform: GitHub
   cicd-pipeline: GitHub Actions
   staging-environment: GitHub Pages (Documentation)
-  production-environment: npm registry (Linter package)
+  production-environment: npm registry (CLI package)
 ```
 
 ### 4.3 JSON Format
@@ -263,10 +259,6 @@ Example:
     {
       "name": "Context Editor",
       "path": "./examples/context-editor"
-    },
-    {
-      "name": "TypeScript Linter",
-      "path": "https://github.com/Agentic-Insights/codebase-context-spec/tree/main/linters/typescript"
     }
   ],
   "mainTechnologies": [
@@ -286,17 +278,17 @@ Example:
     "mainComponents": [
       "Specification document",
       "Context Editor",
-      "TypeScript Linter"
+      "CLI Tool"
     ],
     "dataFlow": [
-      "Codebase -> .context.md files -> Linter -> Validation results"
+      "Codebase -> .context.md files -> CLI -> Validation results"
     ]
   },
   "development": {
     "setupSteps": [
       "Clone the repository",
       "Review the specification documents",
-      "Install linter dependencies"
+      "Install dependencies"
     ],
     "buildCommand": "npm run build",
     "testCommand": "npm test"
@@ -320,15 +312,15 @@ Example:
     ],
     "coverageThreshold": "90%",
     "performanceBenchmarks": [
-      "Linting speed for large codebases",
-      "Memory usage during linting"
+      "Processing speed for large codebases",
+      "Memory usage during processing"
     ]
   },
   "deployment": {
     "platform": "GitHub",
     "cicdPipeline": "GitHub Actions",
     "stagingEnvironment": "GitHub Pages (Documentation)",
-    "productionEnvironment": "npm registry (Linter package)"
+    "productionEnvironment": "npm registry (CLI package)"
   }
 }
 ```
@@ -399,21 +391,21 @@ The `.contextdocs` file should contain an array of documentation sources. Each s
 ---
 contextdocs:
   - name: TypeScript
-    relationship: Main language for linter implementation
+    relationship: Main language for implementation
     resources:
       - Official Documentation: https://www.typescriptlang.org/docs/
       - TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/intro.html
       - TypeScript Deep Dive: https://basarat.gitbook.io/typescript/
 
   - name: Node.js
-    relationship: Runtime environment for TypeScript linter
+    relationship: Runtime environment
     resources:
       - Official Documentation: https://nodejs.org/en/docs/
       - Getting Started Guide: https://nodejs.org/en/docs/guides/getting-started-guide/
       - Node.js Best Practices: https://github.com/goldbergyoni/nodebestpractices
 
   - name: Jest
-    relationship: Testing framework for TypeScript linter
+    relationship: Testing framework
     resources:
       - Official Documentation: https://jestjs.io/docs/getting-started
       - Testing TypeScript with Jest: https://basarat.gitbook.io/typescript/intro-1/jest
@@ -430,21 +422,21 @@ This section can include any free-form text to provide context about the listed 
 ```yaml
 contextdocs:
   - name: TypeScript
-    relationship: Main language for linter implementation
+    relationship: Main language for implementation
     resources:
       - Official Documentation: https://www.typescriptlang.org/docs/
       - TypeScript Handbook: https://www.typescriptlang.org/docs/handbook/intro.html
       - TypeScript Deep Dive: https://basarat.gitbook.io/typescript/
 
   - name: Node.js
-    relationship: Runtime environment for TypeScript linter
+    relationship: Runtime environment
     resources:
       - Official Documentation: https://nodejs.org/en/docs/
       - Getting Started Guide: https://nodejs.org/en/docs/guides/getting-started-guide/
       - Node.js Best Practices: https://github.com/goldbergyoni/nodebestpractices
 
   - name: Jest
-    relationship: Testing framework for TypeScript linter
+    relationship: Testing framework
     resources:
       - Official Documentation: https://jestjs.io/docs/getting-started
       - Testing TypeScript with Jest: https://basarat.gitbook.io/typescript/intro-1/jest
@@ -458,7 +450,7 @@ contextdocs:
   "contextdocs": [
     {
       "name": "TypeScript",
-      "relationship": "Main language for linter implementation",
+      "relationship": "Main language for implementation",
       "resources": [
         {
           "Official Documentation": "https://www.typescriptlang.org/docs/"
@@ -473,7 +465,7 @@ contextdocs:
     },
     {
       "name": "Node.js",
-      "relationship": "Runtime environment for TypeScript linter",
+      "relationship": "Runtime environment",
       "resources": [
         {
           "Official Documentation": "https://nodejs.org/en/docs/"
@@ -488,7 +480,7 @@ contextdocs:
     },
     {
       "name": "Jest",
-      "relationship": "Testing framework for TypeScript linter",
+      "relationship": "Testing framework",
       "resources": [
         {
           "Official Documentation": "https://jestjs.io/docs/getting-started"
@@ -531,7 +523,3 @@ contextdocs:
 ## 8. Conclusion
 
 The Codebase Context Specification provides a flexible, standardized approach to enriching codebases with contextual information for AI models. By adopting this convention and including role-specific information, development teams can enhance AI-assisted workflows, improving code quality and development efficiency across projects of any scale or complexity. The addition of role-specific guidelines and consistent naming conventions ensures that AI models have access to comprehensive, relevant, and well-structured information tailored to different aspects of the software development lifecycle.
-
-## 9. TypeScript Linter Implementation
-
-For details on the TypeScript implementation of the linter for validating Codebase Context Specification files, please refer to the [TypeScript Linter README](linters/typescript/README.md).

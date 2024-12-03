@@ -190,18 +190,26 @@ When referencing diagrams in the .context.md file:
 
 Remember, the goal is to create .context.md and .contextdocs.md files that provide valuable context for both human developers and AI assistants, enabling more effective collaboration and development on the project.
 
-## Linting and testing the new .context.md and .contextdocs.md
+## Validating the .context.md and .contextdocs.md Files
 
-Use the terminal to run the linting command to review the output.
+Use the terminal to run the validation command to review the output.
 Fix any errors or warnings by reviewing the codebase and filling in the missing pieces.
 
-Usage of official linter for .context.md and .contextdocs.md files:
+Usage of the official CLI tool for validating .context.md and .contextdocs.md files:
 
-1. Run the linter from the directory the files are in:
-  `npx codebase-context-lint .`
-2. Repair and re-run until you have full coverage for both files.
-3. Pay special attention to the format of the resources in .contextdocs.md, ensuring they are objects with single key-value pairs.
+1. Install the CLI tool:
+  ```bash
+  npm install -g @agentic-insights/cc-cli
+  ```
 
-By following these guidelines and instructions, you should be able to create comprehensive and properly formatted .context.md and .contextdocs.md files that will pass the linter checks and provide valuable context for the project.
+2. Run the validation command from the directory containing the files:
+  ```bash
+  cc validate
+  ```
+
+3. Review any validation errors and fix them according to the specification.
+4. Pay special attention to the format of the resources in .contextdocs.md, ensuring they are objects with single key-value pairs.
+
+By following these guidelines and instructions, you should be able to create comprehensive and properly formatted .context.md and .contextdocs.md files that will pass validation and provide valuable context for the project.
 
 Review the CODEBASE-CONTEXT.md file provided for the full specification.

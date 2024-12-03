@@ -1,7 +1,5 @@
 # Codebase Context Specification (CCS) v 1.0.0-RFC
 
-[![npm version](https://img.shields.io/npm/v/codebase-context-lint.svg)](https://www.npmjs.com/package/codebase-context-lint)
-
 ![Codebase Context Image](./img/codebase-context.png "Codebase Context Specification")
 
 ## Introduction
@@ -12,64 +10,14 @@ Welcome to the [Codebase Context Specification (CCS)](./CODEBASE-CONTEXT.md) rep
 
 - [Full Specification (CODEBASE-CONTEXT.md)](./CODEBASE-CONTEXT.md)
 - [GitHub Repository](https://github.com/Agentic-Insights/codebase-context-spec)
-- [NPM Package (codebase-context-lint)](https://www.npmjs.com/package/codebase-context-lint)
+- [CLI Tool Repository](https://github.com/Agentic-Insights/cc-cli)
 - [SubStack Article by Vaskin](https://agenticinsights.substack.com/p/codebase-context-specification-rfc)
 - [Context File Example (.context.md)](.context.md)
 - [AI Assistant Prompt (CODING-ASSISTANT-PROMPT.md)](CODING-ASSISTANT-PROMPT.md)
 
-## Installation
+## Installation & Usage
 
-To install the Codebase Context Linter globally, use npm:
-
-```bash
-npm install -g codebase-context-lint
-```
-
-## CLI Usage
-
-After global installation, you can use the `codebase-context-lint` command to lint your project:
-
-```bash
-codebase-context-lint [directory_to_lint] [options]
-```
-
-You can also use npx to run the linter without installing it globally:
-
-```bash
-npx codebase-context-lint [directory_to_lint] [options]
-```
-
-If no directory is specified, the linter will default to the current directory.
-
-Options:
-- `--log-level <level>`: Set the logging level (error, warn, info, debug). Default: info
-- `--help`, `-h`: Show the help message
-
-Examples:
-```bash
-codebase-context-lint
-codebase-context-lint .
-codebase-context-lint /path/to/project --log-level debug
-npx codebase-context-lint
-npx codebase-context-lint /path/to/project --log-level debug
-```
-
-The linter will validate your .context.md, .context.yaml, .context.json, .contextdocs.md, and .contextignore files according to the Codebase Context Specification.
-
-## Library Usage
-
-You can also use the Codebase Context Linter as a library in your TypeScript or JavaScript projects:
-
-```typescript
-import { ContextLinter, LogLevel } from 'codebase-context-lint';
-
-const linter = new ContextLinter(LogLevel.INFO);
-const isValid = await linter.lintDirectory('/path/to/your/project', '1.0.0');
-
-console.log(`Linting result: ${isValid ? 'Valid' : 'Invalid'}`);
-```
-
-Note: The linter will automatically create any necessary directories when writing files.
+For installation and usage instructions of the Codebase Context CLI tool, please visit the [cc-cli repository](https://github.com/Agentic-Insights/cc-cli).
 
 ## Codebase Context Editor
 
