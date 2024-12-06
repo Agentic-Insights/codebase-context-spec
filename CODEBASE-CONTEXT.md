@@ -1,8 +1,8 @@
 # Codebase Context Specification (CCS)
 
 ## Document Information
-- **Version:** 1.0-RFC
-- **Date:** 2024-08-31
+- **Version:** 1.1-RFC
+- **Date:** 2024-12-06
 - **Status:** Draft
 
 ## Table of Contents
