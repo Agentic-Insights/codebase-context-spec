@@ -1,4 +1,4 @@
-# Codebase Context Specification (CCS) v 1.0.0-RFC
+# Codebase Context Specification (CCS) v 1.1.0-RFC
 
 ![Codebase Context Image](./img/codebase-context.png "Codebase Context Specification")
 
