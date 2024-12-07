@@ -8,16 +8,15 @@ Welcome to the [Codebase Context Specification (CCS)](./CODEBASE-CONTEXT.md) rep
 
 ## Quick Links
 
+- [Official Website](https://codebasecontext.org)
 - [Full Specification (CODEBASE-CONTEXT.md)](./CODEBASE-CONTEXT.md)
 - [GitHub Repository](https://github.com/Agentic-Insights/codebase-context-spec)
-- [CLI Tool Repository](https://github.com/Agentic-Insights/cc-cli)
+- [NPM Package](https://www.npmjs.com/package/@codebase-context/cc-cli)
 - [SubStack Article by Vaskin](https://agenticinsights.substack.com/p/codebase-context-specification-rfc)
-- [Context File Example (.context.md)](.context.md)
-- [AI Assistant Prompt (CODING-ASSISTANT-PROMPT.md)](CODING-ASSISTANT-PROMPT.md)
 
 ## Installation & Usage
 
-For installation and usage instructions of the Codebase Context CLI tool, please visit the [cc-cli repository](https://github.com/Agentic-Insights/cc-cli).
+For installation and usage instructions of the Codebase Context CLI tool, visit the [@codebase-context/cc-cli package](https://www.npmjs.com/package/@codebase-context/cc-cli) on NPM.
 
 ## Supported Node.js Versions
 
@@ -31,7 +30,7 @@ We recommend using the latest LTS (Long Term Support) version of Node.js for opt
 
 ## Codebase Context: A New Convention
 
-The Codebase Context Specification introduces a convention similar to `.env` and `.editorconfig` systems, but focused on documenting your code for both AI and humans. Just as `.env` files manage environment variables and `.editorconfig` ensures consistent coding styles, CCS files (`.context.md`, `.context.yaml`, `.context.json`) provide a standardized way to capture and communicate the context of your codebase.
+The Codebase Context Specification introduces a convention similar to `.env` and `.editorconfig` systems, but focused on documenting your code for both AI and humans. Just as `.env` files manage environment variables and `.editorconfig` ensures consistent coding styles, CCS uses a `.context` directory with an `index.md` file (and optionally `.context.yaml`, `.context.json`) to provide a standardized way to capture and communicate the context of your codebase.
 
 This convention allows developers to:
 1. Document high-level architecture and design decisions
@@ -45,7 +44,7 @@ By adopting this convention, teams can ensure that both human developers and AI 
 
 - **Contextual Metadata**: Structured information about the project, its components, and conventions, designed for both human and AI consumption.
 - **AI-Human Collaborative Documentation**: Guidelines for creating documentation that's easily parsed by AI models while remaining human-readable and maintainable.
-- **Standardized Context Files**: Consistent use of `.context.md`, `.context.yaml`, and `.context.json` files for conveying codebase context at various levels (project-wide, directory-specific, etc.).
+- **Standardized Context Directory**: Consistent use of `.context` directories containing `index.md` (and optionally `.yaml` and `.json` files) for conveying codebase context at various levels (project-wide, directory-specific, etc.).
 - **Context-Aware Development**: Encouraging a development approach that considers and documents the broader context of code, not just its immediate functionality.
 
 ## Recent Updates
