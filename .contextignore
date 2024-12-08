@@ -1,0 +1,17 @@
+# Development artifacts
+node_modules/
+.git/
+.vscode/
+
+# Build outputs
+dist/
+build/
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store
+
+# Keep all documentation and specification files
+!*.md
+!img/
