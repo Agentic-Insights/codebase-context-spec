@@ -5,12 +5,6 @@
 - **Date:** 2024-12-06
 - **Status:** Draft
 
-# Codebase Context Specification (CCS)
-
-Version: 2.0.0
-Status: Release
-Date: December 14, 2024
-
 ## Overview
 
 The Codebase Context Specification (CCS) establishes a standardized framework for documenting and communicating codebase context to both human developers and artificial intelligence systems. Through a structured directory approach, CCS enables teams to maintain comprehensive project documentation that enhances collaboration between developers and AI tools.
