@@ -161,11 +161,3 @@ For projects using version 1.0 of the specification:
 3. Restructure documentation into appropriate files
 4. Update any tool configurations
 5. Remove deprecated .context.md files
-
-## Appendix B: Tool Integration Examples
-
-[Implementation examples for various development environments and AI tools]
-
-## Appendix C: Context Validation
-
-[Guidelines for validating context documentation quality and completeness]
