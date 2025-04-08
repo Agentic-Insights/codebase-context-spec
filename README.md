@@ -11,7 +11,7 @@ Welcome to the [Codebase Context Specification (CCS)](./CODEBASE-CONTEXT.md) rep
 - [Official Website](https://codebasecontext.org)
 - [Full Specification (CODEBASE-CONTEXT.md)](./CODEBASE-CONTEXT.md)
 - [GitHub Repository](https://github.com/Agentic-Insights/codebase-context-spec)
-- [NPM Package](https://www.npmjs.com/package/@codebase-context/cc-cli)
+- [NPM Package](https://www.npmjs.com/package/dotcontext)
 - [SubStack Article by Vaskin](https://agenticinsights.substack.com/p/codebase-context-specification-rfc)
 
 ## Installation & Usage
